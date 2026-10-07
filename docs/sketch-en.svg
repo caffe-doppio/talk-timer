@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="960" height="540" role="img" aria-labelledby="title desc" lang="en" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+<title id="title">talk-timer</title><desc id="desc">Sketch of talk-timer. Left, the planner: eight blocks fill 60 minutes, so extending one is refused. Right, a screen with a thin bar under the menu bar, shown in three states: normal, alert, overtime.</desc>
+<rect width="960" height="540" rx="16" fill="#0F1117"/>
+<text x="32" y="46" font-size="24" font-weight="700" fill="#F6F8F9">talk-timer</text>
+<text x="32" y="68" font-size="13" fill="#8891A4">Plan within the time you have, then watch it run out while you talk.</text>
+<rect x="32" y="84" width="416" height="436" rx="10" fill="#181B24" stroke="#363B4C"/>
+<circle cx="48" cy="98" r="4.5" fill="#FF5F57"/>
+<circle cx="62" cy="98" r="4.5" fill="#FEBC2E"/>
+<circle cx="76" cy="98" r="4.5" fill="#28C840"/>
+<text x="240" y="102" font-size="12" font-weight="600" fill="#8891A4" text-anchor="middle">1 · Plan</text>
+<line x1="32" y1="112" x2="448" y2="112" stroke="#363B4C"/>
+<text x="44" y="138" font-size="15" font-weight="700" fill="#F6F8F9">Borrowed from the Lab</text>
+<text x="436" y="138" font-size="13" fill="#F6F8F9" text-anchor="end">Total 60 min</text>
+<rect x="45.0" y="150" width="17.2" height="16" rx="2" fill="#3E5DE7"/>
+<rect x="64.2" y="150" width="30.0" height="16" rx="2" fill="#3E5DE7"/>
+<rect x="96.2" y="150" width="42.8" height="16" rx="2" fill="#3E5DE7"/>
+<rect x="141.0" y="150" width="17.2" height="16" rx="2" fill="#3E5DE7"/>
+<rect x="160.2" y="150" width="94.0" height="16" rx="2" fill="#3E5DE7"/>
+<rect x="256.2" y="150" width="49.2" height="16" rx="2" fill="#3E5DE7"/>
+<rect x="307.4" y="150" width="74.8" height="16" rx="2" fill="#3E5DE7"/>
+<rect x="384.2" y="150" width="42.8" height="16" rx="2" fill="#3E5DE7"/>
+<text x="436" y="186" font-size="12" fill="#8891A4" text-anchor="end">Margin 0 min</text>
+<rect x="40" y="196" width="400" height="24" rx="4" fill="#222631"/>
+<text x="50" y="212" font-size="12" fill="#8891A4">≡</text>
+<text x="66" y="212" font-size="12" fill="#F6F8F9">Why the digital is political</text>
+<rect x="352" y="199" width="32" height="18" rx="3" fill="#181B24" stroke="#363B4C"/>
+<text x="368" y="212" font-size="12" fill="#F6F8F9" text-anchor="middle">3</text>
+<circle cx="402" cy="208" r="8" fill="#181B24" stroke="#363B4C"/>
+<text x="402" y="212" font-size="12" fill="#F6F8F9" text-anchor="middle">−</text>
+<circle cx="424" cy="208" r="8" fill="#181B24" stroke="#363B4C"/>
+<text x="424" y="212" font-size="12" fill="#F6F8F9" text-anchor="middle">+</text>
+<rect x="40" y="224" width="400" height="24" rx="4" fill="#222631"/>
+<text x="50" y="240" font-size="12" fill="#8891A4">≡</text>
+<text x="66" y="240" font-size="12" fill="#F6F8F9">Evidence before a judge</text>
+<rect x="352" y="227" width="32" height="18" rx="3" fill="#181B24" stroke="#363B4C"/>
+<text x="368" y="240" font-size="12" fill="#F6F8F9" text-anchor="middle">5</text>
+<circle cx="402" cy="236" r="8" fill="#181B24" stroke="#363B4C"/>
+<text x="402" y="240" font-size="12" fill="#F6F8F9" text-anchor="middle">−</text>
+<circle cx="424" cy="236" r="8" fill="#181B24" stroke="#363B4C"/>
+<text x="424" y="240" font-size="12" fill="#F6F8F9" text-anchor="middle">+</text>
+<rect x="40" y="252" width="400" height="24" rx="4" fill="#222631"/>
+<text x="50" y="268" font-size="12" fill="#8891A4">≡</text>
+<text x="66" y="268" font-size="12" fill="#F6F8F9">From the field, limits, disclosure</text>
+<rect x="352" y="255" width="32" height="18" rx="3" fill="#181B24" stroke="#363B4C"/>
+<text x="368" y="268" font-size="12" fill="#F6F8F9" text-anchor="middle">7</text>
+<circle cx="402" cy="264" r="8" fill="#181B24" stroke="#363B4C"/>
+<text x="402" y="268" font-size="12" fill="#F6F8F9" text-anchor="middle">−</text>
+<circle cx="424" cy="264" r="8" fill="#181B24" stroke="#363B4C"/>
+<text x="424" y="268" font-size="12" fill="#F6F8F9" text-anchor="middle">+</text>
+<rect x="40" y="280" width="400" height="24" rx="4" fill="#222631"/>
+<text x="50" y="296" font-size="12" fill="#8891A4">≡</text>
+<text x="66" y="296" font-size="12" fill="#F6F8F9">Live demo on the big screen</text>
+<rect x="352" y="283" width="32" height="18" rx="3" fill="#181B24" stroke="#363B4C"/>
+<text x="368" y="296" font-size="12" fill="#F6F8F9" text-anchor="middle">3</text>
+<circle cx="402" cy="292" r="8" fill="#181B24" stroke="#363B4C"/>
+<text x="402" y="296" font-size="12" fill="#F6F8F9" text-anchor="middle">−</text>
+<circle cx="424" cy="292" r="8" fill="#181B24" stroke="#363B4C"/>
+<text x="424" y="296" font-size="12" fill="#F6F8F9" text-anchor="middle">+</text>
+<rect x="40" y="308" width="400" height="24" rx="4" fill="#222631" stroke="#E32C39"/>
+<text x="50" y="324" font-size="12" fill="#8891A4">≡</text>
+<text x="66" y="324" font-size="12" fill="#F6F8F9">Collect and seal</text>
+<rect x="352" y="311" width="32" height="18" rx="3" fill="#181B24" stroke="#363B4C"/>
+<text x="368" y="324" font-size="12" fill="#F6F8F9" text-anchor="middle">15</text>
+<circle cx="402" cy="320" r="8" fill="#181B24" stroke="#363B4C"/>
+<text x="402" y="324" font-size="12" fill="#F6F8F9" text-anchor="middle">−</text>
+<circle cx="424" cy="320" r="8" fill="#181B24" stroke="#E32C39"/>
+<text x="424" y="324" font-size="12" fill="#E32C39" text-anchor="middle">+</text>
+<rect x="40" y="336" width="400" height="24" rx="4" fill="#222631"/>
+<text x="50" y="352" font-size="12" fill="#8891A4">≡</text>
+<text x="66" y="352" font-size="12" fill="#F6F8F9">The hidden bug: disclose or not?</text>
+<rect x="352" y="339" width="32" height="18" rx="3" fill="#181B24" stroke="#363B4C"/>
+<text x="368" y="352" font-size="12" fill="#F6F8F9" text-anchor="middle">8</text>
+<circle cx="402" cy="348" r="8" fill="#181B24" stroke="#363B4C"/>
+<text x="402" y="352" font-size="12" fill="#F6F8F9" text-anchor="middle">−</text>
+<circle cx="424" cy="348" r="8" fill="#181B24" stroke="#363B4C"/>
+<text x="424" y="352" font-size="12" fill="#F6F8F9" text-anchor="middle">+</text>
+<rect x="40" y="364" width="400" height="24" rx="4" fill="#222631"/>
+<text x="50" y="380" font-size="12" fill="#8891A4">≡</text>
+<text x="66" y="380" font-size="12" fill="#F6F8F9">Hand-off and verification</text>
+<rect x="352" y="367" width="32" height="18" rx="3" fill="#181B24" stroke="#363B4C"/>
+<text x="368" y="380" font-size="12" fill="#F6F8F9" text-anchor="middle">12</text>
+<circle cx="402" cy="376" r="8" fill="#181B24" stroke="#363B4C"/>
+<text x="402" y="380" font-size="12" fill="#F6F8F9" text-anchor="middle">−</text>
+<circle cx="424" cy="376" r="8" fill="#181B24" stroke="#363B4C"/>
+<text x="424" y="380" font-size="12" fill="#F6F8F9" text-anchor="middle">+</text>
+<rect x="40" y="392" width="400" height="24" rx="4" fill="#222631"/>
+<text x="50" y="408" font-size="12" fill="#8891A4">≡</text>
+<text x="66" y="408" font-size="12" fill="#F6F8F9">Debrief, open issues</text>
+<rect x="352" y="395" width="32" height="18" rx="3" fill="#181B24" stroke="#363B4C"/>
+<text x="368" y="408" font-size="12" fill="#F6F8F9" text-anchor="middle">7</text>
+<circle cx="402" cy="404" r="8" fill="#181B24" stroke="#363B4C"/>
+<text x="402" y="408" font-size="12" fill="#F6F8F9" text-anchor="middle">−</text>
+<circle cx="424" cy="404" r="8" fill="#181B24" stroke="#363B4C"/>
+<text x="424" y="408" font-size="12" fill="#F6F8F9" text-anchor="middle">+</text>
+<text x="44" y="442" font-size="12" fill="#E32C39">✕ +1 min on “Collect and seal”: refused, margin is 0</text>
+<rect x="44" y="470" width="64" height="26" rx="5" fill="#222631" stroke="#363B4C"/>
+<text x="76" y="487" font-size="12" fill="#F6F8F9" text-anchor="middle">Open…</text>
+<rect x="116" y="470" width="184" height="26" rx="5" fill="#222631" stroke="#363B4C"/>
+<text x="208" y="487" font-size="12" fill="#F6F8F9" text-anchor="middle">Bar on: Built-in display ▾</text>
+<rect x="340" y="470" width="96" height="26" rx="5" fill="#3E5DE7"/>
+<text x="388" y="487" font-size="12" font-weight="600" fill="#F6F8F9" text-anchor="middle">▶ Start</text>
+<text x="704" y="80" font-size="12" font-weight="600" fill="#8891A4" text-anchor="middle">2 · Present</text>
+<rect x="480" y="90" width="448" height="250" rx="10" fill="#222631" stroke="#363B4C"/>
+<rect x="490" y="100" width="428" height="222" fill="#EEF1F4"/>
+<rect x="490" y="100" width="428" height="12" fill="#F6F8F9"/>
+<text x="498" y="109" font-size="8" fill="#363B4C">Safari   File   Edit   View</text>
+<rect x="490" y="112" width="428" height="16" rx="1.8" fill="#181B24"/>
+<text x="496.0" y="122.4" font-size="6.6" fill="#8891A4">2/8</text>
+<text x="510.4" y="122.4" font-size="6.6" font-weight="600" fill="#F6F8F9">Evidence before a judge</text>
+<rect x="605.2" y="118.2" width="60.0" height="3.6" rx="1.8" fill="#3F4759"/>
+<rect x="605.2" y="118.2" width="9.0" height="3.6" rx="1.8" fill="#D7790C"/>
+<text x="671.2" y="122.4" font-size="6.6" fill="#F6F8F9" style="font-variant-numeric:tabular-nums">0:48</text>
+<text x="695.2" y="122.4" font-size="6.6" fill="#8891A4">→ From the field</text>
+<rect x="502" y="138" width="404" height="174" rx="4" fill="#FFFFFF" stroke="#CFD5DE"/>
+<rect x="502" y="138" width="404" height="14" rx="4" fill="#DFE2EA"/>
+<rect x="516" y="166" width="170" height="6" rx="3" fill="#CFD5DE"/>
+<rect x="516" y="180" width="130" height="6" rx="3" fill="#CFD5DE"/>
+<rect x="516" y="194" width="180" height="6" rx="3" fill="#CFD5DE"/>
+<rect x="516" y="208" width="100" height="6" rx="3" fill="#CFD5DE"/>
+<rect x="706" y="152" width="200" height="160" fill="#F6F8F9" stroke="#DFE2EA"/>
+<rect x="716" y="166" width="150" height="5" rx="2" fill="#B2B9C7"/>
+<rect x="716" y="182" width="110" height="5" rx="2" fill="#B2B9C7"/>
+<rect x="716" y="198" width="170" height="5" rx="2" fill="#B2B9C7"/>
+<rect x="716" y="214" width="90" height="5" rx="2" fill="#B2B9C7"/>
+<rect x="716" y="230" width="140" height="5" rx="2" fill="#B2B9C7"/>
+<rect x="716" y="246" width="120" height="5" rx="2" fill="#B2B9C7"/>
+<path d="M 600 268 C 600 220, 560 190, 545 132" fill="none" stroke="#3E5DE7" stroke-width="1.5"/>
+<path d="M 540 138 L 545 130 L 550 138" fill="none" stroke="#3E5DE7" stroke-width="1.5"/>
+<rect x="516" y="262" width="250" height="24" rx="12" fill="#3E5DE7"/>
+<text x="641" y="278" font-size="11" font-weight="600" fill="#F6F8F9" text-anchor="middle">Above every app, full screen too</text>
+<rect x="684" y="340" width="40" height="12" fill="#363B4C"/>
+<rect x="654" y="352" width="100" height="4" rx="2" fill="#363B4C"/>
+<circle cx="484" cy="380" r="3.5" fill="#3E5DE7"/>
+<text x="494" y="384" font-size="11" fill="#8891A4">Normal</text>
+<rect x="480" y="390" width="448" height="24" rx="3.0" fill="#181B24"/>
+<text x="490.0" y="406.0" font-size="11" fill="#8891A4">2/8</text>
+<text x="514.0" y="406.0" font-size="11" font-weight="600" fill="#F6F8F9">Evidence before a judge</text>
+<rect x="672.0" y="399.0" width="100.0" height="6.0" rx="3.0" fill="#3F4759"/>
+<rect x="672.0" y="399.0" width="70.0" height="6.0" rx="3.0" fill="#3E5DE7"/>
+<text x="782.0" y="406.0" font-size="11" fill="#F6F8F9" style="font-variant-numeric:tabular-nums">3:30</text>
+<circle cx="484" cy="430" r="3.5" fill="#D7790C"/>
+<text x="494" y="434" font-size="11" fill="#8891A4">Alert · last 20 % or last minute: line up your transition</text>
+<rect x="480" y="440" width="448" height="24" rx="3.0" fill="#181B24"/>
+<text x="490.0" y="456.0" font-size="11" fill="#8891A4">2/8</text>
+<text x="514.0" y="456.0" font-size="11" font-weight="600" fill="#F6F8F9">Evidence before a judge</text>
+<rect x="672.0" y="449.0" width="100.0" height="6.0" rx="3.0" fill="#3F4759"/>
+<rect x="672.0" y="449.0" width="15.0" height="6.0" rx="3.0" fill="#D7790C"/>
+<text x="782.0" y="456.0" font-size="11" fill="#F6F8F9" style="font-variant-numeric:tabular-nums">0:48</text>
+<text x="822.0" y="456.0" font-size="11" fill="#8891A4">→ From the field</text>
+<circle cx="484" cy="480" r="3.5" fill="#E32C39"/>
+<text x="494" y="484" font-size="11" fill="#8891A4">Overtime · the bar never moves on for you</text>
+<rect x="480" y="490" width="448" height="24" rx="3.0" fill="#181B24"/>
+<text x="490.0" y="506.0" font-size="11" fill="#8891A4">2/8</text>
+<text x="514.0" y="506.0" font-size="11" font-weight="600" fill="#F6F8F9">Evidence before a judge</text>
+<rect x="672.0" y="499.0" width="100.0" height="6.0" rx="3.0" fill="#3F4759"/>
+<text x="782.0" y="506.0" font-size="11" fill="#E32C39" font-weight="700" style="font-variant-numeric:tabular-nums">+1:12</text>
+<text x="822.0" y="506.0" font-size="11" fill="#8891A4">→ From the field</text>
+</svg>

@@ -1,42 +1,50 @@
 # talk-timer
 
-Un planificateur de discours avec une barre de temps flottante, pour macOS.
+![TLP:CLEAR](https://raw.githubusercontent.com/caffe-doppio/badges-tlp/main/tlp-clear.svg)
+[![CI](https://github.com/caffe-doppio/talk-timer/actions/workflows/ci.yml/badge.svg)](https://github.com/caffe-doppio/talk-timer/actions/workflows/ci.yml)
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
-Pour qui a un plan solide mais perd le fil du temps en parlant : un sous-sujet passionnant prévu pour 5 minutes qui en prend 15, surtout en langue étrangère.
+**English** · [Français](README.fr.md)
 
-1. **Planifier** : on fixe une durée totale, puis on range, allonge ou raccourcit des blocs. Le total ne peut jamais être dépassé : allonger un bloc consomme la marge, et quand la marge est vide, il faut raccourcir ailleurs.
-2. **Tenir le temps** : pendant la présentation, une barre fine en haut de l'écran, au-dessus de toutes les applis, affiche la séquence en cours et une jauge qui se vide. On voit la fin arriver et on prépare sa transition.
+A talk planner with a floating time bar, for macOS.
 
-L'outil ne coupe jamais la parole. C'est la personne qui passe au bloc suivant.
+For people who have a solid outline but lose track of time once they start talking. A fascinating sub-topic planned for 5 minutes takes 15, and it gets worse in a foreign language.
 
-```
- 3/8  Evidence before a judge  [▓▓▓░░░░░░░░░░░░░░░]  0:48   → From the field · « cue »
-```
+![Sketch of talk-timer. Left, the planner: eight blocks fill 60 minutes, so extending one is refused. Right, a screen with a thin bar under the menu bar, in three states: normal, alert, overtime.](docs/sketch-en.svg)
+
+1. **Plan.** Set the total length, then reorder, extend or shorten blocks. The total can never be exceeded: extending a block uses up the margin, and once the margin is empty you have to shorten something else.
+2. **Keep time.** While you present, a thin bar at the top of the screen, above every app, shows the current section and a gauge that runs out. You see the end coming and have time to find your transition.
+
+The tool never cuts you off: you decide when to move to the next block.
 
 > [!NOTE]
-> **Statut : en cours.** Les specs sont écrites et le paquet compile, mais ni le planificateur ni la barre ne sont encore implémentés.
-> Spécifications complètes : [`SPECS.md`](SPECS.md).
+> **Status: bar spike.** The floating bar runs from a talk file. The planner window is not built yet.
+> Full specification (French): [`SPECS.md`](SPECS.md).
 
-## Prérequis
+## Requirements
 
 - macOS 26 (Tahoe)
-- Xcode 26 ou les Command Line Tools, Swift 6.2 ou plus récent
+- Xcode 26 or the Command Line Tools, Swift 6.2 or later
 
-## Utilisation
+## Usage
 
 ```bash
-swift build          # compiler
-swift run            # lancer l'application
-swift test           # lancer les tests
-open Package.swift   # ouvrir dans Xcode
+swift build          # build
+swift test           # run the tests
+open Package.swift   # open in Xcode
+
+# Bar spike: shows the bar for a talk, on screen N (default 0, the one with the menu bar)
+swift run TalkTimer fixtures/borrowed-from-the-lab.json --screen 1
 ```
 
+On launch, the app lists the available screens and their numbers in the terminal.
+
 > [!IMPORTANT]
-> Pour présenter, mettez les écrans en **mode étendu**, pas en recopie, et affichez la barre sur l'écran du portable. En recopie, le public voit la barre.
+> To present, set your displays to **extended**, not mirrored, and put the bar on the laptop screen. When mirrored, the audience sees the bar.
 
-## Format d'un talk
+## Talk file format
 
-Un talk est un fichier JSON écrit à la main ou par le planificateur :
+A talk is a JSON file, written by hand or by the planner:
 
 ```json
 {
@@ -49,36 +57,46 @@ Un talk est un fichier JSON écrit à la main ou par le planificateur :
 }
 ```
 
-- La marge, c'est-à-dire `totalMinutes − Σ minutes`, est calculée et jamais stockée.
-- `cue` est une phrase de transition facultative, affichée quand la fin du bloc approche.
-- Un fichier dont la somme des blocs dépasse le total est refusé au chargement.
+- The margin, `totalMinutes − Σ minutes`, is computed and never stored.
+- `cue` is an optional transition line, shown when the end of the block gets close.
+- A file whose blocks add up to more than the total is refused on load.
 
-Exemple complet : [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from-the-lab.json). C'est la timeline d'un workshop de 60 minutes en 8 blocs.
+Full example: [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from-the-lab.json), the timeline of a 60-minute workshop in 8 blocks.
 
-## Raccourcis pendant une session
+## The bar
 
-| Raccourci | Action |
+| State | When | What it shows |
+|---|---|---|
+| Normal | More than 20 % of the block left, and more than 1 minute | Blue gauge, countdown |
+| Alert | 20 % of the block or the last minute, whichever comes first | Orange gauge, next block and transition line |
+| Overtime | Past zero | Empty gauge, red `+m:ss` counting up |
+
+| Shortcut | Action |
 |---|---|
-| ⌃⌥→ ou clic sur la barre | Bloc suivant |
-| ⌃⌥← | Revenir au bloc précédent |
-| ⌃⌥Espace | Pause / reprise |
+| ⌃⌥→ or click on the bar | Next block |
+| ⌃⌥← | Back to the previous block |
+| ⌃⌥Space | Pause / resume (not in the spike yet) |
 
-Les raccourcis sont globaux : ils fonctionnent même quand une autre appli a le focus, et ne demandent pas l'autorisation Accessibilité.
+Shortcuts are global: they work while another app has focus, and do not need the Accessibility permission.
 
-## Structure
+## Layout
 
 ```
 Package.swift
-Sources/TalkTimer/Model.swift          format de fichier, règles de marge, calcul de l'écart
-Sources/TalkTimer/App.swift            point d'entrée, fenêtre du planificateur
-Tests/TalkTimerTests/ModelTests.swift  critères d'acceptation (SPECS.md § 10)
-fixtures/                              talks de référence pour les tests
+Sources/TalkTimer/Model.swift          file format, margin rules, session clock, bar states
+Sources/TalkTimer/Bar.swift            floating panel, bar view, global shortcuts
+Sources/TalkTimer/App.swift            entry point
+Tests/TalkTimerTests/ModelTests.swift  acceptance criteria (SPECS.md § 10)
+fixtures/                              reference talks for the tests
+docs/sketch.py                         generates docs/sketch-{en,fr}.svg
 ```
 
-## Vie privée
+CI runs SwiftLint (`.swiftlint.yml`, adapted from [exelban/stats](https://github.com/exelban/stats)) on Linux, then build and tests on macOS 26.
 
-Aucun accès réseau, aucune télémétrie. Les talks restent des fichiers locaux.
+## Privacy
 
-## Licence
+No network access, no telemetry. Talks stay as local files.
 
-Copyright 2026 Sasha. Publié sous licence [Apache 2.0](LICENSE).
+## License
+
+Copyright 2026 Sasha. Released under the [Apache 2.0](LICENSE) license.

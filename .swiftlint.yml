@@ -1,0 +1,18 @@
+# Inspiré de exelban/stats (.swiftlint.yml), réduit à ce que ce dépôt utilise.
+
+included:
+  - Sources
+  - Tests
+  - Package.swift
+
+disabled_rules:
+  - trailing_comma  # Swift 6.1+ les accepte partout, et elles simplifient les diffs
+
+opt_in_rules:
+  - empty_count
+  - trailing_newline
+
+identifier_name:
+  min_length: 1
+
+line_length: 140

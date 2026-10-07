@@ -50,7 +50,7 @@ Un talk est un fichier JSON, lisible et modifiable à la main. Ce fichier est le
 
 - La **marge n'est pas stockée** : `marge = totalMinutes − Σ minutes`. Elle est toujours ≥ 0.
 - Les identifiants des blocs sont générés au chargement et ne sont pas écrits dans le fichier, pour qu'un humain puisse écrire un talk sans inventer d'UUID.
-- **Chargement refusé**, avec un message qui explique pourquoi, si le JSON est invalide, si un bloc a `minutes < 1` ou si `Σ minutes > totalMinutes`. Dans ce dernier cas, le message donne la somme et le total. Rien n'est corrigé en silence.
+- **Chargement refusé**, avec un message qui explique pourquoi, si le JSON est invalide, si le talk n'a aucun bloc, si un bloc a `minutes < 1` ou si `Σ minutes > totalMinutes`. Dans ce dernier cas, le message donne la somme et le total. Rien n'est corrigé en silence.
 
 Fixture de référence : [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from-the-lab.json). C'est la timeline du workshop *Borrowed from the Lab* : 8 blocs pour 60 min, marge 0.
 
@@ -188,7 +188,7 @@ En phase d'alerte, la suite s'ajoute à droite :
 |---|---|---|---|
 | Normal | `restantBloc > seuil` | `brand-550` `#3E5DE7` | — |
 | Alerte | `0 ≤ restantBloc ≤ seuil` | `warning-400` `#D7790C` | `→ titre suivant` et `cue` du bloc en cours |
-| Dépassement | `restantBloc < 0` | `error-500` `#E32C39`, jauge vide | compteur `+m:ss` qui monte |
+| Dépassement | `restantBloc < 0` | `error-500` `#E32C39`, jauge vide | compteur `+m:ss` qui monte, `→ titre suivant` et `cue` restent affichés |
 | Pause | `pausedAt ≠ nil` | `gray-500` `#6D778C` | `PAUSE` |
 
 - `seuil = max(20 % de la durée du bloc, 60 s)`. On retient le plus précoce des deux, pour laisser le temps de préparer la transition :
