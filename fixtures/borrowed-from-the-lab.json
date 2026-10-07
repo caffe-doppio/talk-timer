@@ -1,0 +1,14 @@
+{
+  "title": "Borrowed from the Lab",
+  "totalMinutes": 60,
+  "blocks": [
+    { "title": "Why the digital is political", "minutes": 3 },
+    { "title": "Evidence before a judge", "minutes": 5 },
+    { "title": "From the field, limits, disclosure", "minutes": 7 },
+    { "title": "Live demo on the big screen", "minutes": 3, "cue": "Enough talk: let me show it once." },
+    { "title": "Collect and seal", "minutes": 15 },
+    { "title": "The hidden bug: disclose or not?", "minutes": 8 },
+    { "title": "Hand-off and verification", "minutes": 12 },
+    { "title": "Debrief, open issues", "minutes": 7 }
+  ]
+}
