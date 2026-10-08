@@ -1,8 +1,10 @@
 # talk-timer
 
-![TLP:CLEAR](https://raw.githubusercontent.com/caffe-doppio/badges-tlp/main/tlp-clear.svg)
-[![CI](https://github.com/caffe-doppio/talk-timer/actions/workflows/ci.yml/badge.svg)](https://github.com/caffe-doppio/talk-timer/actions/workflows/ci.yml)
+[![Swift](https://img.shields.io/badge/Swift-F54A2A?logo=swift&logoColor=white)](#)
+[![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=F0F0F0)](#)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+![Statut](https://img.shields.io/badge/statut-d%C3%A9veloppement-orange)
+[![CI](https://github.com/caffe-doppio/talk-timer/actions/workflows/ci.yml/badge.svg)](https://github.com/caffe-doppio/talk-timer/actions/workflows/ci.yml)
 
 **English** · [Français](README.fr.md)
 
