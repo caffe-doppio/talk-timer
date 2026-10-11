@@ -460,7 +460,7 @@ fixtures/borrowed-from-the-lab.json
 7. **Recette manuelle** complète (§ 10).
 8. **Publication** :
    - icône ;
-   - sketchs refaits, puis remplacés par de vraies captures (README et P11) ;
+   - ✅ captures de la barre dans le README (`assets/screenshots/`), esquisses supprimées ; captures 16:10 pour l'App Store (P11) ;
    - `CLAUDE.md` et `.claude/` versionnés, avec `!CLAUDE.md` et `!.claude/` dans le `.gitignore` du dépôt : il passe avant l'exclusion globale ;
    - politique de confidentialité ;
    - fiche App Store Connect ;
@@ -513,7 +513,7 @@ Sources consultées le 2026-10-11 :
 | P8 | Politique de confidentialité, dans App Store Connect **et dans l'app** | 5.1.1 (i) | obligatoire | obligatoire | `PRIVACY.md` (EN + FR) publié à une URL stable, et lien dans le menu Aide (§ 5) | à faire |
 | P9 | Étiquette de confidentialité | App Store Connect, App Privacy | obligatoire | obligatoire | « Data Not Collected » | à faire |
 | P10 | Métadonnées : URL de support, description, mots-clés, copyright | App Store Connect, Platform version information | obligatoire | obligatoire | Support : GitHub Issues du dépôt | à faire |
-| P11 | Captures Mac 16:10 : 1280×800, 1440×900, 2560×1600 ou 2880×1800, de 1 à 10 | App Store Connect, Screenshot specifications | obligatoire | obligatoire | Vraies captures (et non les sketchs) : planificateur, barre en phase normale, alerte, dépassement, pause prévue | — |
+| P11 | Captures Mac 16:10 : 1280×800, 1440×900, 2560×1600 ou 2880×1800, de 1 à 10 | App Store Connect, Screenshot specifications | obligatoire | obligatoire | Vraies captures, plein écran : planificateur, barre en phase normale, alerte, dépassement, pause prévue | — |
 | P12 | Questionnaire de classification par âge (système 2025-2026) | App Store Connect, Upcoming requirements | obligatoire | obligatoire | 4+ attendu | — |
 | P13 | Statut DSA déclaré et vérifié pour la vitrine UE | App Store Connect, DSA trader requirements | obligatoire | obligatoire Non-trader (confirmé le 2026-10-11) : gratuit, non commercial, compte particulier | à faire |
 | P14 | Build avec Xcode 26 ou plus, puis Xcode 27 à partir d'avril 2027 | Upcoming requirements | obligatoire | obligatoire | Cible de déploiement macOS 26 ; build local sous Xcode 27 | — |
