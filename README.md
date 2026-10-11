@@ -101,4 +101,4 @@ No network access, no telemetry. Talks stay as local files.
 
 ## License
 
-Copyright 2026 Sasha. Released under the [Apache 2.0](LICENSE) license.
+Copyright 2026 @caffe-doppio. Released under the [Apache 2.0](LICENSE) license.

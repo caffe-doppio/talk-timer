@@ -101,4 +101,4 @@ Aucun accès réseau, aucune télémétrie. Les talks restent des fichiers locau
 
 ## Licence
 
-Copyright 2026 Sasha. Publié sous licence [Apache 2.0](LICENSE).
+Copyright 2026 @caffe-doppio. Publié sous licence [Apache 2.0](LICENSE).
