@@ -96,7 +96,8 @@ func decode(_ json: String) throws -> Talk {
         """#)
     #expect(talk.blocks.map(\.isBreak) == [false, true])
 
-    let written = String(decoding: try JSONEncoder().encode(talk), as: UTF8.self)
+    let data = try JSONEncoder().encode(talk)
+    let written = try #require(String(bytes: data, encoding: .utf8))
     #expect(written.components(separatedBy: "\"break\"").count == 2)  // écrit une seule fois, pour Coffee
 }
 
