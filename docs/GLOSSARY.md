@@ -56,6 +56,7 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Seuil d'alerte | seuil | alert threshold | calculé dans `phase(remaining:duration:)` | — | existant |
 | Fenêtre d'édition | planificateur | planner | `PlannerView` | — | prévu |
 | Barre flottante | barre | bar | `BarPanel` (fenêtre), `BarView` (contenu) | — | existant |
+| Jauge du bloc en cours dans la barre des menus | élément de la barre des menus | menu bar extra | `MenuBarExtra` | — | prévu |
 | Raccourci global | raccourci | shortcut | `KeyboardShortcuts.Name` (`.nextBlock`, `.previousBlock`, `.togglePause`, `.endSession`) | — | prévu |
 | Erreur de chargement | — | — | `TalkError` (données), `TalkError.message` (texte, côté app) | — | existant |
 
@@ -74,6 +75,7 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | plan (FR, pour le document) | talk | « talk » est le mot retenu en FR comme en EN. « Planificateur » reste le nom de la fenêtre d'édition |
 | pause (FR, pour l'action en direct) | Suspendre, `togglePause` | En FR, « pause » désigne le bloc prévu (`isBreak`) |
 | break (EN, pour l'action en direct) | Pause, `togglePause` | En EN, « break » désigne le bloc prévu |
+| îlot, island | barre, `BarPanel` | L'îlot est la forme de la barre (§ 7.1), pas un nouveau concept |
 
 ## Icônes
 
@@ -81,13 +83,14 @@ SF Symbols standard uniquement. Une action a une seule icône, partout : barre, 
 
 | Action | SF Symbol | Statut |
 |---|---|---|
-| Précédent | `backward` | prévu |
-| Suivant | `forward` | prévu |
+| Précédent | `backward.end` | prévu |
+| Suivant | `forward.end` | prévu |
 | Suspendre / Reprendre | `playpause` | prévu |
 | Fin | `flag.pattern.checkered.2.crossed` | prévu |
 
 | Ne pas utiliser | Pour | Raison |
 |---|---|---|
+| `backward`, `forward` | Précédent, Suivant | Reculer et avancer *dans* un média. Les variantes `.end` (piste précédente, suivante) disent le saut de bloc |
 | `stop` | Fin | Trop proche de Suspendre dans les conventions des lecteurs : Fin est irréversible et ne doit pas se confondre avec une interruption |
 
 ## Déclarations de premier niveau

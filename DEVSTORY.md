@@ -133,8 +133,8 @@ Notes prises avant de toucher au code ni aux SPECS. Chaque point remet en cause 
   - quand la barre de menus se masque en plein écran, `visibleFrame.maxY` devient le bord haut de l'écran. La barre se colle alors en haut, sur la zone de survol du système.
 - Les deux configurations sont à couvrir, et la recette 1 doit être faite avec chacune.
 - Pistes, éventuellement cumulées :
-  - un élément dans la barre des menus (`MenuBarExtra` en SwiftUI, ou `NSStatusItem`), avec la jauge du bloc en cours dessinée dedans, comme les graphiques de [exelban/stats](https://github.com/exelban/stats). Il n'est visible en plein écran que si la barre de menus reste affichée : c'est un complément ;
-  - un îlot (*island*) : une capsule centrée, un peu plus bas que la barre de menus, et non plus une bande pleine largeur. Retenu : c'est la forme native (voir le point 2). Il faut mesurer la distance au bord qui le sort de la bande de l'app et de la zone de survol, dans les deux configurations.
+  - un élément dans la barre des menus (`MenuBarExtra` en SwiftUI, ou `NSStatusItem`), avec la jauge du bloc en cours dessinée dedans, comme les graphiques de [exelban/stats](https://github.com/exelban/stats). C'est un complément : il n'est visible en plein écran que si la barre de menus reste affichée, et la personne peut le masquer dans Réglages système › Barre des menus › Autoriser dans la barre des menus. Terme officiel en français : « élément de la barre des menus » ;
+  - un îlot (*island*) : une capsule centrée, un peu plus bas que la barre de menus, et non plus une bande pleine largeur. Retenu : c'est la forme native (voir le point 2). Le concept garde son nom, « barre » : seule sa forme change. Il faut mesurer la distance au bord qui le sort de la bande de l'app et de la zone de survol, dans les deux configurations.
 
 **2. Couleurs système et Liquid Glass** (§ 7.3, table des contrastes).
 
