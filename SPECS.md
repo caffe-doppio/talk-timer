@@ -1,7 +1,10 @@
 # talk-timer — spécifications V1
 
-> Statut : brouillon à valider · 2026-10-07
-> Cible : macOS 26 (Tahoe), Apple Silicon · Swift 6.4, SwiftUI + AppKit
+> Statut : V2 du document, à valider · 2026-10-11 (V1 du 2026-10-07)
+> Cible : macOS 26 (Tahoe) et versions suivantes, Apple Silicon · Swift 6.2 minimum, SwiftUI + AppKit · développement local sous Xcode 27
+> Distribution : Mac App Store, gratuit, open source (Apache 2.0). Décisions : § 15
+
+La numérotation des sections est stable : le code y renvoie (`§ 6.2`). Une nouvelle section s'ajoute à la fin.
 
 ## 1. Pourquoi
 
@@ -10,24 +13,17 @@ Beaucoup de personnes qui présentent ont un plan solide mais du mal à tenir en
 talk-timer fait deux choses, et seulement deux :
 
 1. **Planifier** : on fixe une durée totale, puis on range, allonge ou raccourcit des blocs **sans jamais pouvoir dépasser le total**.
-2. **Tenir le temps** : pendant la présentation, une barre fine en haut de l'écran, au-dessus de toutes les applis, affiche le nom de la séquence en cours et une jauge qui se vide. On voit la fin du bloc arriver et on a le temps de trouver une transition.
+2. **Tenir le temps** : pendant la présentation, une barre fine en haut de l'écran, au-dessus de toutes les applis, affiche le nom du bloc en cours et une jauge qui se vide. On voit la fin du bloc arriver et on a le temps de trouver une transition.
 
 L'outil ne coupe jamais la parole. Il informe, et c'est la personne qui décide quand passer au bloc suivant.
 
 ## 2. Vocabulaire
 
-| Terme | Sens |
-|---|---|
-| **Talk** | Une présentation : un titre, une durée totale, des blocs ordonnés |
-| **Bloc** | Une séquence du discours : un titre, une durée en minutes, une phrase de transition facultative |
-| **Marge** | Temps du total qui n'est attribué à aucun bloc. Elle sert de tampon en live |
-| **Session** | Une exécution en direct d'un talk, du démarrage à la fin |
-| **Dépassement** | Temps passé sur un bloc au-delà de sa durée prévue |
-| **Écart** | Différence entre l'heure de fin projetée et l'heure de fin prévue |
+Les termes (FR, EN, identifiant Swift, clé JSON) sont définis dans [`docs/GLOSSARY.md`](docs/GLOSSARY.md), et seulement là. Cette spec les emploie sans les redéfinir. Pour lire la suite : un **talk** contient des **blocs** ; la **marge** est le temps non attribué ; une **session** est l'exécution en direct ; la barre passe par des **phases** ; l'**écart** compare la fin projetée à la fin prévue.
 
 ## 3. Format de fichier
 
-Un talk est un fichier JSON, lisible et modifiable à la main. Ce fichier est le contrat : si un jour on ajoute une autre interface, elle lira le même format.
+Un talk est un fichier JSON, lisible et modifiable à la main, d'extension **`.talk`**. Ce fichier est le contrat : si un jour on ajoute une autre interface, elle lira le même format.
 
 ```json
 {
@@ -43,16 +39,19 @@ Un talk est un fichier JSON, lisible et modifiable à la main. Ce fichier est le
 | Champ | Type | Règle |
 |---|---|---|
 | `title` | texte | Obligatoire, peut être vide |
-| `totalMinutes` | entier | ≥ 1 |
+| `totalMinutes` | entier | 1 à 1440 |
 | `blocks[].title` | texte | Obligatoire |
-| `blocks[].minutes` | entier | ≥ 1 |
+| `blocks[].minutes` | entier | 1 à 1440 |
 | `blocks[].cue` | texte | Facultatif. Phrase de transition affichée dans la barre en phase d'alerte |
 
 - La **marge n'est pas stockée** : `marge = totalMinutes − Σ minutes`. Elle est toujours ≥ 0.
 - Les identifiants des blocs sont générés au chargement et ne sont pas écrits dans le fichier, pour qu'un humain puisse écrire un talk sans inventer d'UUID.
-- **Chargement refusé**, avec un message qui explique pourquoi, si le JSON est invalide, si le talk n'a aucun bloc, si un bloc a `minutes < 1` ou si `Σ minutes > totalMinutes`. Dans ce dernier cas, le message donne la somme et le total. Rien n'est corrigé en silence.
+- **Chargement refusé**, avec un message qui explique pourquoi, si le JSON est invalide, si le talk n'a aucun bloc, si une durée sort de `[1, 1440]` ou si `Σ minutes > totalMinutes`. Dans ce dernier cas, le message donne la somme et le total. Rien n'est corrigé en silence.
+- **Bornes et frontière de confiance.** Un fichier `.talk` peut venir de n'importe où (pièce jointe, téléchargement). Les bornes sont vérifiées **avant** toute somme : en Swift, `+` sur `Int` arrête le programme en cas de débordement, et deux blocs à `Int.max` feraient planter l'app au chargement. 1440 min, soit 24 h, couvre tout usage réel.
+- **Type de fichier.** UTType exporté par l'app, conforme à `public.json` : le Finder ouvre un `.talk` avec talk-timer et l'affiche avec son icône, et le contenu reste du JSON. L'identifiant du type suit le bundle ID (§ 13).
+- **Versions du format.** Un fichier sans champ `format` est en version 1. Le champ ne sera ajouté qu'au premier changement incompatible.
 
-Fixture de référence : [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from-the-lab.json). C'est la timeline du workshop *Borrowed from the Lab* : 8 blocs pour 60 min, marge 0.
+Fixture de référence : [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from-the-lab.json). C'est la timeline du workshop *Borrowed from the Lab* : 8 blocs pour 60 min, marge 0. Elle garde l'extension `.json` : c'est une donnée de test, pas un document.
 
 ## 4. Règles du planificateur
 
@@ -64,11 +63,15 @@ Ces règles sont de la logique pure, sans interface, et elles sont couvertes par
 | Réordonner | Toujours autorisé (la somme ne change pas) | — |
 | Ajouter un bloc | Seulement si `marge ≥ 1`. Durée par défaut : `min(5, marge)` | Bouton désactivé, avec une infobulle « Plus de marge : raccourcissez un bloc » |
 | Supprimer un bloc | Toujours autorisé. Ses minutes retournent dans la marge | — |
-| Changer le total | Autorisé seulement si `total ≥ Σ minutes` | Refus avec bip ; le minimum autorisé est affiché |
+| Changer le total | Autorisé seulement dans `[Σ minutes, 1440]` | Refus avec bip ; le minimum autorisé est affiché |
 
 Exemple avec la fixture : la marge est à 0, donc passer « Collect and seal » de 15 à 16 min est refusé. Il faut d'abord raccourcir un autre bloc, par exemple « Debrief » de 7 à 6, ce qui libère 1 min de marge. Ensuite seulement, l'allongement passe.
 
+Toute modification passe par l'annulation du système (⌘Z / ⇧⌘Z, fournie par `DocumentGroup`).
+
 ## 5. Fenêtre du planificateur
+
+talk-timer est une **app document** (`DocumentGroup` + `FileDocument`) : **une fenêtre par talk**. Le système fournit Fichier › Nouveau, Ouvrir, Ouvrir récent, Enregistrer, l'enregistrement automatique, les versions, le double-clic dans le Finder et l'accès aux fichiers en sandbox. Aucun bouton Ouvrir/Enregistrer dans la fenêtre, et aucun chemin mémorisé dans `@AppStorage`.
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -81,7 +84,7 @@ Exemple avec la fixture : la marge est à 0, donc passer « Collect and seal » 
 │ ≡  …                                                          │
 │ [+ Bloc]                                                      │
 ├──────────────────────────────────────────────────────────────┤
-│ Ouvrir…  Enregistrer   Barre sur : [Écran intégré ▾]  ▶ Démarrer │
+│                    Barre sur : [Écran intégré ▾]  ▶ Démarrer  │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -90,56 +93,59 @@ Exemple avec la fixture : la marge est à 0, donc passer « Collect and seal » 
   - un `Stepper` ± 1 min, borné par les règles du § 4 ;
   - un champ `cue` facultatif.
 - **Frise** : segments proportionnels à la durée, dans l'ordre de la liste. La marge apparaît en dernier, comme un segment gris. Elle est mise à jour en direct.
-- **Fichiers** : `fileImporter` / `fileExporter` (JSON). Le chemin du dernier fichier est mémorisé (`@AppStorage`) et rouvert au lancement.
 - **Sélection de l'écran** : liste issue de `NSScreen.screens`. Par défaut, c'est l'écran qui porte la barre de menus.
-- **▶ Démarrer** : lance une session et affiche la barre. La fenêtre du planificateur reste ouverte mais n'est plus nécessaire.
-- L'interface est compacte, pour tenir dans une moitié d'écran en split-screen.
+- **▶ Démarrer** : lance une session sur le talk de cette fenêtre et affiche la barre. Une seule session à la fois, donc le bouton est désactivé dans les autres fenêtres pendant une session.
+- **Menu Session** dans la barre de menus : Démarrer, Suivant, Précédent, Pause / Reprendre, Fin. Toute action de la barre et du planificateur est accessible depuis un menu, ce qui sert à Voice Control, à VoiceOver et à la découverte des raccourcis.
+- **Réglages** (scène `Settings`, ⌘,) : les trois raccourcis globaux, modifiables (§ 7.4).
+- **Menu Aide** : lien « Politique de confidentialité » (§ 14).
+- L'interface est compacte, pour tenir dans une moitié d'écran en split-screen. Elle utilise les contrôles standard, pour hériter de l'apparence du système (Liquid Glass, mode sombre, contraste).
 
 ## 6. Session en direct
 
 ### 6.1 État
 
-L'état est fondé sur **l'horloge murale, jamais sur un compteur de ticks**. Un compteur dériverait avec la mise en veille, la charge ou le ralentissement d'appli (App Nap). Une soustraction de dates ne dérive pas.
+L'état est fondé sur **l'horloge murale, jamais sur un compteur de ticks**. Un compteur dériverait avec la mise en veille, la charge ou le ralentissement d'appli (App Nap). Une soustraction de dates ne dérive pas. On utilise `Date`, pas `systemUptime` ni `mach_absolute_time` : ces deux API demanderaient une déclaration « required reason » (§ 14).
 
 | Champ | Sens |
 |---|---|
 | `index` | Bloc en cours |
 | `talkStart: Date` | Démarrage de la session (décalé par les pauses) |
 | `blockStart: Date` | Démarrage du bloc en cours (décalé par les pauses) |
-| `history: [Date]` | `blockStart` des blocs précédents, pour pouvoir annuler |
+| `history: [Date]` | `blockStart` des blocs précédents, pour pouvoir revenir en arrière |
 | `pausedAt: Date?` | Non nul pendant une pause |
+| `isFinished: Bool` | Vrai après « Suivant » sur le dernier bloc |
 
 ### 6.2 Calculs
 
 Avec `now` = l'heure courante, ou `pausedAt` pendant une pause :
 
 ```
-restantBloc  = minutes[index] × 60 − (now − blockStart)       // < 0 ⇒ dépassement
-finProjetée  = now + max(0, restantBloc) + Σ minutes[index+1…] × 60
-écart        = finProjetée − (talkStart + totalMinutes × 60)
+remaining     = minutes[index] × 60 − (now − blockStart)       // < 0 ⇒ dépassement
+projectedEnd  = now + max(0, remaining) + Σ minutes[index+1…] × 60
+endOffset     = projectedEnd − (talkStart + totalMinutes × 60)
 ```
 
-- `écart > 0` : on finira en retard. Affiché en rouge, par exemple `fin +4:00`.
-- `écart ≤ 0` : il reste de la marge. Affiché en neutre, par exemple `marge 1:00`.
+- `endOffset > 0` : on finira en retard. Affiché en rouge, par exemple `fin +4:00`.
+- `endOffset ≤ 0` : il reste de la marge. Affiché en neutre, par exemple `marge 1:00`.
 - La marge absorbe le retard naturellement, puisqu'elle fait partie du total. Il n'y a aucun cas particulier à coder.
 
 **Exemple avec la fixture.** Les blocs 1 à 4 ont été tenus. Le bloc 5, « Collect and seal » (15 min), dure depuis 19 min.
 
 - `now = 37 min`
-- `restantBloc = −4 min`
-- `finProjetée = 37 + 0 + (8 + 12 + 7) = 64 min`
-- **écart = +4:00**
+- `remaining = −4 min`
+- `projectedEnd = 37 + 0 + (8 + 12 + 7) = 64 min`
+- **endOffset = +4:00**
 
 Même situation avec `totalMinutes = 65` (5 min de marge) : l'écart vaut **−1:00**, donc il reste 1 min de marge.
 
 ### 6.3 Actions
 
-| Action | Effet | Barre | Raccourci global |
+| Action | Effet | Barre | Raccourci global par défaut |
 |---|---|---|---|
-| **Suivant** | Pousse `blockStart` dans `history`, puis `index += 1` et `blockStart = now`. Sur le dernier bloc, termine la session | clic | ⌃⌥→ |
-| **Annuler** | Revient au bloc précédent avec son `blockStart` d'origine (pris dans `history`). Sans effet sur le premier bloc | — | ⌃⌥← |
-| **Pause / reprise** | La pause fige `now`. À la reprise, `talkStart` et `blockStart` sont décalés de la durée de la pause | — | ⌃⌥Espace |
-| **Fin** | Ferme la barre et revient au planificateur | menu de la fenêtre | — |
+| **Suivant** | Pousse `blockStart` dans `history`, puis `index += 1` et `blockStart = now`. Sur le dernier bloc, `isFinished = true` et la barre se ferme | clic | ⌃⌥→ |
+| **Précédent** | Revient au bloc précédent avec son `blockStart` d'origine (pris dans `history`). Sans effet sur le premier bloc | — | ⌃⌥← |
+| **Pause / Reprendre** | La pause fige `now`. À la reprise, `talkStart` et `blockStart` sont décalés de la durée de la pause | — | ⌃⌥Espace |
+| **Fin** | Ferme la barre, désenregistre les raccourcis, revient au planificateur | menu Session | — |
 
 L'action « Suivant » n'est jamais déclenchée automatiquement, même en dépassement.
 
@@ -159,12 +165,15 @@ Un `NSPanel` qui affiche une vue SwiftUI :
 | `level` | `.statusBar` | Au-dessus des fenêtres ordinaires |
 | `collectionBehavior` | `[.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]` | Visible sur tous les Spaces et au-dessus d'une appli en plein écran |
 | `hidesOnDeactivate` | `false` | Reste visible quand talk-timer n'est pas l'appli active |
+| `sharingType` | `.none` | Précaution contre la capture d'écran, **sans garantie** (voir plus bas) |
 | Position | Pleine largeur de l'écran choisi, 28 pt de haut, collée sous `visibleFrame.maxY` | Juste sous la barre de menus |
 
 Si l'écran choisi est débranché pendant la session (`NSApplication.didChangeScreenParametersNotification`), la barre se replace sur l'écran principal.
 
 > [!IMPORTANT]
 > En **recopie vidéo**, le public voit la barre. Il faut présenter en **écran étendu** et choisir l'écran du portable dans le planificateur.
+>
+> En **partage d'écran** (Zoom, Teams, Meet, QuickTime), `sharingType = .none` n'est pas fiable : selon Apple DTS, ces outils capturent sous le niveau des fenêtres. On ne promet jamais que la barre est invisible en partage ; il faut partager une fenêtre, pas l'écran entier.
 
 ### 7.2 Contenu
 
@@ -182,50 +191,74 @@ En phase d'alerte, la suite s'ajoute à droite :
 - Les chiffres utilisent `.monospacedDigit()`, pour que le texte ne bouge pas chaque seconde.
 - Un texte trop long est tronqué au milieu du titre, jamais au milieu du temps.
 
-### 7.3 États
+### 7.3 Phases
 
-| État | Condition | Jauge | Texte supplémentaire |
+| Phase | Condition | Jauge | Texte supplémentaire |
 |---|---|---|---|
-| Normal | `restantBloc > seuil` | `brand-550` `#3E5DE7` | — |
-| Alerte | `0 ≤ restantBloc ≤ seuil` | `warning-400` `#D7790C` | `→ titre suivant` et `cue` du bloc en cours |
-| Dépassement | `restantBloc < 0` | `error-500` `#E32C39`, jauge vide | compteur `+m:ss` qui monte, `→ titre suivant` et `cue` restent affichés |
-| Pause | `pausedAt ≠ nil` | `gray-500` `#6D778C` | `PAUSE` |
+| `normal` | `remaining > seuil` | `brand-550` `#3E5DE7` | — |
+| `alert` | `0 ≤ remaining ≤ seuil` | `warning-400` `#D7790C` | `→ titre suivant` et `cue` du bloc en cours |
+| `overtime` | `remaining < 0` | `error-500` `#E32C39`, jauge vide | compteur `+m:ss` qui monte, `→ titre suivant` et `cue` restent affichés |
+| `paused` | `pausedAt ≠ nil` (prioritaire sur les autres) | `gray-500` `#6D778C` | `PAUSE` |
 
 - `seuil = max(20 % de la durée du bloc, 60 s)`. On retient le plus précoce des deux, pour laisser le temps de préparer la transition :
   - bloc de 15 min : alerte à 3:00 de la fin ;
   - bloc de 3 min : alerte à 1:00 de la fin.
-- Le fond de la barre est `gray-900` `#181B24` et le texte `gray-025` `#F6F8F9`. Ces couleurs viennent de la palette beta.gouv (`~/.claude/projects/dev-planning/widgets/palette/palette-betagouv.md`).
+- Le fond de la barre est `gray-900` `#181B24` et le texte `gray-025` `#F6F8F9`, d'après la palette beta.gouv. La barre est toujours sombre, quel que soit le mode du système.
 - **L'information ne passe jamais par la couleur seule** : l'alerte ajoute « → suivant », le dépassement ajoute « + », la pause ajoute « PAUSE ».
 
 ### 7.4 Raccourcis
 
-Ils sont enregistrés avec Carbon `RegisterEventHotKey`. Ils fonctionnent quand une autre appli a le focus **sans demander l'autorisation Accessibilité**, contrairement à `NSEvent.addGlobalMonitorForEvents`. Ils sont actifs seulement pendant une session.
+- Gérés par [`sindresorhus/KeyboardShortcuts`](https://github.com/sindresorhus/KeyboardShortcuts), qui s'appuie sur Carbon `RegisterEventHotKey`. Cette API n'est pas dépréciée dans le SDK macOS 27, fonctionne en sandbox et ne demande **pas l'autorisation Accessibilité**, contrairement à `NSEvent.addGlobalMonitorForEvents`.
+- Trois noms : `.nextBlock`, `.previousBlock`, `.togglePause`. Ils sont modifiables dans Réglages et leurs valeurs par défaut sont celles du § 6.3.
+- Ils sont actifs seulement pendant une session : enregistrés à « Démarrer », désenregistrés à la fin ou à ⌘Q.
+- **Conflits.** ⌃⌥← et ⌃⌥→ sont les raccourcis par défaut de Rectangle et Magnet. Si un raccourci ne peut pas être enregistré, la session démarre quand même : la barre reste cliquable et le menu Session fonctionne, et un message indique quel raccourci est pris et où le changer. [À vérifier : ce que KeyboardShortcuts remonte quand une autre app tient déjà la combinaison.]
+
+### 7.5 Accessibilité de la barre
+
+- La barre expose à VoiceOver un libellé de synthèse : « Bloc 3 sur 8, Evidence before a judge, 3 minutes 12 restantes ».
+- Le passage en `alert`, puis en `overtime`, déclenche une annonce VoiceOver.
+- Aucune animation de la jauge, qui saute une fois par seconde. Réduire les animations n'a donc rien à couper.
+- Augmenter le contraste : les couleurs de jauge restent à au moins 3:1 sur le fond, le texte à au moins 4,5:1 (vérifié au § 10).
 
 ## 8. Exigences non fonctionnelles
 
-- **Aucun accès réseau**, aucune télémétrie. Les talks restent des fichiers locaux.
+- **Aucun accès réseau**, aucune télémétrie, aucun entitlement réseau. Les talks restent des fichiers locaux.
+- **Sandbox** : seuls `com.apple.security.app-sandbox` et `com.apple.security.files.user-selected.read-write` sont activés.
 - Démarrage de la barre en moins d'une seconde après le clic sur « Démarrer ».
 - Une précision d'affichage à la seconde suffit. Sur la durée d'une session, l'erreur est nulle, puisque le temps est calculé depuis l'horloge.
-- Les éléments du planificateur sont exposés à VoiceOver (labels sur le `Stepper` et la poignée de déplacement).
+- **Localisation** : anglais (langue de développement) et français, dans un String Catalog (`Localizable.xcstrings`). Aucune chaîne d'interface en dur. Le modèle ne contient aucune chaîne d'interface : `TalkError` porte des données, et l'app les formule.
+- **Journalisation** : `Logger` (framework `os`), jamais `print` dans l'app livrée. Aucun titre de talk ni contenu de bloc dans les journaux.
+- **Accessibilité** : tous les contrôles du planificateur ont un libellé VoiceOver (y compris le `Stepper` et la poignée de déplacement), et tout est utilisable au clavier seul et avec Voice Control. Objectif : déclarer les étiquettes d'accessibilité du § 14.
+- **Contrastes** : texte ≥ 4,5:1, éléments graphiques ≥ 3:1, en mode clair et en mode sombre pour le planificateur.
 
 ## 9. Architecture
 
-Un paquet SwiftPM, qui se compile en terminal (`swift build`, `swift run`, `swift test`, utilisable aussi en SSH) et s'ouvre dans Xcode.
+Cible :
 
 ```
-Package.swift
-Sources/TalkTimer/Model.swift        Talk, Block, règles § 4, calculs § 6.2 (aucun import AppKit/SwiftUI)
-Sources/TalkTimer/App.swift          @main, fenêtre du planificateur
-Sources/TalkTimer/Bar.swift          NSPanel, vue de la barre, raccourcis Carbon
-Tests/TalkTimerTests/ModelTests.swift  Swift Testing
+Package.swift                              paquet local : bibliothèque TalkTimerCore + ses tests
+Sources/TalkTimerCore/Model.swift          Talk, Block, règles § 4, calculs § 6.2 (Foundation seule)
+Tests/TalkTimerCoreTests/ModelTests.swift  Swift Testing, critères § 10
+TalkTimer.xcodeproj                        projet de l'app, dossiers synchronisés
+App/                                       @main, DocumentGroup, planificateur, barre, Réglages
+App/Info.plist                             UTType .talk exporté, ITSAppUsesNonExemptEncryption = NO
+App/TalkTimer.entitlements                 sandbox + fichiers choisis par l'utilisateur
+App/PrivacyInfo.xcprivacy                  privacy manifest (§ 14)
+App/Localizable.xcstrings                  EN + FR
+App/AppIcon.icon                           icône Icon Composer
 fixtures/borrowed-from-the-lab.json
 ```
 
-`Model.swift` reçoit `now` en paramètre au lieu de lire l'horloge. Les tests peuvent ainsi simuler 19 minutes en une ligne.
+- **Pourquoi deux morceaux.** Le Mac App Store n'accepte qu'une app empaquetée par Xcode, ce qu'un exécutable SwiftPM n'est pas (§ 14). Le modèle, lui, reste un paquet SwiftPM : il se teste en terminal (`swift test`, y compris en SSH et sous Linux puisqu'il n'utilise que Foundation), et la frontière de module fait respecter par le **compilateur** la règle « pas d'AppKit ni de SwiftUI dans le modèle ».
+- `Model.swift` reçoit `now` en paramètre au lieu de lire l'horloge. Les tests peuvent ainsi simuler 19 minutes en une ligne.
+- Les symboles du modèle utilisés par l'app sont déclarés `public`. Les tests utilisent `@testable import`.
+- La dépendance KeyboardShortcuts est déclarée dans le projet Xcode et épinglée à une version exacte.
+
+État actuel (spike) : tout est dans l'exécutable SwiftPM `Sources/TalkTimer/`, avec `Model.swift`, `Bar.swift` et `App.swift`.
 
 ## 10. Critères d'acceptation
 
-**Tests automatiques** (`swift test`), tous sur la fixture :
+**Tests automatiques** (`swift test`), tous sur la fixture sauf mention contraire :
 
 1. La fixture se charge, avec 8 blocs, `Σ = 60` et une marge de 0.
 2. Passer le bloc 5 de 15 à 16 est refusé et la valeur reste à 15.
@@ -235,10 +268,12 @@ fixtures/borrowed-from-the-lab.json
 6. Passer le total à 59 est refusé.
 7. Un fichier avec `Σ > total` est refusé au chargement.
 8. Écart : blocs 1 à 4 tenus et bloc 5 à 19 min donnent **+4:00**. Le même cas avec un total de 65 donne **−1:00**.
-9. Pause : 2 min de pause au milieu d'un bloc ne changent ni `restantBloc` ni `écart`.
-10. Annuler après « Suivant » restaure exactement l'`index` et le `blockStart` précédents.
+9. Pause : 2 min de pause au milieu d'un bloc ne changent ni `remaining` ni `endOffset`, et la phase vaut `paused` pendant la pause.
+10. Revenir en arrière après « Suivant » restaure exactement l'`index` et le `blockStart` précédents.
+11. Bornes : un bloc à 1441 min est refusé, un total à 1441 est refusé, et un fichier dont deux blocs valent `Int.max` est refusé **sans crash**.
+12. « Suivant » sur le dernier bloc passe `isFinished` à vrai.
 
-**Recette manuelle** (deuxième écran en mode étendu) :
+**Recette manuelle** (deuxième écran en mode étendu, build Release signé et sandboxé) :
 
 1. Safari en plein écran sur l'écran principal : la barre reste visible au-dessus.
 2. Keynote en mode présentation : la barre reste visible au-dessus.
@@ -246,13 +281,41 @@ fixtures/borrowed-from-the-lab.json
 4. Cliquer sur la barre fait avancer le bloc sans activer talk-timer.
 5. Le Mac se met en veille 1 min pendant un bloc : au réveil, le temps restant a bien diminué d'une minute.
 6. Débrancher l'écran choisi : la barre réapparaît sur l'écran principal.
+7. Double-clic sur un `.talk` dans le Finder : talk-timer l'ouvre.
+8. Ouvrir un talk, quitter, relancer : il est dans Fichier › Ouvrir récent et s'ouvre sans erreur de permission (sandbox).
+9. Rectangle actif avec ses raccourcis par défaut : « Démarrer » affiche le message de conflit, la barre reste utilisable, et un raccourci changé dans Réglages fonctionne immédiatement.
+10. ⌘Q pendant une session : plus aucun processus talk-timer, et ⌃⌥→ est rendu au système.
+11. VoiceOver : tout le planificateur est utilisable, et la barre est annoncée au passage en alerte.
+12. Voice Control : « Cliquer Démarrer » lance la session.
+13. Interface en anglais puis en français (langue du système ou option de schéma) : aucune chaîne non traduite.
+14. Contrastes du § 7.5 et du § 8 mesurés, en mode clair et en mode sombre.
+15. Partage d'écran Zoom ou Teams en écran entier : constater si la barre apparaît, et documenter le résultat (§ 7.1).
+16. `xcodebuild archive`, puis « Validate App » dans l'Organizer : aucune erreur.
 
 ## 11. Ordre d'implémentation
 
-1. **Test rapide (30 min)** : `Bar.swift` seul, avec un compte à rebours codé en dur. On vérifie les recettes manuelles 1 à 4, **lancé depuis un binaire SwiftPM sans bundle `.app`**. Si la barre ne passe pas au-dessus du plein écran sans bundle, on ajoute un script de 10 lignes qui emballe le binaire dans un `.app` (`Info.plist` minimal).
-2. `Model.swift` et `ModelTests.swift`, jusqu'à ce que les critères 1 à 10 passent.
-3. La fenêtre du planificateur.
-4. Le branchement session ↔ barre, puis la recette manuelle complète.
+1. ✅ **Test rapide** : `Bar.swift` seul, lancé depuis un binaire SwiftPM. Recettes 1 à 4 vérifiées.
+2. **Modèle** :
+   - extraire `TalkTimerCore` ;
+   - ajouter les bornes du § 3, la pause, `talkStart`, `isFinished`, `projectedEnd` et `endOffset` ;
+   - écrire les règles du § 4 ;
+   - faire passer les critères automatiques 1 à 12.
+3. **Projet Xcode** : bundle ID provisoire, sandbox, entitlements, Info.plist (UTType, chiffrement), String Catalog, privacy manifest.
+4. **Planificateur** : `DocumentGroup`, liste, frise, menu Session, Réglages.
+5. **Session et barre** :
+   - branchement de la session sur la barre ;
+   - KeyboardShortcuts à la place de `HotKeys` ;
+   - `Logger` à la place de `print` ;
+   - phase `paused` et accessibilité du § 7.5 ;
+   - retrait de `AppDelegate`, du mode ligne de commande et du contournement `setActivationPolicy` ;
+   - commentaire de `Palette` sans chemin personnel.
+6. **Recette manuelle** complète (§ 10).
+7. **Publication** :
+   - icône ;
+   - politique de confidentialité ;
+   - fiche App Store Connect ;
+   - TestFlight Mac ;
+   - soumission.
 
 ## 12. Hors périmètre V1
 
@@ -262,11 +325,73 @@ fixtures/borrowed-from-the-lab.json
 | Redimensionner les blocs à la souris dans la frise | le `Stepper` se révèle trop lent en pratique |
 | Reprendre une session après un crash | un crash arrive en vrai |
 | Télécommande de présentation (Page↓ et flèches) | une personne présente sans clavier à portée |
-| Signature, notarisation, distribution du `.app` | l'outil sort de cette machine |
-| Plusieurs langues d'interface | une personne non francophone l'utilise |
+| Canal Developer ID (notarisation, GitHub Releases, Homebrew) | une demande d'installation hors Store existe. Il faudra un bundle ID distinct (§ 13) |
+| Achat intégré ou pourboire (StoreKit) | jamais tant que l'app est gratuite : ce serait une activité commerciale, donc un statut de trader DSA (§ 14) |
+| Langues d'interface au-delà de EN et FR | une personne le demande et peut relire la traduction |
 
 ## 13. Questions ouvertes
 
-- **Nom définitif** : `talk-timer` est provisoire.
+- **Nom définitif, bundle ID et identifiant du UTType**, à trancher ensemble avant de créer l'app dans App Store Connect : le bundle ID n'est plus modifiable ensuite. Préfixes possibles : `fr.etdeuxmains.` ou `io.github.caffe-doppio.`. Vérifier que le nom est libre sur l'App Store. Un futur canal Developer ID devra avoir son propre bundle ID : avec le même, les deux builds partageraient conteneur et réglages, et le système afficherait des invites.
+- **Statut DSA** : auto-évaluation « non-trader » proposée (gratuit, non commercial, compte particulier). À confirmer par Sasha, car un statut de trader rendrait publics adresse, téléphone et e-mail sur les fiches UE.
+- **Raccourcis par défaut** : on garde ⌃⌥ + flèches (conflit Rectangle et Magnet géré au § 7.4), ou on choisit des valeurs par défaut moins exposées ?
+- **Ouvrir récent en sandbox avec `DocumentGroup`** : supposé fourni par le système (documenté pour `NSDocument`, et seulement par des rapports de forum pour SwiftUI). À confirmer par la recette 8.
 - **Granularité** : la minute suffit-elle, ou faut-il des blocs de 30 s (pitchs courts) ?
 - **Hauteur de la barre** : 28 pt se lit-il de loin, quand on est debout à un mètre de l'écran ?
+- **Langue des commentaires du code** : français aujourd'hui. À revoir si des personnes extérieures contribuent.
+
+## 14. Exigences de publication (Mac App Store)
+
+Sources consultées le 2026-10-11 :
+
+- [App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/), version du 8 juin 2026 ;
+- aide App Store Connect ;
+- documentation Apple ;
+- en-têtes du SDK macOS 27 (Xcode 27.0).
+
+`exigence_apple` et `exigence_projet` suivent la convention de la base `_apple/dev` : le projet vise `obligatoire` par défaut, même quand Apple ne fait que recommander. La colonne « Fiche » indique la fiche à produire avec `/apple-dev-docs` (« à faire » tant qu'elle n'existe pas).
+
+| # | Exigence | Source | `exigence_apple` | `exigence_projet` | Pour talk-timer | Fiche |
+|---|---|---|---|---|---|---|
+| P1 | App Sandbox | Guideline 2.4.5 (i), [App Sandbox](https://developer.apple.com/documentation/security/app-sandbox) | obligatoire | obligatoire | Sandbox + `files.user-selected.read-write`, rien d'autre (§ 8) | à faire |
+| P2 | Accès aux fichiers en sandbox | [Accessing files from the macOS App Sandbox](https://developer.apple.com/documentation/security/accessing-files-from-the-macos-app-sandbox) | obligatoire | obligatoire | Délégué à `DocumentGroup` ; pas de chemin mémorisé (§ 5) | à faire |
+| P3 | Empaquetage par Xcode, bundle autonome, aucun installeur | 2.4.5 (ii) | obligatoire | obligatoire | Projet Xcode, archive (§ 9) | à faire |
+| P4 | Pas de lancement à l'ouverture de session ni de processus après fermeture sans consentement | 2.4.5 (iii) | obligatoire | obligatoire | Aucun élément d'ouverture ; raccourcis désenregistrés à ⌘Q (recette 10) | à faire |
+| P5 | Mises à jour par le Mac App Store uniquement | 2.4.5 (vii) | obligatoire | obligatoire | Pas de Sparkle ni de vérification de version | à faire |
+| P6 | API publiques, aucune technologie dépréciée | 2.4.5 (viii), 2.5.1 | obligatoire | obligatoire | `RegisterEventHotKey` non déprécié (SDK macOS 27), via KeyboardShortcuts | à faire |
+| P7 | Toutes les localisations dans le bundle | 2.4.5 (ix) | obligatoire | obligatoire | String Catalog EN + FR (§ 8) | à faire |
+| P8 | Politique de confidentialité, dans App Store Connect **et dans l'app** | 5.1.1 (i) | obligatoire | obligatoire | `PRIVACY.md` (EN + FR) publié à une URL stable, et lien dans le menu Aide (§ 5) | à faire |
+| P9 | Étiquette de confidentialité | App Store Connect, App Privacy | obligatoire | obligatoire | « Data Not Collected » | à faire |
+| P10 | Métadonnées : URL de support, description, mots-clés, copyright | App Store Connect, Platform version information | obligatoire | obligatoire | Support : GitHub Issues du dépôt | à faire |
+| P11 | Captures Mac 16:10 : 1280×800, 1440×900, 2560×1600 ou 2880×1800, de 1 à 10 | App Store Connect, Screenshot specifications | obligatoire | obligatoire | Planificateur, barre en phase normale, alerte, dépassement | — |
+| P12 | Questionnaire de classification par âge (système 2025-2026) | App Store Connect, Upcoming requirements | obligatoire | obligatoire | 4+ attendu | — |
+| P13 | Statut DSA déclaré et vérifié pour la vitrine UE | App Store Connect, DSA trader requirements | obligatoire | obligatoire | Non-trader proposé (§ 13) | à faire |
+| P14 | Build avec Xcode 26 ou plus, puis Xcode 27 à partir d'avril 2027 | Upcoming requirements | obligatoire | obligatoire | Cible de déploiement macOS 26 ; build local sous Xcode 27 | — |
+| P15 | Aucun attribut `com.apple.quarantine` dans le build | Upcoming requirements (depuis le 18 février 2025) | obligatoire | obligatoire | Archive Xcode ; aucun fichier téléchargé copié dans le bundle | — |
+| P16 | Fonctionnalité minimale | 4.2 | obligatoire | obligatoire | Arguments de revue : planification à budget fermé, barre au-dessus du plein écran, raccourcis globaux sans autorisation | à faire |
+| P17 | Privacy manifest (`PrivacyInfo.xcprivacy`) | [Describing use of required reason API](https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api) | non exigé sur macOS à ce jour | obligatoire | `NSPrivacyAccessedAPICategoryUserDefaults`, raison `CA92.1` (réglages, raccourcis) ; aucune autre catégorie tant que § 6.1 est respecté | à faire |
+| P18 | `ITSAppUsesNonExemptEncryption = NO` | Information Property List | recommandé | obligatoire | Info.plist : évite le questionnaire d'export à chaque envoi | — |
+| P19 | Étiquettes d'accessibilité | App Store Connect, Accessibility Nutrition Labels | volontaire | obligatoire | VoiceOver, Voice Control, Dark Interface, Differentiate Without Color, Sufficient Contrast, Reduced Motion. Chaque étiquette est déclarée seulement après la recette correspondante, car une étiquette publiée ne se retire pas | à faire |
+| P20 | Icône Icon Composer (`.icon`, variantes par défaut, sombre, transparente, teintée) | [HIG App icons](https://developer.apple.com/design/human-interface-guidelines/app-icons) | recommandé | obligatoire | Sans elle, macOS 26 place l'icône dans un carré gris | à faire |
+| P21 | Raccourcis clavier : éviter les conflits | [HIG Keyboards](https://developer.apple.com/design/human-interface-guidelines/keyboards) | recommandé | obligatoire | Raccourcis modifiables, conflit signalé (§ 7.4) | à faire |
+| P22 | Panneaux et fenêtres flottantes | [HIG Panels](https://developer.apple.com/design/human-interface-guidelines/panels) | recommandé | obligatoire | Barre non activante, sans ombre, ne prend jamais le focus (§ 7.1) | à faire |
+
+Points vérifiés qui ne sont pas des exigences :
+
+- Aucune guideline n'interdit les raccourcis globaux ni les fenêtres au-dessus des autres apps.
+- `sharingType = .none` ne cache pas la barre de façon fiable (§ 7.1).
+
+Fiches de langage et de frameworks à produire en parallèle : `DocumentGroup`, Defining file and data types (UTType), String Catalogs, TSPL Concurrency.
+
+## 15. Décisions
+
+| Date | Décision | Motif |
+|---|---|---|
+| 2026-10-07 | Fichier JSON, marge jamais stockée, temps calculé depuis l'horloge | V1 |
+| 2026-10-11 | Distribution par le Mac App Store, sandbox dès la V1 | Visibilité et mises à jour assurées par le Store. Un build sandboxé pourra aussi être notarisé plus tard sans changement |
+| 2026-10-11 | Gratuit, open source (Apache 2.0) | Pas d'activité commerciale ; revue et DSA plus simples |
+| 2026-10-11 | Compte Apple Developer Program particulier (déjà actif) | Vendeur affiché : nom légal |
+| 2026-10-11 | Interface EN (langue de développement) + FR, String Catalog | Extraire des chaînes en dur plus tard coûte plus cher que de les cataloguer tout de suite |
+| 2026-10-11 | App document (`DocumentGroup`), extension `.talk` | En sandbox, ouvrir les récents, les versions et le Finder sont fournis par le système. Un chemin dans `@AppStorage` ne rouvre rien |
+| 2026-10-11 | Raccourcis modifiables avec `sindresorhus/KeyboardShortcuts` (MIT), première dépendance | Compatible sandbox et Mac App Store ; gère l'enregistreur, les conflits avec les menus et les noms de touches localisés |
+| 2026-10-11 | Dictionnaire `docs/GLOSSARY.md` contrôlé en CI | Un concept, un nom par langue |
+| 2026-10-11 | Modèle dans un paquet `TalkTimerCore`, app dans un projet Xcode | Exigence d'empaquetage du Store ; règle « pas d'AppKit » vérifiée par le compilateur |

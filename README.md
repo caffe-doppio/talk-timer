@@ -12,21 +12,21 @@ A talk planner with a floating time bar, for macOS.
 
 For people who have a solid outline but lose track of time once they start talking. A fascinating sub-topic planned for 5 minutes takes 15, and it gets worse in a foreign language.
 
-![Sketch of talk-timer. Left, the planner: eight blocks fill 60 minutes, so extending one is refused. Right, a screen with a thin bar under the menu bar, in three states: normal, alert, overtime.](docs/sketch-en.svg)
+![Sketch of talk-timer. Left, the planner: eight blocks fill 60 minutes, so extending one is refused. Right, a screen with a thin bar under the menu bar, in three phases: normal, alert, overtime.](docs/sketch-en.svg)
 
 1. **Plan.** Set the total length, then reorder, extend or shorten blocks. The total can never be exceeded: extending a block uses up the margin, and once the margin is empty you have to shorten something else.
-2. **Keep time.** While you present, a thin bar at the top of the screen, above every app, shows the current section and a gauge that runs out. You see the end coming and have time to find your transition.
+2. **Keep time.** While you present, a thin bar at the top of the screen, above every app, shows the current block and a gauge that runs out. You see the end coming and have time to find your transition.
 
 The tool never cuts you off: you decide when to move to the next block.
 
 > [!NOTE]
-> **Status: bar spike.** The floating bar runs from a talk file. The planner window is not built yet.
-> Full specification (French): [`SPECS.md`](SPECS.md).
+> **Status: bar spike.** The floating bar runs from a talk file. The planner window is not built yet. Target: the Mac App Store, free.
+> Full specification (French): [`SPECS.md`](SPECS.md). Vocabulary: [`docs/GLOSSARY.md`](docs/GLOSSARY.md).
 
 ## Requirements
 
 - macOS 26 (Tahoe)
-- Xcode 26 or the Command Line Tools, Swift 6.2 or later
+- Xcode 26 or later, or the Command Line Tools, Swift 6.2 or later
 
 ## Usage
 
@@ -67,7 +67,7 @@ Full example: [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from-the
 
 ## The bar
 
-| State | When | What it shows |
+| Phase | When | What it shows |
 |---|---|---|
 | Normal | More than 20 % of the block left, and more than 1 minute | Blue gauge, countdown |
 | Alert | 20 % of the block or the last minute, whichever comes first | Orange gauge, next block and transition line |
@@ -85,15 +85,19 @@ Shortcuts are global: they work while another app has focus, and do not need the
 
 ```
 Package.swift
-Sources/TalkTimer/Model.swift          file format, margin rules, session clock, bar states
+Sources/TalkTimer/Model.swift          file format, margin rules, session clock, bar phases
 Sources/TalkTimer/Bar.swift            floating panel, bar view, global shortcuts
 Sources/TalkTimer/App.swift            entry point
 Tests/TalkTimerTests/ModelTests.swift  acceptance criteria (SPECS.md § 10)
 fixtures/                              reference talks for the tests
 docs/sketch.py                         generates docs/sketch-{en,fr}.svg
+docs/GLOSSARY.md                       one name per concept (FR, EN, Swift, JSON)
+scripts/check-glossary.sh              fails if a top-level declaration is missing from the glossary
 ```
 
-CI runs SwiftLint (`.swiftlint.yml`, adapted from [exelban/stats](https://github.com/exelban/stats)) on Linux, then build and tests on macOS 26.
+Target layout for the App Store build (local `TalkTimerCore` package + Xcode project): [`SPECS.md` § 9](SPECS.md#9-architecture).
+
+CI runs SwiftLint (`.swiftlint.yml`, adapted from [exelban/stats](https://github.com/exelban/stats)) and the glossary check on Linux, then build and tests on macOS 26.
 
 ## Privacy
 

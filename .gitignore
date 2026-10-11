@@ -4,3 +4,4 @@
 DerivedData/
 *.xcodeproj/xcuserdata/
 .vscode/
+.claude/settings.local.json
