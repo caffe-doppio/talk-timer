@@ -77,7 +77,7 @@ Exemple complet : [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from
 |---|---|
 | ⌃⌥→ ou clic sur la barre | Bloc suivant |
 | ⌃⌥← | Revenir au bloc précédent |
-| ⌃⌥Espace | Pause / reprise (pas encore dans le spike) |
+| ⌃⌥Espace | Suspendre / reprendre (pas encore dans le spike) |
 
 Les raccourcis sont globaux : ils fonctionnent même quand une autre appli a le focus, et ne demandent pas l'autorisation Accessibilité.
 

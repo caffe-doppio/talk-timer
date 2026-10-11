@@ -43,6 +43,7 @@ Un talk est un fichier JSON, lisible et modifiable à la main, d'extension **`.t
 | `blocks[].title` | texte | Obligatoire |
 | `blocks[].minutes` | entier | 1 à 1440 |
 | `blocks[].cue` | texte | Facultatif. Phrase de transition affichée dans la barre en phase d'alerte |
+| `blocks[].break` | booléen | Facultatif, `false` par défaut et écrit seulement s'il vaut `true`. Marque une **pause prévue** (§ 6.3) |
 
 - La **marge n'est pas stockée** : `marge = totalMinutes − Σ minutes`. Elle est toujours ≥ 0.
 - Les identifiants des blocs sont générés au chargement et ne sont pas écrits dans le fichier, pour qu'un humain puisse écrire un talk sans inventer d'UUID.
@@ -52,6 +53,48 @@ Un talk est un fichier JSON, lisible et modifiable à la main, d'extension **`.t
 - **Versions du format.** Un fichier sans champ `format` est en version 1. Le champ ne sera ajouté qu'au premier changement incompatible.
 
 Fixture de référence : [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from-the-lab.json). C'est la timeline du workshop *Borrowed from the Lab* : 8 blocs pour 60 min, marge 0. Elle garde l'extension `.json` : c'est une donnée de test, pas un document.
+
+### 3.1 Format Markdown (import et export)
+
+Un talk peut être créé depuis un fichier Markdown et exporté en Markdown. Le Markdown n'est **pas** le format d'enregistrement : c'est un format d'échange, pour écrire un plan dans son éditeur habituel, ou pour le partager et le relire.
+
+```markdown
+# Borrowed from the Lab (60 min)
+
+Notes libres : non importées.
+
+## Live demo on the big screen (3 min)
+
+> Enough talk: let me show it once.
+
+## Coffee (10 min, break)
+```
+
+| Élément Markdown | Devient | Règle |
+|---|---|---|
+| Premier titre de niveau 1 | `title`, et `totalMinutes` si le titre finit par `(N min)` | Sans durée, `totalMinutes = Σ minutes` (marge 0). Sans titre de niveau 1, le titre est vide |
+| Titre de niveau 2 | un bloc | Doit finir par `(N min)` ou `(N min, break)`. `pause` est accepté à la place de `break`, sans tenir compte de la casse |
+| Premier bloc de citation sous un titre de niveau 2 | `cue` du bloc | Paragraphes de la citation joints par un espace |
+| Tout le reste (paragraphes, listes, titres de niveau 3 et plus, code) | rien | Considéré comme des notes, non importé |
+
+- Le titre d'un bloc est le texte du titre de niveau 2 sans le suffixe de durée, en texte brut. C'est la **dernière** paire de parenthèses qui compte : `## Demo (live) (3 min)` donne le titre « Demo (live) ».
+- **Refus**, avec le numéro de ligne : un titre de niveau 2 sans durée, aucun titre de niveau 2, et toutes les règles du § 3 (bornes, `Σ minutes > totalMinutes`). Rien n'est deviné.
+- **Export** : il produit exactement ce format, toujours avec `break` (comme les clés JSON, le mot-clé ne dépend pas de la langue de l'interface), et échappe les caractères Markdown des titres. **Exporter puis réimporter redonne un talk identique.**
+- Parseur : [`swiftlang/swift-markdown`](https://github.com/swiftlang/swift-markdown) (§ 9). Il fournit un arbre typé, les positions dans le source pour les messages d'erreur, et un formateur pour l'export.
+
+Fixture : [`fixtures/borrowed-from-the-lab.md`](fixtures/borrowed-from-the-lab.md), le même talk que la fixture JSON, avec des notes à ignorer.
+
+### 3.2 Export PDF
+
+Le PDF sert à relire ou à imprimer le plan. Contenu :
+
+- le titre et la durée totale ;
+- la frise ;
+- un tableau avec le numéro, le début (`T+0:00`, à partir de `Talk.startMinutes`), le titre, la durée et la transition ;
+- la marge en dernière ligne ;
+- les pauses prévues signalées par le mot « pause », pas seulement par une couleur.
+
+La mise en page est claire même en mode sombre, au format de papier choisi, et paginée si le talk ne tient pas sur une page. Elle est produite par une seule vue d'impression (`NSPrintOperation`) qui sert deux entrées de menu : Imprimer… et Exporter en PDF….
 
 ## 4. Règles du planificateur
 
@@ -65,6 +108,8 @@ Ces règles sont de la logique pure, sans interface, et elles sont couvertes par
 | Supprimer un bloc | Toujours autorisé. Ses minutes retournent dans la marge | — |
 | Changer le total | Autorisé seulement dans `[Σ minutes, 1440]` | Refus avec bip ; le minimum autorisé est affiché |
 
+Une pause prévue est un bloc comme les autres : elle consomme le total et suit les mêmes règles. Seul son affichage change (§ 7.3).
+
 Exemple avec la fixture : la marge est à 0, donc passer « Collect and seal » de 15 à 16 min est refusé. Il faut d'abord raccourcir un autre bloc, par exemple « Debrief » de 7 à 6, ce qui libère 1 min de marge. Ensuite seulement, l'allongement passe.
 
 Toute modification passe par l'annulation du système (⌘Z / ⇧⌘Z, fournie par `DocumentGroup`).
@@ -72,6 +117,23 @@ Toute modification passe par l'annulation du système (⌘Z / ⇧⌘Z, fournie p
 ## 5. Fenêtre du planificateur
 
 talk-timer est une **app document** (`DocumentGroup` + `FileDocument`) : **une fenêtre par talk**. Le système fournit Fichier › Nouveau, Ouvrir, Ouvrir récent, Enregistrer, l'enregistrement automatique, les versions, le double-clic dans le Finder et l'accès aux fichiers en sandbox. Aucun bouton Ouvrir/Enregistrer dans la fenêtre, et aucun chemin mémorisé dans `@AppStorage`.
+
+**Plusieurs talks, brouillons.** Chaque talk est un fichier `.talk`, et on peut en avoir autant qu'on veut, ouverts en même temps. Un talk jamais enregistré (« Sans titre ») est enregistré automatiquement par le système, puis restauré au lancement suivant : un brouillon ne se perd pas en quittant.
+
+**Fenêtre Accueil** (`WelcomeView`, scène `Window`) :
+
+- Elle s'affiche au lancement quand aucun talk n'est restauré, et reste accessible par Fenêtre › Accueil (⇧⌘1).
+- Elle contient « Nouveau talk » (⌘N), « Ouvrir… » (⌘O, `.talk` ou `.md`) et la liste des talks récents.
+- La liste vient des récents du système (`NSDocumentController.recentDocumentURLs`). Elle affiche le nom du fichier et son dossier, sans lire le contenu des fichiers.
+- Ce n'est pas une bibliothèque : les talks restent des fichiers, là où on les a rangés.
+
+**Markdown en entrée.** Fichier › Ouvrir, le glisser-déposer sur l'icône du Dock et « Ouvrir avec » dans le Finder acceptent un `.md` (UTType `net.daringfireball.markdown`, déclaré en lecture seule avec le rôle *Viewer* et le rang `Alternate`). talk-timer ne devient donc jamais l'app par défaut des `.md`. Le `.md` s'ouvre comme un nouveau talk sans titre. L'enregistrement crée un `.talk`, et le `.md` n'est **jamais réécrit**. [À vérifier : la façon dont `DocumentGroup` gère un type lisible mais non inscriptible. Si le comportement ne convient pas, on passe par un menu Fichier › Importer, sans rien changer d'autre.]
+
+**Menu Fichier**, en plus des entrées du système :
+
+- Exporter en Markdown… (§ 3.1) ;
+- Exporter en PDF… (§ 3.2) ;
+- Imprimer… (⌘P).
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -91,11 +153,12 @@ talk-timer est une **app document** (`DocumentGroup` + `FileDocument`) : **une f
 - **Liste** : `List` avec `.onMove`, pour le glisser-déposer natif par la poignée `≡`. Sur chaque ligne :
   - un titre modifiable ;
   - un `Stepper` ± 1 min, borné par les règles du § 4 ;
-  - un champ `cue` facultatif.
+  - un champ `cue` facultatif ;
+  - un interrupteur « Pause », qui marque le bloc comme pause prévue (aussi dans le menu contextuel de la ligne).
 - **Frise** : segments proportionnels à la durée, dans l'ordre de la liste. La marge apparaît en dernier, comme un segment gris. Elle est mise à jour en direct.
 - **Sélection de l'écran** : liste issue de `NSScreen.screens`. Par défaut, c'est l'écran qui porte la barre de menus.
 - **▶ Démarrer** : lance une session sur le talk de cette fenêtre et affiche la barre. Une seule session à la fois, donc le bouton est désactivé dans les autres fenêtres pendant une session.
-- **Menu Session** dans la barre de menus : Démarrer, Suivant, Précédent, Pause / Reprendre, Fin. Toute action de la barre et du planificateur est accessible depuis un menu, ce qui sert à Voice Control, à VoiceOver et à la découverte des raccourcis.
+- **Menu Session** dans la barre de menus : Démarrer, Suivant, Précédent, Suspendre / Reprendre, Fin. Toute action de la barre et du planificateur est accessible depuis un menu, ce qui sert à Voice Control, à VoiceOver et à la découverte des raccourcis.
 - **Réglages** (scène `Settings`, ⌘,) : les trois raccourcis globaux, modifiables (§ 7.4).
 - **Menu Aide** : lien « Politique de confidentialité » (§ 14).
 - L'interface est compacte, pour tenir dans une moitié d'écran en split-screen. Elle utilise les contrôles standard, pour hériter de l'apparence du système (Liquid Glass, mode sombre, contraste).
@@ -109,21 +172,23 @@ L'état est fondé sur **l'horloge murale, jamais sur un compteur de ticks**. Un
 | Champ | Sens |
 |---|---|
 | `index` | Bloc en cours |
-| `talkStart: Date` | Démarrage de la session (décalé par les pauses) |
-| `blockStart: Date` | Démarrage du bloc en cours (décalé par les pauses) |
+| `talkStart: Date` | Démarrage de la session. **Jamais décalé** : l'heure de fin prévue est fixe |
+| `blockStart: Date` | Démarrage du bloc en cours, décalé de la durée d'une suspension à la reprise |
 | `history: [Date]` | `blockStart` des blocs précédents, pour pouvoir revenir en arrière |
-| `pausedAt: Date?` | Non nul pendant une pause |
+| `pausedAt: Date?` | Non nul pendant une suspension |
 | `isFinished: Bool` | Vrai après « Suivant » sur le dernier bloc |
 
 ### 6.2 Calculs
 
-Avec `now` = l'heure courante, ou `pausedAt` pendant une pause :
+Deux horloges : `now` est l'heure courante, et `blockNow = pausedAt ?? now` est figé pendant une suspension.
 
 ```
-remaining     = minutes[index] × 60 − (now − blockStart)       // < 0 ⇒ dépassement
+remaining     = minutes[index] × 60 − (blockNow − blockStart)  // < 0 ⇒ dépassement
 projectedEnd  = now + max(0, remaining) + Σ minutes[index+1…] × 60
 endOffset     = projectedEnd − (talkStart + totalMinutes × 60)
 ```
+
+Pendant une suspension, `remaining` ne bouge pas, mais `projectedEnd` avance avec `now` : la suspension consomme d'abord la marge, puis fait monter l'écart. C'est voulu, car la salle se libère à l'heure prévue quoi qu'il arrive.
 
 - `endOffset > 0` : on finira en retard. Affiché en rouge, par exemple `fin +4:00`.
 - `endOffset ≤ 0` : il reste de la marge. Affiché en neutre, par exemple `marge 1:00`.
@@ -144,10 +209,20 @@ Même situation avec `totalMinutes = 65` (5 min de marge) : l'écart vaut **−1
 |---|---|---|---|
 | **Suivant** | Pousse `blockStart` dans `history`, puis `index += 1` et `blockStart = now`. Sur le dernier bloc, `isFinished = true` et la barre se ferme | clic | ⌃⌥→ |
 | **Précédent** | Revient au bloc précédent avec son `blockStart` d'origine (pris dans `history`). Sans effet sur le premier bloc | — | ⌃⌥← |
-| **Pause / Reprendre** | La pause fige `now`. À la reprise, `talkStart` et `blockStart` sont décalés de la durée de la pause | — | ⌃⌥Espace |
+| **Suspendre / Reprendre** | La suspension fige le bloc en cours (`pausedAt = now`). À la reprise, seul `blockStart` est décalé de la durée de la suspension ; `talkStart` ne bouge pas (§ 6.2) | — | ⌃⌥Espace |
 | **Fin** | Ferme la barre, désenregistre les raccourcis, revient au planificateur | menu Session | — |
 
-L'action « Suivant » n'est jamais déclenchée automatiquement, même en dépassement.
+L'action « Suivant » n'est jamais déclenchée automatiquement, même en dépassement, et pas non plus à la fin d'une pause prévue.
+
+**Deux sortes de pauses.**
+
+| | Pause prévue | Pause imprévue |
+|---|---|---|
+| Exemple | Pause café d'un workshop | Panne du projecteur, question qui s'éternise |
+| Où | Dans le plan : un bloc avec `break: true` (§ 3) | En direct : l'action Suspendre |
+| Temps | Fait partie du total ; son dépassement se compte comme pour tout bloc | Consomme la marge, puis fait monter l'écart |
+| Barre | Le bloc de pause s'affiche avec sa couleur et « Reprise : bloc suivant » (§ 7.3) | Phase `paused`, mot « SUSPENDU » |
+| Entre deux blocs | Placer un bloc de pause entre eux dans le planificateur | « Suivant », puis tout de suite « Suspendre » : le bloc suivant reste figé à sa durée pleine |
 
 ### 6.4 Rafraîchissement
 
@@ -197,14 +272,32 @@ En phase d'alerte, la suite s'ajoute à droite :
 |---|---|---|---|
 | `normal` | `remaining > seuil` | `brand-550` `#3E5DE7` | — |
 | `alert` | `0 ≤ remaining ≤ seuil` | `warning-400` `#D7790C` | `→ titre suivant` et `cue` du bloc en cours |
-| `overtime` | `remaining < 0` | `error-500` `#E32C39`, jauge vide | compteur `+m:ss` qui monte, `→ titre suivant` et `cue` restent affichés |
-| `paused` | `pausedAt ≠ nil` (prioritaire sur les autres) | `gray-500` `#6D778C` | `PAUSE` |
+| `overtime` | `remaining < 0` | `error-500` `#E32C39`, jauge vide | compteur `+m:ss` qui monte, en `error-450` `#F63A45` ; `→ titre suivant` et `cue` restent affichés |
+| `paused` | `pausedAt ≠ nil` (prioritaire sur les autres) | `gray-500` `#6D778C` | `SUSPENDU` / `PAUSED` |
+
+**Bloc de pause prévue** (`isBreak`) : les phases s'appliquent normalement, mais en phase `normal` la jauge prend `success-500` `#40836F`. Le texte commence par `PAUSE` / `BREAK`, et `Reprise : titre suivant` reste affiché en permanence :
+
+```
+ 5/9  PAUSE  Coffee  [▓▓▓▓▓▓▓▓▓░░░░░░░░░]  6:40   Reprise : Collect and seal
+```
 
 - `seuil = max(20 % de la durée du bloc, 60 s)`. On retient le plus précoce des deux, pour laisser le temps de préparer la transition :
   - bloc de 15 min : alerte à 3:00 de la fin ;
   - bloc de 3 min : alerte à 1:00 de la fin.
 - Le fond de la barre est `gray-900` `#181B24` et le texte `gray-025` `#F6F8F9`, d'après la palette beta.gouv. La barre est toujours sombre, quel que soit le mode du système.
-- **L'information ne passe jamais par la couleur seule** : l'alerte ajoute « → suivant », le dépassement ajoute « + », la pause ajoute « PAUSE ».
+- **L'information ne passe jamais par la couleur seule** : l'alerte ajoute « → suivant », le dépassement ajoute « + », la suspension ajoute « SUSPENDU », la pause prévue ajoute « PAUSE ».
+- Contrastes calculés sur le fond `#181B24` (formule WCAG 2) :
+
+  | Couleur | Usage | Contraste | Minimum |
+  |---|---|---|---|
+  | `gray-025` | texte | 16,1:1 | 4,5:1 |
+  | `gray-400` | texte secondaire | 5,4:1 | 4,5:1 |
+  | `error-450` | compteur de dépassement | 4,6:1 | 4,5:1 |
+  | `warning-400` | jauge | 5,4:1 | 3:1 |
+  | `success-500`, `gray-500`, `error-500` | jauges | 3,8:1 | 3:1 |
+  | `brand-550` | jauge | 3,2:1 | 3:1 |
+
+  Le spike écrit le compteur de dépassement en `error-500` (3,8:1), ce qui est insuffisant pour un texte de 13 pt. Correction prévue au § 11.
 
 ### 7.4 Raccourcis
 
@@ -237,7 +330,8 @@ Cible :
 
 ```
 Package.swift                              paquet local : bibliothèque TalkTimerCore + ses tests
-Sources/TalkTimerCore/Model.swift          Talk, Block, règles § 4, calculs § 6.2 (Foundation seule)
+Sources/TalkTimerCore/Model.swift          Talk, Block, règles § 4, calculs § 6.2
+Sources/TalkTimerCore/Markdown.swift       import et export Markdown (§ 3.1)
 Tests/TalkTimerCoreTests/ModelTests.swift  Swift Testing, critères § 10
 TalkTimer.xcodeproj                        projet de l'app, dossiers synchronisés
 App/                                       @main, DocumentGroup, planificateur, barre, Réglages
@@ -249,10 +343,17 @@ App/AppIcon.icon                           icône Icon Composer
 fixtures/borrowed-from-the-lab.json
 ```
 
-- **Pourquoi deux morceaux.** Le Mac App Store n'accepte qu'une app empaquetée par Xcode, ce qu'un exécutable SwiftPM n'est pas (§ 14). Le modèle, lui, reste un paquet SwiftPM : il se teste en terminal (`swift test`, y compris en SSH et sous Linux puisqu'il n'utilise que Foundation), et la frontière de module fait respecter par le **compilateur** la règle « pas d'AppKit ni de SwiftUI dans le modèle ».
+- **Pourquoi deux morceaux.** Le Mac App Store n'accepte qu'une app empaquetée par Xcode, ce qu'un exécutable SwiftPM n'est pas (§ 14). Le modèle, lui, reste un paquet SwiftPM : il se teste en terminal (`swift test`, y compris en SSH), et la frontière de module fait respecter par le **compilateur** la règle « pas d'AppKit ni de SwiftUI dans le modèle ».
 - `Model.swift` reçoit `now` en paramètre au lieu de lire l'horloge. Les tests peuvent ainsi simuler 19 minutes en une ligne.
 - Les symboles du modèle utilisés par l'app sont déclarés `public`. Les tests utilisent `@testable import`.
-- La dépendance KeyboardShortcuts est déclarée dans le projet Xcode et épinglée à une version exacte.
+- Dépendances, chacune épinglée à une version exacte :
+
+  | Paquet | Version | Licence | Où | Pour |
+  |---|---|---|---|---|
+  | [`swiftlang/swift-markdown`](https://github.com/swiftlang/swift-markdown) | 0.9.0 | Apache 2.0 | `TalkTimerCore` (`Package.swift`) | § 3.1. Version 0.x : l'API peut changer d'une version mineure à l'autre, d'où l'épinglage exact |
+  | [`sindresorhus/KeyboardShortcuts`](https://github.com/sindresorhus/KeyboardShortcuts) | 3.1.0 | MIT | app (projet Xcode) | § 7.4 |
+
+- `TalkTimerCore` n'importe ni AppKit ni SwiftUI. Il n'utilise que Foundation et swift-markdown, qui fonctionne aussi sous Linux.
 
 État actuel (spike) : tout est dans l'exécutable SwiftPM `Sources/TalkTimer/`, avec `Model.swift`, `Bar.swift` et `App.swift`.
 
@@ -268,10 +369,16 @@ fixtures/borrowed-from-the-lab.json
 6. Passer le total à 59 est refusé.
 7. Un fichier avec `Σ > total` est refusé au chargement.
 8. Écart : blocs 1 à 4 tenus et bloc 5 à 19 min donnent **+4:00**. Le même cas avec un total de 65 donne **−1:00**.
-9. Pause : 2 min de pause au milieu d'un bloc ne changent ni `remaining` ni `endOffset`, et la phase vaut `paused` pendant la pause.
+9. Suspension : bloc 2 commencé depuis 1 min, puis 2 min de suspension. `remaining` vaut 4:00 avant, pendant et après, la phase vaut `paused` pendant la suspension, et `endOffset` passe de 0:00 à **+2:00** (la fin est fixe).
 10. Revenir en arrière après « Suivant » restaure exactement l'`index` et le `blockStart` précédents.
 11. Bornes : un bloc à 1441 min est refusé, un total à 1441 est refusé, et un fichier dont deux blocs valent `Int.max` est refusé **sans crash**.
 12. « Suivant » sur le dernier bloc passe `isFinished` à vrai.
+13. Pause prévue : `"break": true` se charge dans `isBreak`, un bloc sans le champ vaut `false`, et l'enregistrement n'écrit `break` que s'il vaut `true`.
+14. Markdown : `fixtures/borrowed-from-the-lab.md` s'importe en un talk égal à celui de la fixture JSON (aux identifiants de bloc près), notes ignorées.
+15. Aller-retour : exporter en Markdown puis réimporter redonne le même talk, y compris avec un bloc de pause et des titres contenant `#`, `*`, `>` et des parenthèses (`Demo (live)`).
+16. Markdown refusé, avec le bon numéro de ligne : un titre de niveau 2 sans durée ; aucun titre de niveau 2 ; `Σ minutes > totalMinutes`.
+17. Sans durée dans le titre de niveau 1, `totalMinutes = Σ minutes`. `(10 min, Pause)` est reconnu comme une pause prévue.
+18. `startMinutes` de la fixture vaut `[0, 3, 8, 15, 18, 33, 41, 53]`.
 
 **Recette manuelle** (deuxième écran en mode étendu, build Release signé et sandboxé) :
 
@@ -291,27 +398,36 @@ fixtures/borrowed-from-the-lab.json
 14. Contrastes du § 7.5 et du § 8 mesurés, en mode clair et en mode sombre.
 15. Partage d'écran Zoom ou Teams en écran entier : constater si la barre apparaît, et documenter le résultat (§ 7.1).
 16. `xcodebuild archive`, puis « Validate App » dans l'Organizer : aucune erreur.
+17. Créer un talk, ne pas l'enregistrer, quitter, relancer : le brouillon est restauré.
+18. Fenêtre Accueil : elle apparaît au lancement sans talk restauré, liste les récents, et chacun s'ouvre sans erreur de permission.
+19. Un `.md` ouvert par « Ouvrir avec » devient un talk sans titre. ⌘S propose un `.talk`, et le `.md` est inchangé (même empreinte). talk-timer n'est pas devenue l'app par défaut des `.md`.
+20. Export PDF d'un talk de 30 blocs en mode sombre : fond clair, pagination, pauses lisibles sans couleur.
 
 ## 11. Ordre d'implémentation
 
 1. ✅ **Test rapide** : `Bar.swift` seul, lancé depuis un binaire SwiftPM. Recettes 1 à 4 vérifiées.
 2. **Modèle** :
    - extraire `TalkTimerCore` ;
-   - ajouter les bornes du § 3, la pause, `talkStart`, `isFinished`, `projectedEnd` et `endOffset` ;
+   - ajouter les bornes du § 3, la suspension, `talkStart`, `isFinished`, `projectedEnd`, `endOffset`, `isBreak` et `startMinutes` ;
    - écrire les règles du § 4 ;
-   - faire passer les critères automatiques 1 à 12.
-3. **Projet Xcode** : bundle ID provisoire, sandbox, entitlements, Info.plist (UTType, chiffrement), String Catalog, privacy manifest.
-4. **Planificateur** : `DocumentGroup`, liste, frise, menu Session, Réglages.
-5. **Session et barre** :
+   - faire passer les critères automatiques 1 à 13.
+3. **Markdown** : ajouter swift-markdown, écrire l'import et l'export du § 3.1, critères 14 à 18.
+4. **Projet Xcode** : bundle ID provisoire, sandbox, entitlements, Info.plist (UTType, chiffrement), String Catalog, privacy manifest.
+5. **Planificateur** : `DocumentGroup` (lecture des `.md`), liste avec interrupteur Pause, frise, menu Session, Réglages, fenêtre Accueil, export PDF et impression.
+6. **Session et barre** :
    - branchement de la session sur la barre ;
    - KeyboardShortcuts à la place de `HotKeys` ;
    - `Logger` à la place de `print` ;
    - phase `paused` et accessibilité du § 7.5 ;
    - retrait de `AppDelegate`, du mode ligne de commande et du contournement `setActivationPolicy` ;
-   - commentaire de `Palette` sans chemin personnel.
-6. **Recette manuelle** complète (§ 10).
-7. **Publication** :
+   - commentaire de `Palette` sans chemin personnel ;
+   - compteur de dépassement en `error-450` (§ 7.3) ;
+   - affichage des blocs de pause prévue.
+7. **Recette manuelle** complète (§ 10).
+8. **Publication** :
    - icône ;
+   - sketchs refaits, puis remplacés par de vraies captures (README et P11) ;
+   - `CLAUDE.md` et `.claude/` versionnés, avec `!CLAUDE.md` et `!.claude/` dans le `.gitignore` du dépôt : il passe avant l'exclusion globale ;
    - politique de confidentialité ;
    - fiche App Store Connect ;
    - TestFlight Mac ;
@@ -321,7 +437,9 @@ fixtures/borrowed-from-the-lab.json
 
 | Idée | À ajouter quand… |
 |---|---|
-| Import d'un plan Markdown (titres `##` avec « (N min) ») | on aura réécrit trois talks à la main |
+| Notes de l'orateur (les paragraphes du Markdown, aujourd'hui ignorés) | une personne veut retrouver ses notes dans l'app |
+| Bibliothèque intégrée (talks stockés dans l'app, recherche) | la fenêtre Accueil et les récents ne suffisent plus |
+| iCloud Drive | une personne passe d'un Mac à l'autre. Demande un entitlement iCloud, à ajouter au § 14 |
 | Redimensionner les blocs à la souris dans la frise | le `Stepper` se révèle trop lent en pratique |
 | Reprendre une session après un crash | un crash arrive en vrai |
 | Télécommande de présentation (Page↓ et flèches) | une personne présente sans clavier à portée |
@@ -332,7 +450,6 @@ fixtures/borrowed-from-the-lab.json
 ## 13. Questions ouvertes
 
 - **Nom définitif, bundle ID et identifiant du UTType**, à trancher ensemble avant de créer l'app dans App Store Connect : le bundle ID n'est plus modifiable ensuite. Préfixes possibles : `fr.etdeuxmains.` ou `io.github.caffe-doppio.`. Vérifier que le nom est libre sur l'App Store. Un futur canal Developer ID devra avoir son propre bundle ID : avec le même, les deux builds partageraient conteneur et réglages, et le système afficherait des invites.
-- **Statut DSA** : auto-évaluation « non-trader » proposée (gratuit, non commercial, compte particulier). À confirmer par Sasha, car un statut de trader rendrait publics adresse, téléphone et e-mail sur les fiches UE.
 - **Raccourcis par défaut** : on garde ⌃⌥ + flèches (conflit Rectangle et Magnet géré au § 7.4), ou on choisit des valeurs par défaut moins exposées ?
 - **Ouvrir récent en sandbox avec `DocumentGroup`** : supposé fourni par le système (documenté pour `NSDocument`, et seulement par des rapports de forum pour SwiftUI). À confirmer par la recette 8.
 - **Granularité** : la minute suffit-elle, ou faut-il des blocs de 30 s (pitchs courts) ?
@@ -362,9 +479,9 @@ Sources consultées le 2026-10-11 :
 | P8 | Politique de confidentialité, dans App Store Connect **et dans l'app** | 5.1.1 (i) | obligatoire | obligatoire | `PRIVACY.md` (EN + FR) publié à une URL stable, et lien dans le menu Aide (§ 5) | à faire |
 | P9 | Étiquette de confidentialité | App Store Connect, App Privacy | obligatoire | obligatoire | « Data Not Collected » | à faire |
 | P10 | Métadonnées : URL de support, description, mots-clés, copyright | App Store Connect, Platform version information | obligatoire | obligatoire | Support : GitHub Issues du dépôt | à faire |
-| P11 | Captures Mac 16:10 : 1280×800, 1440×900, 2560×1600 ou 2880×1800, de 1 à 10 | App Store Connect, Screenshot specifications | obligatoire | obligatoire | Planificateur, barre en phase normale, alerte, dépassement | — |
+| P11 | Captures Mac 16:10 : 1280×800, 1440×900, 2560×1600 ou 2880×1800, de 1 à 10 | App Store Connect, Screenshot specifications | obligatoire | obligatoire | Vraies captures (et non les sketchs) : planificateur, barre en phase normale, alerte, dépassement, pause prévue | — |
 | P12 | Questionnaire de classification par âge (système 2025-2026) | App Store Connect, Upcoming requirements | obligatoire | obligatoire | 4+ attendu | — |
-| P13 | Statut DSA déclaré et vérifié pour la vitrine UE | App Store Connect, DSA trader requirements | obligatoire | obligatoire | Non-trader proposé (§ 13) | à faire |
+| P13 | Statut DSA déclaré et vérifié pour la vitrine UE | App Store Connect, DSA trader requirements | obligatoire | obligatoire Non-trader (confirmé le 2026-10-11) : gratuit, non commercial, compte particulier | à faire |
 | P14 | Build avec Xcode 26 ou plus, puis Xcode 27 à partir d'avril 2027 | Upcoming requirements | obligatoire | obligatoire | Cible de déploiement macOS 26 ; build local sous Xcode 27 | — |
 | P15 | Aucun attribut `com.apple.quarantine` dans le build | Upcoming requirements (depuis le 18 février 2025) | obligatoire | obligatoire | Archive Xcode ; aucun fichier téléchargé copié dans le bundle | — |
 | P16 | Fonctionnalité minimale | 4.2 | obligatoire | obligatoire | Arguments de revue : planification à budget fermé, barre au-dessus du plein écran, raccourcis globaux sans autorisation | à faire |
@@ -392,6 +509,13 @@ Fiches de langage et de frameworks à produire en parallèle : `DocumentGroup`, 
 | 2026-10-11 | Compte Apple Developer Program particulier (déjà actif) | Vendeur affiché : nom légal |
 | 2026-10-11 | Interface EN (langue de développement) + FR, String Catalog | Extraire des chaînes en dur plus tard coûte plus cher que de les cataloguer tout de suite |
 | 2026-10-11 | App document (`DocumentGroup`), extension `.talk` | En sandbox, ouvrir les récents, les versions et le Finder sont fournis par le système. Un chemin dans `@AppStorage` ne rouvre rien |
-| 2026-10-11 | Raccourcis modifiables avec `sindresorhus/KeyboardShortcuts` (MIT), première dépendance | Compatible sandbox et Mac App Store ; gère l'enregistreur, les conflits avec les menus et les noms de touches localisés |
+| 2026-10-11 | Raccourcis modifiables avec `sindresorhus/KeyboardShortcuts` (MIT) | Compatible sandbox et Mac App Store ; gère l'enregistreur, les conflits avec les menus et les noms de touches localisés |
 | 2026-10-11 | Dictionnaire `docs/GLOSSARY.md` contrôlé en CI | Un concept, un nom par langue |
 | 2026-10-11 | Modèle dans un paquet `TalkTimerCore`, app dans un projet Xcode | Exigence d'empaquetage du Store ; règle « pas d'AppKit » vérifiée par le compilateur |
+| 2026-10-11 | Statut DSA : non-trader | Gratuit, non commercial, compte particulier : adresse et téléphone ne sont pas publiés |
+| 2026-10-11 | « talk » reste le mot français ; « plan » écarté pour le document | Un seul mot par langue (GLOSSARY) |
+| 2026-10-11 | Import et export Markdown avec `swiftlang/swift-markdown`, export PDF par l'impression | Arbre typé, numéros de ligne, échappement à l'export donc aller-retour sans perte ; le PDF réutilise le panneau d'impression du système |
+| 2026-10-11 | Un `.md` s'ouvre par Fichier › Ouvrir, en lecture seule, rang `Alternate` | Le Finder et le Dock fonctionnent sans code ; talk-timer ne prend pas les `.md` à l'éditeur habituel |
+| 2026-10-11 | Pause prévue = bloc `break: true` ; pause imprévue = Suspendre, fin fixe | La salle se libère à l'heure prévue : une suspension consomme la marge, puis l'écart |
+| 2026-10-11 | Fenêtre Accueil sur les récents du système, pas de bibliothèque | Les talks restent des fichiers (le fichier est le contrat, § 3) |
+| 2026-10-11 | `CLAUDE.md` et `.claude/` locaux jusqu'à la publication | Exclus par l'ignore global, réintégrés au § 11, étape 8 |

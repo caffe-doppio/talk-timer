@@ -21,27 +21,33 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Durée d'un bloc, en minutes | durée | length | `Block.minutes` | `blocks[].minutes` | existant |
 | Durée du bloc en cours, en secondes | — | — | `Session.duration` | — | existant |
 | Phrase de transition | transition | cue | `Block.cue` | `blocks[].cue` | existant |
+| Pause prévue dans le plan (bloc) | pause | break | `Block.isBreak` | `blocks[].break` | prévu |
+| Début d'un bloc, en minutes depuis le début du talk | début | start | `Talk.startMinutes` | jamais stockée | prévu |
 | Temps non attribué | marge | margin | `Talk.margin` | jamais stockée | existant |
 | Fichier de talk | fichier `.talk` | `.talk` file | `TalkDocument`, UTType `.talk` | — | prévu |
+| Talk au format Markdown (import et export) | Markdown | Markdown | `Talk(markdown:)`, `Talk.markdown` | — | prévu |
+| Export imprimable | Exporter en PDF, Imprimer | Export as PDF, Print | `TalkPrintView` | — | prévu |
+| Fenêtre d'ouverture | Accueil | Welcome | `WelcomeView` | — | prévu |
+| Talks ouverts récemment | talks récents | recent talks | récents du système (`NSDocumentController`) | — | prévu |
 | Exécution en direct | session | session | `Session` | — | existant |
 | Bloc en cours | bloc en cours | current block | `Session.block`, `Session.index` | — | existant |
 | Bloc suivant | bloc suivant | next block | `Session.nextBlock` | — | existant |
 | Début de la session | — | — | `Session.talkStart` | — | prévu |
 | Début du bloc en cours | — | — | `Session.blockStart` | — | existant |
 | Pile des débuts précédents | — | — | `Session.history` | — | existant |
-| Instant de mise en pause | — | — | `Session.pausedAt` | — | prévu |
+| Instant de la suspension | — | — | `Session.pausedAt` | — | prévu |
 | Temps restant du bloc | restant | remaining | `Session.remaining(at:)` | — | existant |
 | Fin projetée | fin projetée | projected end | `Session.projectedEnd(at:)` | — | prévu |
 | Écart à la fin prévue | écart | end offset | `Session.endOffset(at:)` | — | prévu |
 | Passer au bloc suivant | Suivant | Next | `Session.next(at:)` | — | existant |
 | Revenir au bloc précédent | Précédent | Back | `Session.back()` | — | existant |
-| Pause et reprise | Pause / Reprendre | Pause / Resume | `Session.togglePause(at:)` | — | prévu |
+| Pause imprévue en direct | Suspendre / Reprendre | Pause / Resume | `Session.togglePause(at:)` | — | prévu |
 | Fin de session | Fin | End | `Session.isFinished` | — | prévu |
 | Affichage de la barre selon le temps | phase | phase | `Phase` | — | existant |
 | Phase normale | normal | normal | `Phase.normal` | — | existant |
 | Fin de bloc proche | alerte | alert | `Phase.alert` | — | existant |
 | Temps dépassé | dépassement | overtime | `Phase.overtime` | — | existant |
-| Session en pause | pause | paused | `Phase.paused` | — | prévu |
+| Session suspendue | suspendu | paused | `Phase.paused` | — | prévu |
 | Seuil d'alerte | seuil | alert threshold | calculé dans `phase(remaining:duration:)` | — | existant |
 | Fenêtre d'édition | planificateur | planner | `PlannerView` | — | prévu |
 | Barre flottante | barre | bar | `BarPanel` (fenêtre), `BarView` (contenu) | — | existant |
@@ -50,13 +56,19 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 
 ### Noms écartés
 
+> [!WARNING]
+> **Faux ami FR/EN.** « pause » en français désigne le bloc prévu (EN : *break*). « Pause » en anglais désigne l'action imprévue (FR : *Suspendre*). Dans le code, on n'écrit jamais `pause` seul : `isBreak` pour le bloc, `togglePause` et `.paused` pour l'action.
+
 | Ne pas utiliser | Pour | Raison |
 |---|---|---|
 | état, `State` | phase | « État » désigne l'état de la session (§ 6.1). La barre a des phases (§ 7.3) |
 | Annuler, undo | Précédent, `back()` | Dans le planificateur, « Annuler » est ⌘Z |
 | `drift`, dérive | écart, `endOffset` | « Dérive » est réservé à la dérive d'horloge que le § 6.1 évite |
 | durée (seule) en Swift | `minutes` ou `duration` | `minutes` : entier, dans le fichier. `duration` : secondes, à l'exécution |
-| section, séquence, segment, étape (pour un bloc) | bloc | Un seul mot pour la séquence. « Segment » désigne seulement le dessin d'un bloc dans la frise |
+| section, séquence, segment, étape, item, élément (pour un bloc) | bloc | Un seul mot pour la séquence. « Segment » désigne seulement le dessin d'un bloc dans la frise |
+| plan (FR, pour le document) | talk | « talk » est le mot retenu en FR comme en EN. « Planificateur » reste le nom de la fenêtre d'édition |
+| pause (FR, pour l'action en direct) | Suspendre, `togglePause` | En FR, « pause » désigne le bloc prévu (`isBreak`) |
+| break (EN, pour l'action en direct) | Pause, `togglePause` | En EN, « break » désigne le bloc prévu |
 
 ## Déclarations de premier niveau
 
