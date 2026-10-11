@@ -214,6 +214,8 @@ Même situation avec `totalMinutes = 65` (5 min de marge) : l'écart vaut **−1
 
 L'action « Suivant » n'est jamais déclenchée automatiquement, même en dépassement, et pas non plus à la fin d'une pause prévue.
 
+« Suivant » pendant une suspension ne la lève pas : le bloc suivant démarre figé à sa durée pleine (`blockStart = pausedAt`). « Précédent » pendant une suspension garde `pausedAt` : le bloc précédent est figé là où la suspension a commencé.
+
 **Deux sortes de pauses.**
 
 | | Pause prévue | Pause imprévue |
@@ -355,7 +357,7 @@ fixtures/borrowed-from-the-lab.json
 
 - `TalkTimerCore` n'importe ni AppKit ni SwiftUI. Il n'utilise que Foundation et swift-markdown, qui fonctionne aussi sous Linux.
 
-État actuel (spike) : tout est dans l'exécutable SwiftPM `Sources/TalkTimer/`, avec `Model.swift`, `Bar.swift` et `App.swift`.
+État actuel : le modèle est dans `Sources/TalkTimerCore/` (bibliothèque, symboles `public`) et testé par `Tests/TalkTimerCoreTests/`. L'exécutable SwiftPM `Sources/TalkTimer/` (`Bar.swift`, `App.swift`) reste le spike de la barre, en attendant le projet Xcode.
 
 ## 10. Critères d'acceptation
 
@@ -405,8 +407,8 @@ fixtures/borrowed-from-the-lab.json
 
 ## 11. Ordre d'implémentation
 
-1. ✅ **Test rapide** : `Bar.swift` seul, lancé depuis un binaire SwiftPM. Recettes 1 à 4 vérifiées.
-2. **Modèle** :
+1. ✅ **Test rapide** : `Bar.swift` seul, lancé depuis un binaire SwiftPM (`swift run`). Recettes 1 à 4 à cocher explicitement.
+2. ✅ **Modèle** (2026-10-11) :
    - extraire `TalkTimerCore` ;
    - ajouter les bornes du § 3, la suspension, `talkStart`, `isFinished`, `projectedEnd`, `endOffset`, `isBreak` et `startMinutes` ;
    - écrire les règles du § 4 ;

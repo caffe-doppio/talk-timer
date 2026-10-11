@@ -1,6 +1,7 @@
 import AppKit
 import Carbon.HIToolbox
 import SwiftUI
+import TalkTimerCore
 
 @main
 struct TalkTimerApp: App {
@@ -34,7 +35,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         do {
             talk = try Talk.load(from: URL(filePath: path))
         } catch {
-            print("talk-timer : \(error.localizedDescription)")
+            print("talk-timer : \((error as? TalkError)?.message ?? error.localizedDescription)")
             exit(1)
         }
 
@@ -43,10 +44,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let screen = screens.indices.contains(wanted) ? screens[wanted] : screens[0]  // [0] porte la barre de menus
 
         let live = Live(Session(talk: talk, now: .now))
-        panel = BarPanel(screen: screen, rootView: BarView(live: live)) { live.session.next(at: .now) }
+        let next = { [weak self] in
+            live.session.next(at: .now)
+            if live.session.isFinished { self?.panel?.close() }  // Suivant sur le dernier bloc termine la session (§ 6.3)
+        }
+        panel = BarPanel(screen: screen, rootView: BarView(live: live), onClick: next)
         panel?.orderFrontRegardless()
 
-        HotKeys.register(keyCode: kVK_RightArrow) { live.session.next(at: .now) }
+        HotKeys.register(keyCode: kVK_RightArrow, action: next)
         HotKeys.register(keyCode: kVK_LeftArrow) { live.session.back() }
+        HotKeys.register(keyCode: kVK_Space) { live.session.togglePause(at: .now) }
+    }
+}
+
+/// Le modèle ne porte aucune chaîne (§ 8) : l'app formule les refus. Passera au String Catalog avec le projet Xcode.
+extension TalkError {
+    var message: String {
+        switch self {
+        case .noBlocks: "Le talk ne contient aucun bloc."
+        case .badTotal(let total): "La durée totale (\(total) min) doit être comprise entre 1 et \(Talk.maxMinutes) min."
+        case .badMinutes(let title): "Le bloc « \(title) » doit durer entre 1 et \(Talk.maxMinutes) min."
+        case .overTotal(let sum, let total): "Les blocs totalisent \(sum) min pour un total de \(total) min."
+        }
     }
 }

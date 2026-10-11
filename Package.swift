@@ -4,8 +4,12 @@ import PackageDescription
 let package = Package(
     name: "TalkTimer",
     platforms: [.macOS(.v26)],
+    products: [
+        .library(name: "TalkTimerCore", targets: ["TalkTimerCore"]),  // lu par le futur projet Xcode (SPECS § 9)
+    ],
     targets: [
-        .executableTarget(name: "TalkTimer"),
-        .testTarget(name: "TalkTimerTests", dependencies: ["TalkTimer"]),
+        .target(name: "TalkTimerCore"),
+        .executableTarget(name: "TalkTimer", dependencies: ["TalkTimerCore"]),  // spike de la barre
+        .testTarget(name: "TalkTimerCoreTests", dependencies: ["TalkTimerCore"]),
     ]
 )

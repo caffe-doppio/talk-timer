@@ -1,6 +1,7 @@
 import AppKit
 import Carbon.HIToolbox
 import SwiftUI
+import TalkTimerCore
 
 // Barre flottante : SPECS.md § 7.
 
@@ -19,6 +20,7 @@ enum Palette {
     static let normal = Color(hex: 0x3E5DE7)  // brand-550
     static let alert = Color(hex: 0xD7790C)  // warning-400
     static let overtime = Color(hex: 0xE32C39)  // error-500
+    static let paused = Color(hex: 0x6D778C)  // gray-500
 }
 
 extension Color {
@@ -33,6 +35,7 @@ extension Phase {
         case .normal: Palette.normal
         case .alert: Palette.alert
         case .overtime: Palette.overtime
+        case .paused: Palette.paused
         }
     }
 }
@@ -77,7 +80,7 @@ struct BarView: View {
         TimelineView(.periodic(from: .now, by: 1)) { context in
             let session = live.session
             let remaining = session.remaining(at: context.date)
-            let current = phase(remaining: remaining, duration: session.duration)
+            let current = session.phase(at: context.date)
 
             HStack(spacing: 12) {
                 Text("\(session.index + 1)/\(session.talk.blocks.count)")
@@ -92,6 +95,9 @@ struct BarView: View {
                     .monospacedDigit()
                     .fontWeight(current == .overtime ? .bold : .regular)
                     .foregroundStyle(current == .overtime ? Palette.overtime : Palette.text)
+                if current == .paused {
+                    Text("SUSPENDU").fontWeight(.bold)  // jamais la couleur seule (§ 7.3)
+                }
                 if current != .normal, let next = session.nextBlock {
                     Text("→ \(next.title)" + (session.block.cue.map { " · « \($0) »" } ?? ""))
                         .foregroundStyle(Palette.muted)

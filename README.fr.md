@@ -16,11 +16,13 @@ Pour qui a un plan solide mais perd le fil du temps en parlant : un sous-sujet p
 
 1. **Planifier.** On fixe une durée totale, puis on range, allonge ou raccourcit des blocs. Le total ne peut jamais être dépassé : allonger un bloc consomme la marge, et quand la marge est vide, il faut raccourcir ailleurs.
 2. **Tenir le temps.** Pendant la présentation, une barre fine en haut de l'écran, au-dessus de toutes les applis, affiche le bloc en cours et une jauge qui se vide. On voit la fin arriver et on a le temps de préparer sa transition.
+3. **Partager** *(prévu)*. Créer un talk à partir d'un plan en Markdown, l'exporter en Markdown ou en PDF.
 
 L'outil ne coupe jamais la parole : c'est la personne qui décide quand passer au bloc suivant.
 
 > [!NOTE]
-> **Statut : spike de la barre.** La barre flottante fonctionne à partir d'un fichier de talk. La fenêtre du planificateur n'est pas encore faite. Cible : le Mac App Store, en gratuit.
+> **Statut : modèle + spike de la barre.** Le modèle (format de fichier, règles du planificateur, session en direct avec suspension) est une bibliothèque testée, `TalkTimerCore`. La barre flottante fonctionne à partir d'un fichier de talk. La fenêtre du planificateur n'est pas encore faite. Cible : le Mac App Store, en gratuit.
+> Journal de développement : [`DEVSTORY.md`](DEVSTORY.md).
 > Spécifications complètes : [`SPECS.md`](SPECS.md). Vocabulaire : [`docs/GLOSSARY.md`](docs/GLOSSARY.md).
 
 ## Prérequis
@@ -54,14 +56,16 @@ Un talk est un fichier JSON, écrit à la main ou par le planificateur :
   "totalMinutes": 60,
   "blocks": [
     { "title": "Why the digital is political", "minutes": 3 },
-    { "title": "Live demo on the big screen", "minutes": 3, "cue": "Enough talk: let me show it once." }
+    { "title": "Live demo on the big screen", "minutes": 3, "cue": "Enough talk: let me show it once." },
+    { "title": "Coffee", "minutes": 10, "break": true }
   ]
 }
 ```
 
 - La marge, `totalMinutes − Σ minutes`, est calculée et jamais stockée.
 - `cue` est une phrase de transition facultative, affichée quand la fin du bloc approche.
-- Un fichier dont la somme des blocs dépasse le total est refusé au chargement.
+- `break: true` marque une pause prévue. Elle compte dans le total comme n'importe quel bloc (le spike ne l'affiche pas encore différemment).
+- Toute durée est comprise entre 1 et 1440 minutes (24 h). Un fichier dont la somme des blocs dépasse le total est refusé au chargement.
 
 Exemple complet : [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from-the-lab.json), la timeline d'un workshop de 60 minutes en 8 blocs.
 
@@ -72,30 +76,32 @@ Exemple complet : [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from
 | Normal | Plus de 20 % du bloc restant, et plus d'une minute | Jauge bleue, compte à rebours |
 | Alerte | 20 % du bloc ou dernière minute, selon ce qui arrive en premier | Jauge orange, bloc suivant et phrase de transition |
 | Dépassement | Au-delà de zéro | Jauge vide, `+m:ss` rouge qui monte |
+| Suspendu | Après ⌃⌥Espace | Jauge grise, compte à rebours figé, mention `SUSPENDU` |
 
 | Raccourci | Action |
 |---|---|
 | ⌃⌥→ ou clic sur la barre | Bloc suivant |
 | ⌃⌥← | Revenir au bloc précédent |
-| ⌃⌥Espace | Suspendre / reprendre (pas encore dans le spike) |
+| ⌃⌥Espace | Suspendre / reprendre. Le bloc est figé, pas l'heure de fin : une pause imprévue consomme la marge |
 
 Les raccourcis sont globaux : ils fonctionnent même quand une autre appli a le focus, et ne demandent pas l'autorisation Accessibilité.
 
 ## Structure
 
 ```
-Package.swift
-Sources/TalkTimer/Model.swift          format de fichier, règles de marge, horloge de session, phases de la barre
-Sources/TalkTimer/Bar.swift            panneau flottant, vue de la barre, raccourcis globaux
-Sources/TalkTimer/App.swift            point d'entrée
-Tests/TalkTimerTests/ModelTests.swift  critères d'acceptation (SPECS.md § 10)
-fixtures/                              talks de référence pour les tests
-docs/sketch.py                         génère docs/sketch-{en,fr}.svg
-docs/GLOSSARY.md                       un nom par concept (FR, EN, Swift, JSON)
-scripts/check-glossary.sh              échoue si une déclaration de premier niveau manque au dictionnaire
+Package.swift                              bibliothèque TalkTimerCore, spike de la barre, tests
+Sources/TalkTimerCore/Model.swift          format de fichier, règles du planificateur, horloge de session, phases de la barre (ni AppKit ni SwiftUI)
+Sources/TalkTimer/Bar.swift                spike : panneau flottant, vue de la barre, raccourcis globaux
+Sources/TalkTimer/App.swift                spike : point d'entrée
+Tests/TalkTimerCoreTests/ModelTests.swift  critères d'acceptation (SPECS.md § 10)
+fixtures/                                  talks de référence (JSON, Markdown)
+docs/GLOSSARY.md                           un nom par concept (FR, EN, Swift, JSON)
+docs/sketch.py                             génère docs/sketch-{en,fr}.svg
+scripts/check-glossary.sh                  échoue si une déclaration de premier niveau manque au dictionnaire
+DEVSTORY.md                                journal de développement
 ```
 
-Structure cible pour le build App Store (paquet local `TalkTimerCore` + projet Xcode) : [`SPECS.md` § 9](SPECS.md#9-architecture).
+Prochaine étape : le projet Xcode du build App Store, qui dépendra de `TalkTimerCore` ([`SPECS.md` § 9](SPECS.md#9-architecture)).
 
 La CI lance SwiftLint (`.swiftlint.yml`, adapté de [exelban/stats](https://github.com/exelban/stats)) et le contrôle du dictionnaire sous Linux, puis la compilation et les tests sous macOS 26.
 

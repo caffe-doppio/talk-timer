@@ -17,13 +17,17 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Présentation complète | talk | talk | `Talk` | racine du fichier | existant |
 | Titre du talk | titre | title | `Talk.title` | `title` | existant |
 | Durée totale | durée totale | total length | `Talk.totalMinutes` | `totalMinutes` | existant |
+| Borne de toute durée (24 h) | durée maximale | maximum length | `Talk.maxMinutes` | — | existant |
 | Séquence du discours | bloc | block | `Block` | `blocks[]` | existant |
 | Durée d'un bloc, en minutes | durée | length | `Block.minutes` | `blocks[].minutes` | existant |
 | Durée du bloc en cours, en secondes | — | — | `Session.duration` | — | existant |
 | Phrase de transition | transition | cue | `Block.cue` | `blocks[].cue` | existant |
-| Pause prévue dans le plan (bloc) | pause | break | `Block.isBreak` | `blocks[].break` | prévu |
-| Début d'un bloc, en minutes depuis le début du talk | début | start | `Talk.startMinutes` | jamais stockée | prévu |
+| Pause prévue dans le plan (bloc) | pause | break | `Block.isBreak` | `blocks[].break` | existant |
+| Début d'un bloc, en minutes depuis le début du talk | début | start | `Talk.startMinutes` | jamais stockée | existant |
 | Temps non attribué | marge | margin | `Talk.margin` | jamais stockée | existant |
+| Changer la durée d'un bloc (règle § 4) | — | — | `Talk.setMinutes(_:at:)` | — | existant |
+| Ajouter un bloc (règle § 4) | Ajouter un bloc | Add Block | `Talk.addBlock(title:)` | — | existant |
+| Changer la durée totale (règle § 4) | — | — | `Talk.setTotal(_:)` | — | existant |
 | Fichier de talk | fichier `.talk` | `.talk` file | `TalkDocument`, UTType `.talk` | — | prévu |
 | Talk au format Markdown (import et export) | Markdown | Markdown | `Talk(markdown:)`, `Talk.markdown` | — | prévu |
 | Export imprimable | Exporter en PDF, Imprimer | Export as PDF, Print | `TalkPrintView` | — | prévu |
@@ -32,27 +36,27 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Exécution en direct | session | session | `Session` | — | existant |
 | Bloc en cours | bloc en cours | current block | `Session.block`, `Session.index` | — | existant |
 | Bloc suivant | bloc suivant | next block | `Session.nextBlock` | — | existant |
-| Début de la session | — | — | `Session.talkStart` | — | prévu |
+| Début de la session | — | — | `Session.talkStart` | — | existant |
 | Début du bloc en cours | — | — | `Session.blockStart` | — | existant |
 | Pile des débuts précédents | — | — | `Session.history` | — | existant |
-| Instant de la suspension | — | — | `Session.pausedAt` | — | prévu |
+| Instant de la suspension | — | — | `Session.pausedAt` | — | existant |
 | Temps restant du bloc | restant | remaining | `Session.remaining(at:)` | — | existant |
-| Fin projetée | fin projetée | projected end | `Session.projectedEnd(at:)` | — | prévu |
-| Écart à la fin prévue | écart | end offset | `Session.endOffset(at:)` | — | prévu |
+| Fin projetée | fin projetée | projected end | `Session.projectedEnd(at:)` | — | existant |
+| Écart à la fin prévue | écart | end offset | `Session.endOffset(at:)` | — | existant |
 | Passer au bloc suivant | Suivant | Next | `Session.next(at:)` | — | existant |
 | Revenir au bloc précédent | Précédent | Back | `Session.back()` | — | existant |
-| Pause imprévue en direct | Suspendre / Reprendre | Pause / Resume | `Session.togglePause(at:)` | — | prévu |
-| Fin de session | Fin | End | `Session.isFinished` | — | prévu |
-| Affichage de la barre selon le temps | phase | phase | `Phase` | — | existant |
+| Pause imprévue en direct | Suspendre / Reprendre | Pause / Resume | `Session.togglePause(at:)` | — | existant |
+| Fin de session | Fin | End | `Session.isFinished` | — | existant |
+| Affichage de la barre selon le temps | phase | phase | `Phase`, `Session.phase(at:)` | — | existant |
 | Phase normale | normal | normal | `Phase.normal` | — | existant |
 | Fin de bloc proche | alerte | alert | `Phase.alert` | — | existant |
 | Temps dépassé | dépassement | overtime | `Phase.overtime` | — | existant |
-| Session suspendue | suspendu | paused | `Phase.paused` | — | prévu |
+| Session suspendue | suspendu | paused | `Phase.paused` | — | existant |
 | Seuil d'alerte | seuil | alert threshold | calculé dans `phase(remaining:duration:)` | — | existant |
 | Fenêtre d'édition | planificateur | planner | `PlannerView` | — | prévu |
 | Barre flottante | barre | bar | `BarPanel` (fenêtre), `BarView` (contenu) | — | existant |
 | Raccourci global | raccourci | shortcut | `KeyboardShortcuts.Name` (`.nextBlock`, `.previousBlock`, `.togglePause`) | — | prévu |
-| Erreur de chargement | — | — | `TalkError` | — | existant |
+| Erreur de chargement | — | — | `TalkError` (données), `TalkError.message` (texte, côté app) | — | existant |
 
 ### Noms écartés
 
@@ -72,17 +76,17 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 
 ## Déclarations de premier niveau
 
-Une ligne par déclaration de premier niveau dans `Sources/`. Les membres (propriétés, méthodes, cas d'`enum`) sont dans la table « Concepts ».
+Une ligne par déclaration de premier niveau dans `Sources/`. `TalkTimerCore` (le modèle) expose ses déclarations en `public` ; `TalkTimer` est le spike de la barre. Les membres (propriétés, méthodes, cas d'`enum`) sont dans la table « Concepts ».
 
 | Déclaration | Genre | Fichier | Rôle | Spec |
 |---|---|---|---|---|
-| `Block` | struct | `Sources/TalkTimer/Model.swift` | Un bloc : titre, minutes, transition | § 3 |
-| `Talk` | struct | `Sources/TalkTimer/Model.swift` | Un talk, sa marge, son chargement validé | § 3, § 4 |
-| `TalkError` | enum | `Sources/TalkTimer/Model.swift` | Motifs de refus au chargement | § 3 |
-| `Session` | struct | `Sources/TalkTimer/Model.swift` | État d'une session en direct, calculé depuis `now` | § 6 |
-| `Phase` | enum | `Sources/TalkTimer/Model.swift` | Phase de la barre | § 7.3 |
-| `phase(remaining:duration:)` | func | `Sources/TalkTimer/Model.swift` | Phase selon le temps restant et le seuil | § 7.3 |
-| `clock(_:)` | func | `Sources/TalkTimer/Model.swift` | Formatage `m:ss` et `+m:ss` | § 7.2 |
+| `Block` | struct | `Sources/TalkTimerCore/Model.swift` | Un bloc : titre, minutes, transition | § 3 |
+| `Talk` | struct | `Sources/TalkTimerCore/Model.swift` | Un talk, sa marge, son chargement validé, les règles du planificateur | § 3, § 4 |
+| `TalkError` | enum | `Sources/TalkTimerCore/Model.swift` | Motifs de refus au chargement, sans texte | § 3, § 8 |
+| `Session` | struct | `Sources/TalkTimerCore/Model.swift` | État d'une session en direct, calculé depuis `now` | § 6 |
+| `Phase` | enum | `Sources/TalkTimerCore/Model.swift` | Phase de la barre | § 7.3 |
+| `phase(remaining:duration:)` | func | `Sources/TalkTimerCore/Model.swift` | Phase selon le temps restant et le seuil | § 7.3 |
+| `clock(_:)` | func | `Sources/TalkTimerCore/Model.swift` | Formatage `m:ss` et `+m:ss` | § 7.2 |
 | `Live` | class | `Sources/TalkTimer/Bar.swift` | Enveloppe `@Observable` de la `Session`, pour SwiftUI | § 6.4 |
 | `Palette` | enum | `Sources/TalkTimer/Bar.swift` | Couleurs de la barre (palette beta.gouv) | § 7.3 |
 | `extension Color` | extension | `Sources/TalkTimer/Bar.swift` | `Color(hex:)` | § 7.3 |
@@ -92,3 +96,4 @@ Une ligne par déclaration de premier niveau dans `Sources/`. Les membres (propr
 | `HotKeys` | enum | `Sources/TalkTimer/Bar.swift` | Raccourcis Carbon du spike, remplacés par KeyboardShortcuts (§ 11) | § 7.4 |
 | `TalkTimerApp` | struct | `Sources/TalkTimer/App.swift` | Point d'entrée `@main` | § 5 |
 | `AppDelegate` | class | `Sources/TalkTimer/App.swift` | Lancement du spike en ligne de commande | § 11 |
+| `extension TalkError` | extension | `Sources/TalkTimer/App.swift` | `message` : texte des refus, en attendant le String Catalog | § 8 |

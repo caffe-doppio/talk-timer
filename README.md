@@ -16,11 +16,13 @@ For people who have a solid outline but lose track of time once they start talki
 
 1. **Plan.** Set the total length, then reorder, extend or shorten blocks. The total can never be exceeded: extending a block uses up the margin, and once the margin is empty you have to shorten something else.
 2. **Keep time.** While you present, a thin bar at the top of the screen, above every app, shows the current block and a gauge that runs out. You see the end coming and have time to find your transition.
+3. **Share** *(planned)*. Start a talk from a Markdown outline, export it to Markdown or PDF.
 
 The tool never cuts you off: you decide when to move to the next block.
 
 > [!NOTE]
-> **Status: bar spike.** The floating bar runs from a talk file. The planner window is not built yet. Target: the Mac App Store, free.
+> **Status: core model + bar spike.** The model (file format, planner rules, live session with pause) is a tested library, `TalkTimerCore`. The floating bar runs from a talk file. The planner window is not built yet. Target: the Mac App Store, free.
+> Development log: [`DEVSTORY.md`](DEVSTORY.md) (French).
 > Full specification (French): [`SPECS.md`](SPECS.md). Vocabulary: [`docs/GLOSSARY.md`](docs/GLOSSARY.md).
 
 ## Requirements
@@ -54,14 +56,16 @@ A talk is a JSON file, written by hand or by the planner:
   "totalMinutes": 60,
   "blocks": [
     { "title": "Why the digital is political", "minutes": 3 },
-    { "title": "Live demo on the big screen", "minutes": 3, "cue": "Enough talk: let me show it once." }
+    { "title": "Live demo on the big screen", "minutes": 3, "cue": "Enough talk: let me show it once." },
+    { "title": "Coffee", "minutes": 10, "break": true }
   ]
 }
 ```
 
 - The margin, `totalMinutes − Σ minutes`, is computed and never stored.
 - `cue` is an optional transition line, shown when the end of the block gets close.
-- A file whose blocks add up to more than the total is refused on load.
+- `break: true` marks a planned break. It counts in the total like any block (not shown differently by the spike yet).
+- Every length is between 1 and 1440 minutes (24 h). A file whose blocks add up to more than the total is refused on load.
 
 Full example: [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from-the-lab.json), the timeline of a 60-minute workshop in 8 blocks.
 
@@ -72,30 +76,32 @@ Full example: [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from-the
 | Normal | More than 20 % of the block left, and more than 1 minute | Blue gauge, countdown |
 | Alert | 20 % of the block or the last minute, whichever comes first | Orange gauge, next block and transition line |
 | Overtime | Past zero | Empty gauge, red `+m:ss` counting up |
+| Paused | After ⌃⌥Space | Grey gauge, frozen countdown, `PAUSED` label (`SUSPENDU` in the French-only spike) |
 
 | Shortcut | Action |
 |---|---|
 | ⌃⌥→ or click on the bar | Next block |
 | ⌃⌥← | Back to the previous block |
-| ⌃⌥Space | Pause / resume (not in the spike yet) |
+| ⌃⌥Space | Pause / resume. The block is frozen, the end time is not: an unplanned pause uses up the margin |
 
 Shortcuts are global: they work while another app has focus, and do not need the Accessibility permission.
 
 ## Layout
 
 ```
-Package.swift
-Sources/TalkTimer/Model.swift          file format, margin rules, session clock, bar phases
-Sources/TalkTimer/Bar.swift            floating panel, bar view, global shortcuts
-Sources/TalkTimer/App.swift            entry point
-Tests/TalkTimerTests/ModelTests.swift  acceptance criteria (SPECS.md § 10)
-fixtures/                              reference talks for the tests
-docs/sketch.py                         generates docs/sketch-{en,fr}.svg
-docs/GLOSSARY.md                       one name per concept (FR, EN, Swift, JSON)
-scripts/check-glossary.sh              fails if a top-level declaration is missing from the glossary
+Package.swift                              TalkTimerCore library, bar spike, tests
+Sources/TalkTimerCore/Model.swift          file format, planner rules, session clock, bar phases (no AppKit, no SwiftUI)
+Sources/TalkTimer/Bar.swift                bar spike: floating panel, bar view, global shortcuts
+Sources/TalkTimer/App.swift                bar spike: entry point
+Tests/TalkTimerCoreTests/ModelTests.swift  acceptance criteria (SPECS.md § 10)
+fixtures/                                  reference talks (JSON, Markdown)
+docs/GLOSSARY.md                           one name per concept (FR, EN, Swift, JSON)
+docs/sketch.py                             generates docs/sketch-{en,fr}.svg
+scripts/check-glossary.sh                  fails if a top-level declaration is missing from the glossary
+DEVSTORY.md                                development log
 ```
 
-Target layout for the App Store build (local `TalkTimerCore` package + Xcode project): [`SPECS.md` § 9](SPECS.md#9-architecture).
+Next: the Xcode project for the App Store build, which depends on `TalkTimerCore` ([`SPECS.md` § 9](SPECS.md#9-architecture)).
 
 CI runs SwiftLint (`.swiftlint.yml`, adapted from [exelban/stats](https://github.com/exelban/stats)) and the glossary check on Linux, then build and tests on macOS 26.
 
