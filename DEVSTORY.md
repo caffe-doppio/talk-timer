@@ -118,3 +118,65 @@ Ces corrections sont bien moins chères maintenant, avec trois fichiers de code.
 - **`git mv`** déplace un fichier en gardant son historique visible (`git log --follow`).
 
 **Suite.** Étape 3 : ajouter swift-markdown 0.9.0 à `Package.swift`, écrire l'import et l'export Markdown, puis faire passer les critères 14 à 18.
+
+---
+
+## 2026-10-11 · Retours d'usage sur le spike, avant de continuer
+
+Notes prises avant de toucher au code ni aux SPECS. Chaque point remet en cause une partie de la spec actuelle, indiquée entre parenthèses.
+
+**1. Emplacement de la barre** (§ 7.1, recette 1).
+
+- Constat : avec une app en plein écran, la barre recouvre la bande du haut de l'app, là où apparaît la poignée « ··· ».
+- La position dépend du réglage système « Masquer/afficher automatiquement la barre des menus » (Réglages › Barre des menus). La barre se colle sous `visibleFrame.maxY` :
+  - réglé sur « Jamais » (ma configuration), la barre de menus reste visible en plein écran, et la barre se place juste en dessous, sur la bande de l'app ;
+  - quand la barre de menus se masque en plein écran, `visibleFrame.maxY` devient le bord haut de l'écran. La barre se colle alors en haut, sur la zone de survol du système.
+- Les deux configurations sont à couvrir, et la recette 1 doit être faite avec chacune.
+- Pistes, éventuellement cumulées :
+  - un élément dans la barre des menus (`MenuBarExtra` en SwiftUI, ou `NSStatusItem`). Il n'est visible en plein écran que si la barre de menus reste affichée, donc il ne suffit pas seul ;
+  - un îlot (*island*) : une capsule centrée, un peu plus bas que la barre de menus, et non plus une bande pleine largeur. Il reste nécessaire. Il faut mesurer la distance au bord qui le sort de la bande de l'app et de la zone de survol, dans les deux configurations.
+
+**2. Couleurs système et Liquid Glass** (§ 7.3, table des contrastes).
+
+- Apple recommande les couleurs système et le matériau Liquid Glass plutôt qu'une palette propre. La barre utilise aujourd'hui la palette beta.gouv, sur un fond sombre fixe.
+- Ce qu'en disent les fiches (`_apple/dev/01-design/technologyoverviews-liquid-glass.md`, `…-adopting-liquid-glass.md`, `03-frameworks/swiftui-applying-liquid-glass-to-custom-views.md`) :
+  - la barre est un élément personnalisé, donc l'adoption automatique ne la couvre pas. `glassEffect(_:in:)` s'applique directement à la vue SwiftUI hébergée dans le `NSPanel`, sans passer par `NSGlassEffectView` ;
+  - la forme par défaut est une capsule. Elle convient mal à une bande pleine largeur, mais exactement à un îlot : les points 1 et 2 vont dans le même sens ;
+  - un seul effet pour toute la barre, posé après les autres modificateurs. La barre est redessinée chaque seconde, donc on mesure le rendu avec Instruments ;
+  - les boutons du point 3 prennent les styles système `.glass`, et non un verre fait à la main ;
+  - les couleurs sont des couleurs système, ou des couleurs propres définies en clair, en sombre et en contraste augmenté ;
+  - les tests se font avec « Réduire la transparence », « Réduire les animations », le contraste augmenté et chaque apparence de Liquid Glass.
+- Conséquence : sur du verre, le fond dépend de ce qui passe derrière. La table des contrastes du § 7.3, calculée sur `#181B24`, ne tient plus telle quelle : l'exigence « texte à 4,5:1 » doit se vérifier autrement.
+- Hypothèse : une teinte (`.tint`) pour signaler l'alerte ou le dépassement, à confronter au contraste et à la règle « jamais la couleur seule ».
+- À vérifier : aucune page ne dit comment se comporte `glassEffect` dans un panneau `.borderless` au niveau `.statusBar`, au-dessus d'une app en plein écran. Un petit spike le tranchera.
+
+**3. Boutons en plus des raccourcis** (§ 6.3, colonne « Barre »).
+
+- Les raccourcis globaux restent, mais chaque action a aussi son bouton dans la barre : Précédent, Suspendre / Reprendre, Suivant.
+- Le panneau étant non activant, cliquer un bouton ne retire pas le focus à l'app de présentation : c'est déjà ce que fait le clic aujourd'hui.
+
+**4. Le clic seul ne passe plus au bloc suivant** (§ 6.3, `BarPanel.sendEvent`).
+
+- Constat : n'importe quel clic sur la barre déclenche Suivant (`sendEvent` réagit à tout `leftMouseDown`). Sur le dernier bloc, ce clic termine la session et ferme la barre : impossible de revenir en arrière, puisque Précédent n'a plus de barre ni de session.
+- Un clic peut être involontaire. Suivant se déclenche désormais par ⌘-clic, par le bouton ou par le raccourci.
+- Décidé : **seule l'action Fin ferme la barre.** Suivant sur le dernier bloc devient sans effet, comme Précédent sur le premier.
+
+**5. Comportement à la fin d'un bloc, au choix** (§ 6.3 : « Suivant n'est jamais déclenché automatiquement »).
+
+- Deux comportements :
+  - **dépassement** (comportement actuel) : le compteur `+m:ss` monte en rouge, et le passage au bloc suivant est manuel ;
+  - **passage automatique** au bloc suivant à la fin du bloc.
+- Décidé :
+  - le choix est **propre à chaque talk**, donc enregistré dans le `.talk` ;
+  - une **pause prévue se termine toujours à la main** (bouton ou raccourci), même en passage automatique ;
+  - le **dernier bloc passe en dépassement**, compteur rouge, jusqu'à Fin (bouton ou raccourci) ;
+  - principe : le passage au bloc suivant peut être automatique, la fin du talk est toujours manuelle.
+- Conséquences à reporter dans les SPECS :
+  - Fin reçoit un bouton et un raccourci global (aujourd'hui : menu Session seulement). C'est un quatrième nom KeyboardShortcuts, à ajouter au § 7.4 et à GLOSSARY ;
+  - Fin est irréversible, comme le clic du point 4. Son raccourci doit être difficile à taper par erreur, ou demander une confirmation. À décider ;
+  - une nouvelle clé JSON au § 3, et sa forme dans le Markdown du § 3.1. Sans elle, l'aller-retour Markdown perdrait le réglage, alors qu'il est promis sans perte ;
+  - le nom du réglage, à inscrire dans GLOSSARY (FR, EN, Swift, JSON) ;
+  - le calcul : pour respecter l'invariant « tout se calcule depuis `now` », le passage automatique se déduit de l'horloge, pas d'un minuteur. Si le Mac sort de veille deux blocs plus tard, la session retrouve le bon bloc d'un coup. La chaîne s'arrête d'elle-même à la première pause prévue ou au dernier bloc ;
+  - effet de bord : en passage automatique, seuls une pause prévue ou le dernier bloc peuvent être en dépassement. L'écart bouge surtout avec les suspensions.
+
+**Suite.** Mettre à jour les SPECS (§ 3, 3.1, 6.3, 7.1 à 7.5, 10, 13, 15) et GLOSSARY, puis faire un petit spike de l'îlot en verre (position dans les deux configurations de la barre de menus, `glassEffect` dans le panneau). L'étape 3 (Markdown) attend la clé JSON du point 5.
