@@ -47,6 +47,7 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Revenir au bloc précédent | Précédent | Back | `Session.back()` | — | existant |
 | Pause imprévue en direct | Suspendre / Reprendre | Pause / Resume | `Session.togglePause(at:)` | — | existant |
 | Fin de session | Fin | End | `Session.isFinished` | — | existant |
+| Passage automatique au bloc suivant (sinon : dépassement). Jamais après une pause prévue ni après le dernier bloc | passage automatique | advance automatically | `Talk.autoAdvance` | `autoAdvance` (facultatif, `false` par défaut) | prévu |
 | Affichage de la barre selon le temps | phase | phase | `Phase`, `Session.phase(at:)` | — | existant |
 | Phase normale | normal | normal | `Phase.normal` | — | existant |
 | Fin de bloc proche | alerte | alert | `Phase.alert` | — | existant |
@@ -55,7 +56,7 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Seuil d'alerte | seuil | alert threshold | calculé dans `phase(remaining:duration:)` | — | existant |
 | Fenêtre d'édition | planificateur | planner | `PlannerView` | — | prévu |
 | Barre flottante | barre | bar | `BarPanel` (fenêtre), `BarView` (contenu) | — | existant |
-| Raccourci global | raccourci | shortcut | `KeyboardShortcuts.Name` (`.nextBlock`, `.previousBlock`, `.togglePause`) | — | prévu |
+| Raccourci global | raccourci | shortcut | `KeyboardShortcuts.Name` (`.nextBlock`, `.previousBlock`, `.togglePause`, `.endSession`) | — | prévu |
 | Erreur de chargement | — | — | `TalkError` (données), `TalkError.message` (texte, côté app) | — | existant |
 
 ### Noms écartés
@@ -73,6 +74,21 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | plan (FR, pour le document) | talk | « talk » est le mot retenu en FR comme en EN. « Planificateur » reste le nom de la fenêtre d'édition |
 | pause (FR, pour l'action en direct) | Suspendre, `togglePause` | En FR, « pause » désigne le bloc prévu (`isBreak`) |
 | break (EN, pour l'action en direct) | Pause, `togglePause` | En EN, « break » désigne le bloc prévu |
+
+## Icônes
+
+SF Symbols standard uniquement. Une action a une seule icône, partout : barre, menu Session, Réglages. Chaque bouton à icône porte le nom de son action comme libellé d'accessibilité (colonne FR / EN de « Concepts »).
+
+| Action | SF Symbol | Statut |
+|---|---|---|
+| Précédent | `backward` | prévu |
+| Suivant | `forward` | prévu |
+| Suspendre / Reprendre | `playpause` | prévu |
+| Fin | `flag.pattern.checkered.2.crossed` | prévu |
+
+| Ne pas utiliser | Pour | Raison |
+|---|---|---|
+| `stop` | Fin | Trop proche de Suspendre dans les conventions des lecteurs : Fin est irréversible et ne doit pas se confondre avec une interruption |
 
 ## Déclarations de premier niveau
 

@@ -133,8 +133,8 @@ Notes prises avant de toucher au code ni aux SPECS. Chaque point remet en cause 
   - quand la barre de menus se masque en plein écran, `visibleFrame.maxY` devient le bord haut de l'écran. La barre se colle alors en haut, sur la zone de survol du système.
 - Les deux configurations sont à couvrir, et la recette 1 doit être faite avec chacune.
 - Pistes, éventuellement cumulées :
-  - un élément dans la barre des menus (`MenuBarExtra` en SwiftUI, ou `NSStatusItem`). Il n'est visible en plein écran que si la barre de menus reste affichée, donc il ne suffit pas seul ;
-  - un îlot (*island*) : une capsule centrée, un peu plus bas que la barre de menus, et non plus une bande pleine largeur. Il reste nécessaire. Il faut mesurer la distance au bord qui le sort de la bande de l'app et de la zone de survol, dans les deux configurations.
+  - un élément dans la barre des menus (`MenuBarExtra` en SwiftUI, ou `NSStatusItem`), avec la jauge du bloc en cours dessinée dedans, comme les graphiques de [exelban/stats](https://github.com/exelban/stats). Il n'est visible en plein écran que si la barre de menus reste affichée : c'est un complément ;
+  - un îlot (*island*) : une capsule centrée, un peu plus bas que la barre de menus, et non plus une bande pleine largeur. Retenu : c'est la forme native (voir le point 2). Il faut mesurer la distance au bord qui le sort de la bande de l'app et de la zone de survol, dans les deux configurations.
 
 **2. Couleurs système et Liquid Glass** (§ 7.3, table des contrastes).
 
@@ -153,6 +153,7 @@ Notes prises avant de toucher au code ni aux SPECS. Chaque point remet en cause 
 **3. Boutons en plus des raccourcis** (§ 6.3, colonne « Barre »).
 
 - Les raccourcis globaux restent, mais chaque action a aussi son bouton dans la barre : Précédent, Suspendre / Reprendre, Suivant.
+- Icônes : SF Symbols standard, une par action, consignées dans GLOSSARY (section « Icônes »). Fin prend un drapeau à damier plutôt que `stop`, pour ne pas la confondre avec Suspendre.
 - Le panneau étant non activant, cliquer un bouton ne retire pas le focus à l'app de présentation : c'est déjà ce que fait le clic aujourd'hui.
 
 **4. Le clic seul ne passe plus au bloc suivant** (§ 6.3, `BarPanel.sendEvent`).
@@ -178,5 +179,7 @@ Notes prises avant de toucher au code ni aux SPECS. Chaque point remet en cause 
   - le nom du réglage, à inscrire dans GLOSSARY (FR, EN, Swift, JSON) ;
   - le calcul : pour respecter l'invariant « tout se calcule depuis `now` », le passage automatique se déduit de l'horloge, pas d'un minuteur. Si le Mac sort de veille deux blocs plus tard, la session retrouve le bon bloc d'un coup. La chaîne s'arrête d'elle-même à la première pause prévue ou au dernier bloc ;
   - effet de bord : en passage automatique, seuls une pause prévue ou le dernier bloc peuvent être en dépassement. L'écart bouge surtout avec les suspensions.
+
+**Hors sujet, mais réglé au passage.** La CI échouait sur SwiftLint 0.65.1 : la règle `optional_data_string_conversion` refuse `String(decoding:as:)` dans `ModelTests.swift`. Cet initialiseur remplace en silence les octets invalides par `�`. `String(bytes:encoding:)` renvoie `nil` à la place, et `#require` fait échouer le test proprement.
 
 **Suite.** Mettre à jour les SPECS (§ 3, 3.1, 6.3, 7.1 à 7.5, 10, 13, 15) et GLOSSARY, puis faire un petit spike de l'îlot en verre (position dans les deux configurations de la barre de menus, `glassEffect` dans le panneau). L'étape 3 (Markdown) attend la clé JSON du point 5.
