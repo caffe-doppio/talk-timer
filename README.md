@@ -12,6 +12,11 @@ A talk planner with a floating time bar, for macOS.
 
 For people who have a solid outline but lose track of time once they start talking. A fascinating sub-topic planned for 5 minutes takes 15, and it gets worse in a foreign language.
 
+1. **Plan.** Set the total length, then reorder, extend or shorten blocks. The total can never be exceeded: extending a block uses up the margin, and once the margin is empty you have to shorten something else.
+<!--TODO: Ajouter screenshots de l'écran du plan-->
+
+2. **Keep time.** While you present, a glass island at the top of the screen, above every app, shows the current block and a gauge that runs out. You see the end coming and have time to find your transition.
+
 ![The bar in the normal phase: block 4 of 8, "Live demo on the big screen", a blue gauge two-thirds full, 2:49 left, then "→ Collect and seal". On the right, the back, pause/resume and next buttons, then the End button with a checkered flag, set apart.](assets/screenshots/bar_normal.png)\
 **Normal.** 2:49 left in block 4 of 8. The gauge runs out from right to left, and the next block is always in view. On the right: back, pause/resume, next, and End, set apart because it takes two presses.
 
@@ -24,8 +29,6 @@ For people who have a solid outline but lose track of time once they start talki
 ![The paused bar: a grey gauge frozen at 0:52, the word "SUSPENDU", then the next block and the transition line.](assets/screenshots/bar_paused.png)\
 **Paused.** ⌃⌥Space freezes the block at 0:52 and shows `SUSPENDU` (the spike is in French only). The end time does not move: an unplanned pause uses up the margin.
 
-1. **Plan.** Set the total length, then reorder, extend or shorten blocks. The total can never be exceeded: extending a block uses up the margin, and once the margin is empty you have to shorten something else.
-2. **Keep time.** While you present, a glass island at the top of the screen, above every app, shows the current block and a gauge that runs out. You see the end coming and have time to find your transition.
 3. **Share** *(planned)*. Start a talk from a Markdown outline, export it to Markdown or PDF.
 
 The tool never cuts you off. Moving to the next block can be automatic if you choose so for a talk; ending the talk is always up to you.

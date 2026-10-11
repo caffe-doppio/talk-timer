@@ -12,6 +12,11 @@ Un planificateur de discours avec une barre de temps flottante, pour macOS.
 
 Pour qui a un plan solide mais perd le fil du temps en parlant : un sous-sujet passionnant prévu pour 5 minutes en prend 15, et c'est pire en langue étrangère.
 
+1. **Planifier.** On fixe une durée totale, puis on range, allonge ou raccourcit des blocs. Le total ne peut jamais être dépassé : allonger un bloc consomme la marge, et quand la marge est vide, il faut raccourcir ailleurs.
+<!--TODO: Ajouter screenshots de l'écran du plan-->
+
+2. **Tenir le temps.** Pendant la présentation, un îlot en verre en haut de l'écran, au-dessus de toutes les applis, affiche le bloc en cours et une jauge qui se vide. On voit la fin arriver et on a le temps de préparer sa transition.
+
 ![La barre en phase normale : bloc 4 sur 8, « Live demo on the big screen », une jauge bleue aux deux tiers, 2:49 restantes, puis « → Collect and seal ». À droite, les boutons Précédent, Suspendre / Reprendre et Suivant, puis le bouton Fin au drapeau à damier, à l'écart.](assets/screenshots/bar_normal.png)\
 **Normal.** 2:49 restantes dans le bloc 4 sur 8. La jauge se vide de droite à gauche, et le bloc suivant reste toujours visible. À droite : Précédent, Suspendre / Reprendre, Suivant, et Fin, à l'écart parce qu'elle demande deux appuis.
 
@@ -24,8 +29,6 @@ Pour qui a un plan solide mais perd le fil du temps en parlant : un sous-sujet p
 ![La barre suspendue : une jauge grise figée à 0:52, le mot « SUSPENDU », puis le bloc suivant et la phrase de transition.](assets/screenshots/bar_paused.png)\
 **Suspendu.** ⌃⌥Espace fige le bloc à 0:52 et affiche `SUSPENDU`. L'heure de fin, elle, ne bouge pas : une pause imprévue consomme la marge.
 
-1. **Planifier.** On fixe une durée totale, puis on range, allonge ou raccourcit des blocs. Le total ne peut jamais être dépassé : allonger un bloc consomme la marge, et quand la marge est vide, il faut raccourcir ailleurs.
-2. **Tenir le temps.** Pendant la présentation, un îlot en verre en haut de l'écran, au-dessus de toutes les applis, affiche le bloc en cours et une jauge qui se vide. On voit la fin arriver et on a le temps de préparer sa transition.
 3. **Partager** *(prévu)*. Créer un talk à partir d'un plan en Markdown, l'exporter en Markdown ou en PDF.
 
 L'outil ne coupe jamais la parole. Le passage au bloc suivant peut être automatique, si on le choisit pour un talk ; la fin du talk, elle, est toujours décidée par la personne.
