@@ -1,6 +1,6 @@
 # talk-timer — spécifications V1
 
-> Statut : V2 du document, à valider · 2026-10-11 (V1 du 2026-10-07)
+> Statut : V2 du document, à valider · 2026-10-11, révisée après les retours d'usage du spike (V1 du 2026-10-07)
 > Cible : macOS 26 (Tahoe) et versions suivantes, Apple Silicon · Swift 6.2 minimum, SwiftUI + AppKit · développement local sous Xcode 27
 > Distribution : Mac App Store, gratuit, open source (Apache 2.0). Décisions : § 15
 
@@ -13,9 +13,9 @@ Beaucoup de personnes qui présentent ont un plan solide mais du mal à tenir en
 talk-timer fait deux choses, et seulement deux :
 
 1. **Planifier** : on fixe une durée totale, puis on range, allonge ou raccourcit des blocs **sans jamais pouvoir dépasser le total**.
-2. **Tenir le temps** : pendant la présentation, une barre fine en haut de l'écran, au-dessus de toutes les applis, affiche le nom du bloc en cours et une jauge qui se vide. On voit la fin du bloc arriver et on a le temps de trouver une transition.
+2. **Tenir le temps** : pendant la présentation, une barre en forme d'îlot, en haut de l'écran et au-dessus de toutes les applis, affiche le nom du bloc en cours et une jauge qui se vide. On voit la fin du bloc arriver et on a le temps de trouver une transition.
 
-L'outil ne coupe jamais la parole. Il informe, et c'est la personne qui décide quand passer au bloc suivant.
+L'outil ne coupe jamais la parole. Il informe. Le passage au bloc suivant peut être automatique, si on le choisit pour un talk ; la fin du talk, elle, est toujours décidée par la personne.
 
 ## 2. Vocabulaire
 
@@ -40,6 +40,7 @@ Un talk est un fichier JSON, lisible et modifiable à la main, d'extension **`.t
 |---|---|---|
 | `title` | texte | Obligatoire, peut être vide |
 | `totalMinutes` | entier | 1 à 1440 |
+| `autoAdvance` | booléen | Facultatif, `false` par défaut et écrit seulement s'il vaut `true`. Active le **passage automatique** (§ 6.3) |
 | `blocks[].title` | texte | Obligatoire |
 | `blocks[].minutes` | entier | 1 à 1440 |
 | `blocks[].cue` | texte | Facultatif. Phrase de transition affichée dans la barre en phase d'alerte |
@@ -72,14 +73,14 @@ Notes libres : non importées.
 
 | Élément Markdown | Devient | Règle |
 |---|---|---|
-| Premier titre de niveau 1 | `title`, et `totalMinutes` si le titre finit par `(N min)` | Sans durée, `totalMinutes = Σ minutes` (marge 0). Sans titre de niveau 1, le titre est vide |
+| Premier titre de niveau 1 | `title`, et `totalMinutes` si le titre finit par `(N min)`. `(N min, auto)` active en plus `autoAdvance` | Sans durée, `totalMinutes = Σ minutes` (marge 0), et `auto` n'est pas reconnu : `(auto)` seul reste dans le titre. Sans titre de niveau 1, le titre est vide |
 | Titre de niveau 2 | un bloc | Doit finir par `(N min)` ou `(N min, break)`. `pause` est accepté à la place de `break`, sans tenir compte de la casse |
 | Premier bloc de citation sous un titre de niveau 2 | `cue` du bloc | Paragraphes de la citation joints par un espace |
 | Tout le reste (paragraphes, listes, titres de niveau 3 et plus, code) | rien | Considéré comme des notes, non importé |
 
 - Le titre d'un bloc est le texte du titre de niveau 2 sans le suffixe de durée, en texte brut. C'est la **dernière** paire de parenthèses qui compte : `## Demo (live) (3 min)` donne le titre « Demo (live) ».
 - **Refus**, avec le numéro de ligne : un titre de niveau 2 sans durée, aucun titre de niveau 2, et toutes les règles du § 3 (bornes, `Σ minutes > totalMinutes`). Rien n'est deviné.
-- **Export** : il produit exactement ce format, toujours avec `break` (comme les clés JSON, le mot-clé ne dépend pas de la langue de l'interface), et échappe les caractères Markdown des titres. **Exporter puis réimporter redonne un talk identique.**
+- **Export** : il produit exactement ce format, toujours avec `break` et `auto` (comme les clés JSON, le mot-clé ne dépend pas de la langue de l'interface), et échappe les caractères Markdown des titres. **Exporter puis réimporter redonne un talk identique.**
 - Parseur : [`swiftlang/swift-markdown`](https://github.com/swiftlang/swift-markdown) (§ 9). Il fournit un arbre typé, les positions dans le source pour les messages d'erreur, et un formateur pour l'export.
 
 Fixture : [`fixtures/borrowed-from-the-lab.md`](fixtures/borrowed-from-the-lab.md), le même talk que la fixture JSON, avec des notes à ignorer.
@@ -146,7 +147,7 @@ talk-timer est une **app document** (`DocumentGroup` + `FileDocument`) : **une f
 │ ≡  …                                                          │
 │ [+ Bloc]                                                      │
 ├──────────────────────────────────────────────────────────────┤
-│                    Barre sur : [Écran intégré ▾]  ▶ Démarrer  │
+│ [ ] Passage auto.  Barre sur : [Écran intégré ▾]  ▶ Démarrer  │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -157,9 +158,10 @@ talk-timer est une **app document** (`DocumentGroup` + `FileDocument`) : **une f
   - un interrupteur « Pause », qui marque le bloc comme pause prévue (aussi dans le menu contextuel de la ligne).
 - **Frise** : segments proportionnels à la durée, dans l'ordre de la liste. La marge apparaît en dernier, comme un segment gris. Elle est mise à jour en direct.
 - **Sélection de l'écran** : liste issue de `NSScreen.screens`. Par défaut, c'est l'écran qui porte la barre de menus.
+- **Passage automatique** : interrupteur dans le pied de la fenêtre. Il modifie le talk (`autoAdvance`, § 6.3), donc passe par ⌘Z.
 - **▶ Démarrer** : lance une session sur le talk de cette fenêtre et affiche la barre. Une seule session à la fois, donc le bouton est désactivé dans les autres fenêtres pendant une session.
 - **Menu Session** dans la barre de menus : Démarrer, Suivant, Précédent, Suspendre / Reprendre, Fin. Toute action de la barre et du planificateur est accessible depuis un menu, ce qui sert à Voice Control, à VoiceOver et à la découverte des raccourcis.
-- **Réglages** (scène `Settings`, ⌘,) : les trois raccourcis globaux, modifiables (§ 7.4).
+- **Réglages** (scène `Settings`, ⌘,) : les quatre raccourcis globaux, modifiables (§ 7.4).
 - **Menu Aide** : lien « Politique de confidentialité » (§ 14).
 - L'interface est compacte, pour tenir dans une moitié d'écran en split-screen. Elle utilise les contrôles standard, pour hériter de l'apparence du système (Liquid Glass, mode sombre, contraste).
 
@@ -176,7 +178,8 @@ L'état est fondé sur **l'horloge murale, jamais sur un compteur de ticks**. Un
 | `blockStart: Date` | Démarrage du bloc en cours, décalé de la durée d'une suspension à la reprise |
 | `history: [Date]` | `blockStart` des blocs précédents, pour pouvoir revenir en arrière |
 | `pausedAt: Date?` | Non nul pendant une suspension |
-| `isFinished: Bool` | Vrai après « Suivant » sur le dernier bloc |
+| `furthestIndex` | Bloc le plus avancé atteint. Un bloc d'indice inférieur a été retrouvé par « Précédent » |
+| `isFinished: Bool` | Vrai après « Fin » |
 
 ### 6.2 Calculs
 
@@ -207,12 +210,25 @@ Même situation avec `totalMinutes = 65` (5 min de marge) : l'écart vaut **−1
 
 | Action | Effet | Barre | Raccourci global par défaut |
 |---|---|---|---|
-| **Suivant** | Pousse `blockStart` dans `history`, puis `index += 1` et `blockStart = now`. Sur le dernier bloc, `isFinished = true` et la barre se ferme | clic | ⌃⌥→ |
-| **Précédent** | Revient au bloc précédent avec son `blockStart` d'origine (pris dans `history`). Sans effet sur le premier bloc | — | ⌃⌥← |
-| **Suspendre / Reprendre** | La suspension fige le bloc en cours (`pausedAt = now`). À la reprise, seul `blockStart` est décalé de la durée de la suspension ; `talkStart` ne bouge pas (§ 6.2) | — | ⌃⌥Espace |
-| **Fin** | Ferme la barre, désenregistre les raccourcis, revient au planificateur | menu Session | — |
+| **Suivant** | Pousse `blockStart` dans `history`, puis `index += 1` et `blockStart = now`. Sans effet sur le dernier bloc | bouton `forward.end`, ou ⌘-clic n'importe où sur la barre | ⌃⌥→ |
+| **Précédent** | Revient au bloc précédent avec son `blockStart` d'origine (pris dans `history`). Sans effet sur le premier bloc | bouton `backward.end` | ⌃⌥← |
+| **Suspendre / Reprendre** | La suspension fige le bloc en cours (`pausedAt = now`). À la reprise, seul `blockStart` est décalé de la durée de la suspension ; `talkStart` ne bouge pas (§ 6.2) | bouton `playpause` | ⌃⌥Espace |
+| **Fin** | Passe `isFinished` à vrai, ferme la barre, désenregistre les raccourcis, revient au planificateur. **Seule action qui ferme la barre.** Double appui depuis la barre ou le raccourci (voir plus bas) ; un seul choix depuis le menu Session | bouton `flag.pattern.checkered.2.crossed`, menu Session | à choisir (§ 13) |
 
-L'action « Suivant » n'est jamais déclenchée automatiquement, même en dépassement, et pas non plus à la fin d'une pause prévue.
+**Clic.** Un clic seul sur le fond de la barre ne fait rien : un clic involontaire ne doit rien changer. Seuls les boutons et le ⌘-clic agissent.
+
+**Fin en double appui.** Fin est irréversible. Un premier appui (bouton ou raccourci) affiche « Fin ? » dans la barre pendant 3 s ; un second appui dans ce délai termine la session. Passé ce délai, rien ne change. Aucun dialogue, donc l'app de présentation garde le focus. L'attente est un état de l'app, pas du modèle. Depuis le menu Session, un seul choix suffit : ouvrir le menu est déjà un geste délibéré.
+
+**Passage automatique** (`autoAdvance`, choisi pour chaque talk, § 3). Sans lui, un bloc écoulé passe en dépassement et attend « Suivant ». Avec lui, la session passe d'elle-même au bloc suivant quand `remaining ≤ 0`, sauf :
+
+- sur une pause prévue, qui se termine toujours par « Suivant » ;
+- sur le dernier bloc, qui passe en dépassement jusqu'à « Fin » ;
+- pendant une suspension, où `remaining` est figé ;
+- sur un bloc retrouvé par « Précédent » (`index < furthestIndex`), qui attend « Suivant ». Le passage automatique reprend dès qu'on atteint de nouveau `furthestIndex`.
+
+Le passage se déduit de l'horloge, sans minuteur. À chaque rafraîchissement (§ 6.4), l'app appelle `Session.catchUp(at:)`, qui avance tant que ces conditions le permettent. Le bloc suivant commence à la fin exacte du précédent (`blockStart += duration`), et non à `now`. Après une veille qui a couvert plusieurs blocs, la session retrouve donc d'un coup le bon bloc et le bon temps restant, et une seconde de rafraîchissement perdue ne décale rien.
+
+En passage automatique, seuls une pause prévue, un bloc retrouvé ou le dernier bloc peuvent être en dépassement : l'écart bouge surtout avec les suspensions.
 
 « Suivant » pendant une suspension ne la lève pas : le bloc suivant démarre figé à sa durée pleine (`blockStart = pausedAt`). « Précédent » pendant une suspension garde `pausedAt` : le bloc précédent est figé là où la suspension a commencé.
 
@@ -224,11 +240,12 @@ L'action « Suivant » n'est jamais déclenchée automatiquement, même en dépa
 | Où | Dans le plan : un bloc avec `break: true` (§ 3) | En direct : l'action Suspendre |
 | Temps | Fait partie du total ; son dépassement se compte comme pour tout bloc | Consomme la marge, puis fait monter l'écart |
 | Barre | Le bloc de pause s'affiche avec sa couleur et « Reprise : bloc suivant » (§ 7.3) | Phase `paused`, mot « SUSPENDU » |
+| Fin | Toujours par « Suivant », même en passage automatique | Par « Reprendre » |
 | Entre deux blocs | Placer un bloc de pause entre eux dans le planificateur | « Suivant », puis tout de suite « Suspendre » : le bloc suivant reste figé à sa durée pleine |
 
 ### 6.4 Rafraîchissement
 
-Un `TimelineView(.periodic(from:by: 1))` redessine la barre chaque seconde. Comme tout est recalculé depuis l'horloge, une seconde perdue (veille, charge) ne fausse rien.
+Un `TimelineView(.periodic(from:by: 1))` redessine la barre chaque seconde. Le même rafraîchissement appelle `Session.catchUp(at:)` (§ 6.3). Comme tout est recalculé depuis l'horloge, une seconde perdue (veille, charge) ne fausse rien.
 
 ## 7. Barre flottante
 
@@ -243,7 +260,17 @@ Un `NSPanel` qui affiche une vue SwiftUI :
 | `collectionBehavior` | `[.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]` | Visible sur tous les Spaces et au-dessus d'une appli en plein écran |
 | `hidesOnDeactivate` | `false` | Reste visible quand talk-timer n'est pas l'appli active |
 | `sharingType` | `.none` | Précaution contre la capture d'écran, **sans garantie** (voir plus bas) |
-| Position | Pleine largeur de l'écran choisi, 28 pt de haut, collée sous `visibleFrame.maxY` | Juste sous la barre de menus |
+| Forme | Îlot : capsule centrée horizontalement, largeur ajustée au contenu, au plus 60 % de l'écran (point de départ, à ajuster au test rapide) | Forme native de Liquid Glass (§ 7.3) |
+| Position | À une distance `d` sous le haut de l'écran choisi (voir plus bas) | Ne recouvre ni la bande du haut d'une app en plein écran ni la zone de survol du système |
+
+**Position verticale.** Elle dépend du réglage système « Masquer/afficher automatiquement la barre des menus » :
+
+- barre des menus affichée en plein écran : `visibleFrame.maxY` est sous la barre des menus, là où une app en plein écran dessine sa bande du haut, avec la poignée « ··· ». Le spike s'y collait et la recouvrait ;
+- barre des menus masquée en plein écran : `visibleFrame.maxY` est le bord haut de l'écran, qui est la zone de survol du système.
+
+`d` est donc mesuré par le test rapide de l'îlot (§ 11, étape 3), dans les deux configurations et sur un écran à encoche (`NSScreen.safeAreaInsets`).
+
+**Élément de la barre des menus** (`MenuBarExtra`), en complément, pendant la session seulement : la jauge du bloc en cours et le temps restant, dessinés comme les graphiques de [exelban/stats](https://github.com/exelban/stats). Son menu reprend les actions du menu Session. Il ne remplace jamais la barre : il disparaît en plein écran quand la barre des menus se masque, et la personne peut le désactiver (Réglages système › Barre des menus › Autoriser dans la barre des menus). [À vérifier : `MenuBarExtra` rend son libellé comme une image. Si la jauge ne s'y dessine pas, on passe par `NSStatusItem` avec une vue.]
 
 Si l'écran choisi est débranché pendant la session (`NSApplication.didChangeScreenParametersNotification`), la barre se replace sur l'écran principal.
 
@@ -255,15 +282,17 @@ Si l'écran choisi est débranché pendant la session (`NSApplication.didChangeS
 ### 7.2 Contenu
 
 ```
- 3/8  Evidence before a judge  [▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░]  3:12      marge 0:00
+( 3/8  Evidence before a judge  [▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░]  3:12   marge 0:00   ⏮ ⏯ ⏭   🏁 )
 ```
 
 En phase d'alerte, la suite s'ajoute à droite :
 
 ```
- 3/8  Evidence before a judge  [▓▓▓░░░░░░░░░░░░░░░]  0:48   → From the field · « cue »
+( 3/8  Evidence before a judge  [▓▓▓░░░░░░░░░░░░░░░]  0:48   → From the field · « cue »   ⏮ ⏯ ⏭   🏁 )
 ```
 
+- **Boutons**, à droite : Précédent, Suspendre / Reprendre, Suivant, puis Fin, séparée des trois autres. Icônes de GLOSSARY (section « Icônes »), style de bouton système `.glass`.
+- Pendant l'attente du second appui sur Fin, « Fin ? » remplace le temps restant.
 - La **jauge se vide de droite à gauche** : elle est pleine au début du bloc et vide à zéro.
 - Les chiffres utilisent `.monospacedDigit()`, pour que le texte ne bouge pas chaque seconde.
 - Un texte trop long est tronqué au milieu du titre, jamais au milieu du temps.
@@ -272,48 +301,39 @@ En phase d'alerte, la suite s'ajoute à droite :
 
 | Phase | Condition | Jauge | Texte supplémentaire |
 |---|---|---|---|
-| `normal` | `remaining > seuil` | `brand-550` `#3E5DE7` | — |
-| `alert` | `0 ≤ remaining ≤ seuil` | `warning-400` `#D7790C` | `→ titre suivant` et `cue` du bloc en cours |
-| `overtime` | `remaining < 0` | `error-500` `#E32C39`, jauge vide | compteur `+m:ss` qui monte, en `error-450` `#F63A45` ; `→ titre suivant` et `cue` restent affichés |
-| `paused` | `pausedAt ≠ nil` (prioritaire sur les autres) | `gray-500` `#6D778C` | `SUSPENDU` / `PAUSED` |
+| `normal` | `remaining > seuil` | bleu système (`Color.blue`) | — |
+| `alert` | `0 ≤ remaining ≤ seuil` | orange système (`Color.orange`) | `→ titre suivant` et `cue` du bloc en cours |
+| `overtime` | `remaining < 0` | rouge système (`Color.red`), jauge vide | compteur `+m:ss` qui monte, en rouge système ; `→ titre suivant` et `cue` restent affichés |
+| `paused` | `pausedAt ≠ nil` (prioritaire sur les autres) | gris système (`Color.gray`) | `SUSPENDU` / `PAUSED` |
 
-**Bloc de pause prévue** (`isBreak`) : les phases s'appliquent normalement, mais en phase `normal` la jauge prend `success-500` `#40836F`. Le texte commence par `PAUSE` / `BREAK`, et `Reprise : titre suivant` reste affiché en permanence :
+**Bloc de pause prévue** (`isBreak`) : les phases s'appliquent normalement, mais en phase `normal` la jauge prend le vert système (`Color.green`). Le texte commence par `PAUSE` / `BREAK`, et `Reprise : titre suivant` reste affiché en permanence :
 
 ```
- 5/9  PAUSE  Coffee  [▓▓▓▓▓▓▓▓▓░░░░░░░░░]  6:40   Reprise : Collect and seal
+( 5/9  PAUSE  Coffee  [▓▓▓▓▓▓▓▓▓░░░░░░░░░]  6:40   Reprise : Collect and seal   ⏮ ⏯ ⏭   🏁 )
 ```
 
 - `seuil = max(20 % de la durée du bloc, 60 s)`. On retient le plus précoce des deux, pour laisser le temps de préparer la transition :
   - bloc de 15 min : alerte à 3:00 de la fin ;
   - bloc de 3 min : alerte à 1:00 de la fin.
-- Le fond de la barre est `gray-900` `#181B24` et le texte `gray-025` `#F6F8F9`, d'après la palette beta.gouv. La barre est toujours sombre, quel que soit le mode du système.
+- **Matériau.** Un seul `glassEffect(.regular, in: Capsule())` pour toute la barre, posé après les autres modificateurs. Aucune couleur de fond : le verre prend la teinte de ce qui passe derrière. Le texte utilise les styles `.primary` et `.secondary`, qui s'adaptent à ce fond.
+- **Couleurs système**, sans palette propre : elles ont leurs variantes claire, sombre et contraste augmenté. La couleur d'accentuation n'est pas utilisée : choisie par la personne, elle peut être orange ou rouge et brouiller les phases.
 - **L'information ne passe jamais par la couleur seule** : l'alerte ajoute « → suivant », le dépassement ajoute « + », la suspension ajoute « SUSPENDU », la pause prévue ajoute « PAUSE ».
-- Contrastes calculés sur le fond `#181B24` (formule WCAG 2) :
-
-  | Couleur | Usage | Contraste | Minimum |
-  |---|---|---|---|
-  | `gray-025` | texte | 16,1:1 | 4,5:1 |
-  | `gray-400` | texte secondaire | 5,4:1 | 4,5:1 |
-  | `error-450` | compteur de dépassement | 4,6:1 | 4,5:1 |
-  | `warning-400` | jauge | 5,4:1 | 3:1 |
-  | `success-500`, `gray-500`, `error-500` | jauges | 3,8:1 | 3:1 |
-  | `brand-550` | jauge | 3,2:1 | 3:1 |
-
-  Le spike écrit le compteur de dépassement en `error-500` (3,8:1), ce qui est insuffisant pour un texte de 13 pt. Correction prévue au § 11.
+- **Contrastes.** Le fond n'est plus fixe, donc aucun calcul ne vaut une fois pour toutes. Les seuils (texte ≥ 4,5:1, jauges ≥ 3:1) se vérifient à la recette avec l'Inspecteur d'accessibilité, au-dessus d'un fond clair, d'un fond sombre et d'une image chargée, puis avec « Augmenter le contraste » et « Réduire la transparence », qui rend le verre opaque (§ 10).
 
 ### 7.4 Raccourcis
 
 - Gérés par [`sindresorhus/KeyboardShortcuts`](https://github.com/sindresorhus/KeyboardShortcuts), qui s'appuie sur Carbon `RegisterEventHotKey`. Cette API n'est pas dépréciée dans le SDK macOS 27, fonctionne en sandbox et ne demande **pas l'autorisation Accessibilité**, contrairement à `NSEvent.addGlobalMonitorForEvents`.
-- Trois noms : `.nextBlock`, `.previousBlock`, `.togglePause`. Ils sont modifiables dans Réglages et leurs valeurs par défaut sont celles du § 6.3.
+- Quatre noms : `.nextBlock`, `.previousBlock`, `.togglePause`, `.endSession`. Ils sont modifiables dans Réglages et leurs valeurs par défaut sont celles du § 6.3.
 - Ils sont actifs seulement pendant une session : enregistrés à « Démarrer », désenregistrés à la fin ou à ⌘Q.
 - **Conflits.** ⌃⌥← et ⌃⌥→ sont les raccourcis par défaut de Rectangle et Magnet. Si un raccourci ne peut pas être enregistré, la session démarre quand même : la barre reste cliquable et le menu Session fonctionne, et un message indique quel raccourci est pris et où le changer. [À vérifier : ce que KeyboardShortcuts remonte quand une autre app tient déjà la combinaison.]
 
 ### 7.5 Accessibilité de la barre
 
 - La barre expose à VoiceOver un libellé de synthèse : « Bloc 3 sur 8, Evidence before a judge, 3 minutes 12 restantes ».
-- Le passage en `alert`, puis en `overtime`, déclenche une annonce VoiceOver.
+- Le passage en `alert`, puis en `overtime`, déclenche une annonce VoiceOver. Le premier appui sur Fin aussi : « Appuyez à nouveau pour terminer ».
+- Chaque bouton porte le nom de son action comme libellé : lu par VoiceOver, et utilisable par Voice Control (« Cliquer Suivant »).
 - Aucune animation de la jauge, qui saute une fois par seconde. Réduire les animations n'a donc rien à couper.
-- Augmenter le contraste : les couleurs de jauge restent à au moins 3:1 sur le fond, le texte à au moins 4,5:1 (vérifié au § 10).
+- Augmenter le contraste et Réduire la transparence : les couleurs de jauge restent à au moins 3:1 sur le fond, le texte à au moins 4,5:1. Le fond de verre varie, donc c'est vérifié à la recette (§ 10).
 
 ## 8. Exigences non fonctionnelles
 
@@ -374,20 +394,25 @@ fixtures/borrowed-from-the-lab.json
 9. Suspension : bloc 2 commencé depuis 1 min, puis 2 min de suspension. `remaining` vaut 4:00 avant, pendant et après, la phase vaut `paused` pendant la suspension, et `endOffset` passe de 0:00 à **+2:00** (la fin est fixe).
 10. Revenir en arrière après « Suivant » restaure exactement l'`index` et le `blockStart` précédents.
 11. Bornes : un bloc à 1441 min est refusé, un total à 1441 est refusé, et un fichier dont deux blocs valent `Int.max` est refusé **sans crash**.
-12. « Suivant » sur le dernier bloc passe `isFinished` à vrai.
+12. « Suivant » sur le dernier bloc est sans effet ; « Fin » passe `isFinished` à vrai.
 13. Pause prévue : `"break": true` se charge dans `isBreak`, un bloc sans le champ vaut `false`, et l'enregistrement n'écrit `break` que s'il vaut `true`.
 14. Markdown : `fixtures/borrowed-from-the-lab.md` s'importe en un talk égal à celui de la fixture JSON (aux identifiants de bloc près), notes ignorées.
 15. Aller-retour : exporter en Markdown puis réimporter redonne le même talk, y compris avec un bloc de pause et des titres contenant `#`, `*`, `>` et des parenthèses (`Demo (live)`).
 16. Markdown refusé, avec le bon numéro de ligne : un titre de niveau 2 sans durée ; aucun titre de niveau 2 ; `Σ minutes > totalMinutes`.
 17. Sans durée dans le titre de niveau 1, `totalMinutes = Σ minutes`. `(10 min, Pause)` est reconnu comme une pause prévue.
 18. `startMinutes` de la fixture vaut `[0, 3, 8, 15, 18, 33, 41, 53]`.
+19. `autoAdvance` : absent, il vaut `false`, et l'enregistrement ne l'écrit que s'il vaut `true`.
+20. Passage automatique sur la fixture : à 16 min, un seul `catchUp` mène au bloc 4 (début 15 min, `remaining` 2:00), avec un `history` complet, sans appel intermédiaire.
+21. Passage automatique : il entre dans une pause prévue mais n'en sort pas ; il n'avance pas pendant une suspension ; le dernier bloc passe en dépassement et `isFinished` reste faux.
+22. Passage automatique et Précédent : après « Précédent », `catchUp` laisse le bloc en dépassement ; après « Suivant » jusqu'à `furthestIndex`, il reprend.
+23. Markdown : `# Titre (60 min, auto)` active `autoAdvance`, l'export l'écrit et l'aller-retour le conserve. `# Titre (auto)` donne le titre « Titre (auto) ».
 
 **Recette manuelle** (deuxième écran en mode étendu, build Release signé et sandboxé) :
 
-1. Safari en plein écran sur l'écran principal : la barre reste visible au-dessus.
+1. Safari en plein écran sur l'écran principal, avec la barre des menus masquée en plein écran, puis toujours affichée (Réglages système › Barre des menus) : la barre reste visible, et ne recouvre ni la poignée « ··· » de Safari ni la zone de survol du système.
 2. Keynote en mode présentation : la barre reste visible au-dessus.
 3. Le focus est dans Safari : ⌃⌥→ fait avancer le bloc et Safari garde le focus.
-4. Cliquer sur la barre fait avancer le bloc sans activer talk-timer.
+4. Un clic sur le fond de la barre ne fait rien. ⌘-clic et le bouton Suivant font avancer le bloc, sans activer talk-timer.
 5. Le Mac se met en veille 1 min pendant un bloc : au réveil, le temps restant a bien diminué d'une minute.
 6. Débrancher l'écran choisi : la barre réapparaît sur l'écran principal.
 7. Double-clic sur un `.talk` dans le Finder : talk-timer l'ouvre.
@@ -397,13 +422,16 @@ fixtures/borrowed-from-the-lab.json
 11. VoiceOver : tout le planificateur est utilisable, et la barre est annoncée au passage en alerte.
 12. Voice Control : « Cliquer Démarrer » lance la session.
 13. Interface en anglais puis en français (langue du système ou option de schéma) : aucune chaîne non traduite.
-14. Contrastes du § 7.5 et du § 8 mesurés, en mode clair et en mode sombre.
+14. Contrastes du § 7.5 et du § 8 mesurés, en mode clair et en mode sombre. Pour la barre : au-dessus d'un fond clair, d'un fond sombre et d'une image chargée, puis avec « Augmenter le contraste » et « Réduire la transparence ».
 15. Partage d'écran Zoom ou Teams en écran entier : constater si la barre apparaît, et documenter le résultat (§ 7.1).
 16. `xcodebuild archive`, puis « Validate App » dans l'Organizer : aucune erreur.
 17. Créer un talk, ne pas l'enregistrer, quitter, relancer : le brouillon est restauré.
 18. Fenêtre Accueil : elle apparaît au lancement sans talk restauré, liste les récents, et chacun s'ouvre sans erreur de permission.
 19. Un `.md` ouvert par « Ouvrir avec » devient un talk sans titre. ⌘S propose un `.talk`, et le `.md` est inchangé (même empreinte). talk-timer n'est pas devenue l'app par défaut des `.md`.
 20. Export PDF d'un talk de 30 blocs en mode sombre : fond clair, pagination, pauses lisibles sans couleur.
+21. Fin : un appui sur son raccourci affiche « Fin ? », et rien ne change 3 s plus tard. Deux appuis rapprochés terminent la session.
+22. Élément de la barre des menus : présent pendant la session seulement, sa jauge suit celle de la barre. Désactivé dans Réglages système, la session fonctionne à l'identique.
+23. Passage automatique : le Mac se met en veille pendant deux blocs. Au réveil, la barre affiche le bon bloc et le bon temps restant.
 
 ## 11. Ordre d'implémentation
 
@@ -413,7 +441,10 @@ fixtures/borrowed-from-the-lab.json
    - ajouter les bornes du § 3, la suspension, `talkStart`, `isFinished`, `projectedEnd`, `endOffset`, `isBreak` et `startMinutes` ;
    - écrire les règles du § 4 ;
    - faire passer les critères automatiques 1 à 13.
-3. **Markdown** : ajouter swift-markdown, écrire l'import et l'export du § 3.1, critères 14 à 18.
+3. **Modèle, suite, et Markdown** :
+   - `autoAdvance`, `furthestIndex`, `catchUp(at:)`, et « Fin » seule passe `isFinished` à vrai (§ 6.3) : critères 12 et 19 à 22 ;
+   - ajouter swift-markdown, écrire l'import et l'export du § 3.1 : critères 14 à 18 et 23 ;
+   - test rapide de l'îlot dans le spike : distance `d` dans les deux configurations de la barre des menus, `glassEffect` dans le `NSPanel`, clic seul sans effet (§ 7.1).
 4. **Projet Xcode** : bundle ID provisoire, sandbox, entitlements, Info.plist (UTType, chiffrement), String Catalog, privacy manifest.
 5. **Planificateur** : `DocumentGroup` (lecture des `.md`), liste avec interrupteur Pause, frise, menu Session, Réglages, fenêtre Accueil, export PDF et impression.
 6. **Session et barre** :
@@ -422,8 +453,9 @@ fixtures/borrowed-from-the-lab.json
    - `Logger` à la place de `print` ;
    - phase `paused` et accessibilité du § 7.5 ;
    - retrait de `AppDelegate`, du mode ligne de commande et du contournement `setActivationPolicy` ;
-   - commentaire de `Palette` sans chemin personnel ;
-   - compteur de dépassement en `error-450` (§ 7.3) ;
+   - îlot en Liquid Glass et couleurs système, retrait de `Palette` (§ 7.3) ;
+   - boutons, ⌘-clic et double appui de Fin (§ 6.3, § 7.2) ;
+   - élément de la barre des menus (§ 7.1) ;
    - affichage des blocs de pause prévue.
 7. **Recette manuelle** complète (§ 10).
 8. **Publication** :
@@ -452,10 +484,10 @@ fixtures/borrowed-from-the-lab.json
 ## 13. Questions ouvertes
 
 - **Nom définitif, bundle ID et identifiant du UTType**, à trancher ensemble avant de créer l'app dans App Store Connect : le bundle ID n'est plus modifiable ensuite. Préfixes possibles : `fr.etdeuxmains.` ou `io.github.caffe-doppio.`. Vérifier que le nom est libre sur l'App Store. Un futur canal Developer ID devra avoir son propre bundle ID : avec le même, les deux builds partageraient conteneur et réglages, et le système afficherait des invites.
-- **Raccourcis par défaut** : on garde ⌃⌥ + flèches (conflit Rectangle et Magnet géré au § 7.4), ou on choisit des valeurs par défaut moins exposées ?
+- **Raccourcis par défaut** : on garde ⌃⌥ + flèches (conflit Rectangle et Magnet géré au § 7.4), ou on choisit des valeurs par défaut moins exposées ? Et lequel pour Fin : ⌃⌥⌫ est la restauration de Rectangle.
 - **Ouvrir récent en sandbox avec `DocumentGroup`** : supposé fourni par le système (documenté pour `NSDocument`, et seulement par des rapports de forum pour SwiftUI). À confirmer par la recette 8.
 - **Granularité** : la minute suffit-elle, ou faut-il des blocs de 30 s (pitchs courts) ?
-- **Hauteur de la barre** : 28 pt se lit-il de loin, quand on est debout à un mètre de l'écran ?
+- **Hauteur de l'îlot** : la hauteur se lit-elle de loin, quand on est debout à un mètre de l'écran ? Les boutons doivent aussi rester cliquables sans viser.
 - **Langue des commentaires du code** : français aujourd'hui. À revoir si des personnes extérieures contribuent.
 
 ## 14. Exigences de publication (Mac App Store)
@@ -493,6 +525,7 @@ Sources consultées le 2026-10-11 :
 | P20 | Icône Icon Composer (`.icon`, variantes par défaut, sombre, transparente, teintée) | [HIG App icons](https://developer.apple.com/design/human-interface-guidelines/app-icons) | recommandé | obligatoire | Sans elle, macOS 26 place l'icône dans un carré gris | à faire |
 | P21 | Raccourcis clavier : éviter les conflits | [HIG Keyboards](https://developer.apple.com/design/human-interface-guidelines/keyboards) | recommandé | obligatoire | Raccourcis modifiables, conflit signalé (§ 7.4) | à faire |
 | P22 | Panneaux et fenêtres flottantes | [HIG Panels](https://developer.apple.com/design/human-interface-guidelines/panels) | recommandé | obligatoire | Barre non activante, sans ombre, ne prend jamais le focus (§ 7.1) | à faire |
+| P23 | Liquid Glass sur les vues personnalisées, couleurs système | [Adopting Liquid Glass](https://developer.apple.com/documentation/technologyoverviews/adopting-liquid-glass), [Applying Liquid Glass to custom views](https://developer.apple.com/documentation/swiftui/applying-liquid-glass-to-custom-views) | recommandé | obligatoire | Un seul `glassEffect` en capsule sur la barre, boutons `.glass`, couleurs système, recette avec Réduire la transparence (§ 7.3) | faite |
 
 Points vérifiés qui ne sont pas des exigences :
 
@@ -520,4 +553,11 @@ Fiches de langage et de frameworks à produire en parallèle : `DocumentGroup`, 
 | 2026-10-11 | Un `.md` s'ouvre par Fichier › Ouvrir, en lecture seule, rang `Alternate` | Le Finder et le Dock fonctionnent sans code ; talk-timer ne prend pas les `.md` à l'éditeur habituel |
 | 2026-10-11 | Pause prévue = bloc `break: true` ; pause imprévue = Suspendre, fin fixe | La salle se libère à l'heure prévue : une suspension consomme la marge, puis l'écart |
 | 2026-10-11 | Fenêtre Accueil sur les récents du système, pas de bibliothèque | Les talks restent des fichiers (le fichier est le contrat, § 3) |
+| 2026-10-11 | Barre en îlot (capsule Liquid Glass) sous la bande du haut, au lieu d'une bande pleine largeur. Le concept garde le nom « barre » | La bande recouvrait la poignée « ··· » des apps en plein écran ; la capsule est la forme native du matériau |
+| 2026-10-11 | Couleurs système dans la barre ; palette beta.gouv retirée | Recommandation Apple. Les variantes sombre et contraste augmenté sont fournies par le système |
+| 2026-10-11 | Un clic seul sur la barre ne fait rien ; Suivant par ⌘-clic, bouton ou raccourci | Un clic involontaire faisait avancer le bloc, et fermait la barre sur le dernier sans retour possible |
+| 2026-10-11 | Seule « Fin » ferme la barre, par double appui | Fin est irréversible |
+| 2026-10-11 | Passage automatique au choix, pour chaque talk (`autoAdvance`). Jamais en sortie de pause prévue, ni en fin de talk, ni sur un bloc retrouvé | Le passage au bloc suivant peut être automatique, la fin du talk jamais |
+| 2026-10-11 | Élément de la barre des menus, en complément de la barre | Le système et la personne peuvent le masquer : il ne suffit jamais seul |
+| 2026-10-11 | Icônes SF Symbols standard, consignées dans GLOSSARY | Une icône par action |
 | 2026-10-11 | `CLAUDE.md` et `.claude/` locaux jusqu'à la publication | Exclus par l'ignore global, réintégrés au § 11, étape 8 |

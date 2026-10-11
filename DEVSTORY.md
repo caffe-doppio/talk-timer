@@ -174,7 +174,8 @@ Notes prises avant de toucher au code ni aux SPECS. Chaque point remet en cause 
   - principe : le passage au bloc suivant peut être automatique, la fin du talk est toujours manuelle.
 - Conséquences à reporter dans les SPECS :
   - Fin reçoit un bouton et un raccourci global (aujourd'hui : menu Session seulement). C'est un quatrième nom KeyboardShortcuts, à ajouter au § 7.4 et à GLOSSARY ;
-  - Fin est irréversible, comme le clic du point 4. Son raccourci doit être difficile à taper par erreur, ou demander une confirmation. À décider ;
+  - Fin est irréversible, comme le clic du point 4. Décidé : **double appui**. Le premier affiche « Fin ? » pendant 3 s, le second termine. Aucun dialogue, donc Keynote garde le focus ;
+  - un bloc retrouvé par Précédent est déjà écoulé, et sans règle il repartirait aussitôt. Décidé : il **reste manuel** et attend Suivant. Le passage automatique reprend au bloc le plus avancé atteint (`furthestIndex`) ;
   - une nouvelle clé JSON au § 3, et sa forme dans le Markdown du § 3.1. Sans elle, l'aller-retour Markdown perdrait le réglage, alors qu'il est promis sans perte ;
   - le nom du réglage, à inscrire dans GLOSSARY (FR, EN, Swift, JSON) ;
   - le calcul : pour respecter l'invariant « tout se calcule depuis `now` », le passage automatique se déduit de l'horloge, pas d'un minuteur. Si le Mac sort de veille deux blocs plus tard, la session retrouve le bon bloc d'un coup. La chaîne s'arrête d'elle-même à la première pause prévue ou au dernier bloc ;
@@ -182,4 +183,4 @@ Notes prises avant de toucher au code ni aux SPECS. Chaque point remet en cause 
 
 **Hors sujet, mais réglé au passage.** La CI échouait sur SwiftLint 0.65.1 : la règle `optional_data_string_conversion` refuse `String(decoding:as:)` dans `ModelTests.swift`. Cet initialiseur remplace en silence les octets invalides par `�`. `String(bytes:encoding:)` renvoie `nil` à la place, et `#require` fait échouer le test proprement.
 
-**Suite.** Mettre à jour les SPECS (§ 3, 3.1, 6.3, 7.1 à 7.5, 10, 13, 15) et GLOSSARY, puis faire un petit spike de l'îlot en verre (position dans les deux configurations de la barre de menus, `glassEffect` dans le panneau). L'étape 3 (Markdown) attend la clé JSON du point 5.
+**Suite.** SPECS et GLOSSARY mis à jour (§ 1, 3, 3.1, 5, 6.1 à 6.4, 7.1 à 7.5, 10, 11, 13 à 15). Ensuite : l'étape 3 révisée, qui comprend la suite du modèle, le Markdown et le test rapide de l'îlot en verre (position dans les deux configurations de la barre de menus, `glassEffect` dans le panneau).
