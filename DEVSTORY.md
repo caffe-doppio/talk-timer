@@ -184,3 +184,45 @@ Notes prises avant de toucher au code ni aux SPECS. Chaque point remet en cause 
 **Hors sujet, mais réglé au passage.** La CI échouait sur SwiftLint 0.65.1 : la règle `optional_data_string_conversion` refuse `String(decoding:as:)` dans `ModelTests.swift`. Cet initialiseur remplace en silence les octets invalides par `�`. `String(bytes:encoding:)` renvoie `nil` à la place, et `#require` fait échouer le test proprement.
 
 **Suite.** SPECS et GLOSSARY mis à jour (§ 1, 3, 3.1, 5, 6.1 à 6.4, 7.1 à 7.5, 10, 11, 13 à 15). Ensuite : l'étape 3 révisée, qui comprend la suite du modèle, le Markdown et le test rapide de l'îlot en verre (position dans les deux configurations de la barre de menus, `glassEffect` dans le panneau).
+
+---
+
+## 2026-10-12 · Étape 3 : passage automatique, îlot en verre, Markdown
+
+**Fait.**
+
+- `fce4236` : passage automatique dans le modèle. Ajouts :
+  - `Talk.autoAdvance` ;
+  - `Session.catchUp(at:)` et `furthestIndex` ;
+  - `Session.end()`, désormais seule à terminer la session : « Suivant » est sans effet sur le dernier bloc.
+- `0eeaa7d` : la barre devient un îlot en Liquid Glass, aux couleurs système. Ajouts :
+  - les boutons Précédent, Suspendre / Reprendre, Suivant et Fin ;
+  - ⌘-clic pour Suivant, un clic seul ne faisant plus rien ;
+  - Fin en double appui ;
+  - le bloc suivant toujours affiché, et la jauge hachurée en alerte.
+- `bdd2b5b`, `64fb35f`, `64e3053` : captures de la barre dans le README, à la place des esquisses.
+- Markdown (commit à venir) : swift-markdown 0.9.0, `Talk(markdown:)` et `Talk.markdown`, les refus avec leur numéro de ligne (`TalkError.atLine`). 26 tests, critères 1 à 23 du § 10.
+- Distance de l'îlot : `d = NSStatusBar.system.thickness + safeAreaInsets.top + 88`, soit 110 pt sur l'iMac. Valeur trouvée à l'essai, après 32, 56 et 72 pt.
+
+**Pourquoi.** Les retours d'usage de l'entrée précédente. Le passage automatique se calcule depuis l'horloge, comme le reste : le bloc suivant commence à `blockStart + duration`, pas à `now`. Une veille qui a couvert trois blocs se rattrape donc d'un seul appel.
+
+**Pièges.**
+
+1. **SwiftLint, deux fois sur la même règle.** `String(decoding:as:)` est refusé (`optional_data_string_conversion`). Je l'ai corrigé, puis réécrit dans le test suivant. Le linter ne tourne qu'en CI : un motif refusé une fois est à chercher avec `grep` avant de pousser.
+2. **`.glass` sur des boutons dans une capsule en verre.** La spec le demandait, la fiche *Adopting Liquid Glass* le déconseille (pas de verre sur le verre). Les boutons sont `.borderless`.
+3. **`NSStatusBar.system.thickness` vaut 22 pt, alors que la barre des menus en mesure 30** (`frame.maxY − visibleFrame.maxY`) sur macOS 26. La constante sert de base stable, et l'écart est absorbé par les 88 pt trouvés à l'essai.
+4. **Pas de capture d'écran depuis l'agent.** `screencapture` échoue sans l'autorisation d'enregistrement de l'écran : la vérification visuelle reste manuelle.
+5. **`large_tuple`.** SwiftLint refuse un tuple de trois éléments. `split` renvoie `(titre, (minutes, mot-clé)?)` : la durée est absente ou complète, jamais à moitié.
+6. **Afficher le bloc suivant en permanence retirait un signal d'alerte non coloré.** Il est remplacé par le gras, puis par un motif hachuré sur la jauge.
+
+**Notions.**
+
+- **`acceptsFirstMouse`.** Une fenêtre qui ne devient jamais clé ignore par défaut le premier clic, qui sert à l'activer. `FirstClickHostingView` le laisse passer jusqu'aux boutons.
+- **`onChange(of:)`.** On ne modifie pas l'état pendant le calcul du `body`. `onChange` s'exécute après la mise à jour, comme un rappel `after_update` en Ruby. Fiche : `/apple-dev-docs https://developer.apple.com/documentation/swiftui/view/onchange(of:initial:_:)`.
+- **`glassEffect(_:in:)` et `Canvas`.** Un seul effet de verre pour toute la barre, et un dessin immédiat pour les hachures, sans nouveau type. Fiche : `/apple-dev-docs https://developer.apple.com/documentation/swiftui/canvas`.
+- **Regex Swift.** `/(?<minutes>\d+)/` et `wholeMatch(of:)` donnent des captures nommées et typées : `match.minutes` est vérifié à la compilation. C'est l'équivalent de `re.fullmatch` avec `(?P<minutes>…)` en Python, sans les accès par chaîne. Fiche : `/apple-dev-docs https://developer.apple.com/documentation/swift/regex`.
+- **`indirect case`.** `TalkError.atLine(Int, TalkError)` contient un `TalkError` : Swift doit le ranger derrière un pointeur. C'est le `Box<T>` d'un `enum` récursif en Rust. Fiche : `/apple-dev-docs tspl:LanguageGuide/Enumerations`.
+- **`as?` sur les nœuds de swift-markdown.** Les enfants d'un `Document` sont des `Markup` : on teste leur type concret (`child as? Heading`), comme `isinstance` en Python.
+- **`Package.resolved`.** Il fige la révision exacte de swift-markdown et de swift-cmark, comme `Cargo.lock` ou `Gemfile.lock`. Il est versionné.
+
+**Suite.** Étape 4 : le projet Xcode (bundle ID provisoire, sandbox, entitlements, Info.plist, String Catalog, privacy manifest). Il faut d'abord trancher le nom et le bundle ID (§ 13).

@@ -48,8 +48,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let live = Live(Session(talk: talk, now: .now))
         live.onEnd = { NSApp.terminate(nil) }  // pas encore de planificateur où revenir (§ 6.3)
         let next = { live.session.next(at: .now) }  // sans effet sur le dernier bloc (§ 6.3)
-        // Calibrage de `d` (§ 7.1) : sous la barre des menus et sous une barre d'outils à deux étages, à ajuster avec --offset.
-        let offset = CGFloat(value("--offset") ?? Int(NSStatusBar.system.thickness + screen.safeAreaInsets.top) + 72)
+        // `d` (§ 7.1) : 110 pt sur un iMac (barre des menus de 22 pt, sans encoche). --offset reste le réglage fin.
+        let offset = CGFloat(value("--offset") ?? Int(NSStatusBar.system.thickness + screen.safeAreaInsets.top) + 88)
         print("îlot à \(Int(offset)) pt du haut de l'écran (--offset)")
         panel = BarPanel(screen: screen, offset: offset, rootView: BarView(live: live), onCommandClick: next)
         panel?.orderFrontRegardless()
@@ -68,6 +68,8 @@ extension TalkError {
         case .badTotal(let total): "La durée totale (\(total) min) doit être comprise entre 1 et \(Talk.maxMinutes) min."
         case .badMinutes(let title): "Le bloc « \(title) » doit durer entre 1 et \(Talk.maxMinutes) min."
         case .overTotal(let sum, let total): "Les blocs totalisent \(sum) min pour un total de \(total) min."
+        case .missingDuration(let title): "Le bloc « \(title) » n'a pas de durée : terminez son titre par (N min)."
+        case .atLine(let line, let error): "Ligne \(line) : \(error.message)"
         }
     }
 }

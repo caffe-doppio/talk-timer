@@ -54,7 +54,7 @@ open Package.swift   # open in Xcode
 swift run TalkTimer fixtures/borrowed-from-the-lab.json --screen 1
 
 # Options: --auto moves to the next block on its own; --offset D sets the bar D points below the top of the screen
-swift run TalkTimer fixtures/borrowed-from-the-lab.json --screen 1 --auto --offset 96
+swift run TalkTimer fixtures/borrowed-from-the-lab.json --screen 1 --auto --offset 130
 ```
 
 On launch, the app lists the available screens and their numbers in the terminal.
@@ -109,9 +109,10 @@ Shortcuts are global: they work while another app has focus, and do not need the
 ```
 Package.swift                              TalkTimerCore library, bar spike, tests
 Sources/TalkTimerCore/Model.swift          file format, planner rules, session clock, bar phases (no AppKit, no SwiftUI)
+Sources/TalkTimerCore/Markdown.swift       Markdown import and export
 Sources/TalkTimer/Bar.swift                bar spike: floating panel, bar view, global shortcuts
 Sources/TalkTimer/App.swift                bar spike: entry point
-Tests/TalkTimerCoreTests/ModelTests.swift  acceptance criteria (SPECS.md § 10)
+Tests/TalkTimerCoreTests/                  acceptance criteria (SPECS.md § 10)
 fixtures/                                  reference talks (JSON, Markdown)
 docs/GLOSSARY.md                           one name per concept (FR, EN, Swift, JSON)
 assets/screenshots/                        screenshots of the bar

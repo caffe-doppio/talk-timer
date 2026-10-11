@@ -128,6 +128,8 @@ public enum TalkError: Error, Equatable, Sendable {
     case badTotal(Int)
     case badMinutes(String)
     case overTotal(sum: Int, total: Int)
+    case missingDuration(String)  // titre de niveau 2 sans `(N min)` (§ 3.1)
+    indirect case atLine(Int, TalkError)  // refus d'un import Markdown, avec sa ligne (§ 3.1)
 }
 
 // MARK: - Session en direct (§ 6)

@@ -268,7 +268,7 @@ Un `NSPanel` qui affiche une vue SwiftUI :
 - barre des menus affichée en plein écran : `visibleFrame.maxY` est sous la barre des menus, là où une app en plein écran dessine sa bande du haut, avec la poignée « ··· ». Le spike s'y collait et la recouvrait ;
 - barre des menus masquée en plein écran : `visibleFrame.maxY` est le bord haut de l'écran, qui est la zone de survol du système.
 
-`d` est donc mesuré par le test rapide de l'îlot (§ 11, étape 3), dans les deux configurations et sur un écran à encoche (`NSScreen.safeAreaInsets`). Premières mesures : 32 puis 56 pt sous la barre des menus recouvrent encore les barres d'outils à deux étages ; on essaie 72 pt.
+`d` est donc mesuré par le test rapide de l'îlot (§ 11, étape 3), dans les deux configurations et sur un écran à encoche (`NSScreen.safeAreaInsets`). Mesures sur iMac (2026-10-12) : 32, 56 puis 72 pt sous la barre des menus recouvrent encore les barres d'outils à deux étages. Retenu : **`d = NSStatusBar.system.thickness + safeAreaInsets.top + 88`**, soit 110 pt sur un iMac (22 + 0 + 88). L'encoche s'ajoute d'elle-même sur un portable ; à vérifier à la recette 1 sur un MacBook.
 
 **Élément de la barre des menus** (`MenuBarExtra`), en complément, pendant la session seulement : la jauge du bloc en cours et le temps restant, dessinés comme les graphiques de [exelban/stats](https://github.com/exelban/stats). Son menu reprend les actions du menu Session. Il ne remplace jamais la barre : il disparaît en plein écran quand la barre des menus se masque, et la personne peut le désactiver (Réglages système › Barre des menus › Autoriser dans la barre des menus). [À vérifier : `MenuBarExtra` rend son libellé comme une image. Si la jauge ne s'y dessine pas, on passe par `NSStatusItem` avec une vue.]
 
@@ -441,10 +441,10 @@ fixtures/borrowed-from-the-lab.json
    - ajouter les bornes du § 3, la suspension, `talkStart`, `isFinished`, `projectedEnd`, `endOffset`, `isBreak` et `startMinutes` ;
    - écrire les règles du § 4 ;
    - faire passer les critères automatiques 1 à 13.
-3. **Modèle, suite, et Markdown** :
+3. ✅ **Modèle, suite, et Markdown** (2026-10-12) :
    - ✅ `autoAdvance`, `furthestIndex`, `catchUp(at:)`, et « Fin » seule passe `isFinished` à vrai (§ 6.3) : critères 12 et 19 à 22 ;
-   - ajouter swift-markdown, écrire l'import et l'export du § 3.1 : critères 14 à 18 et 23 ;
-   - test rapide de l'îlot dans le spike : distance `d` dans les deux configurations de la barre des menus, `glassEffect` dans le `NSPanel`, clic seul sans effet (§ 7.1).
+   - ✅ ajouter swift-markdown, écrire l'import et l'export du § 3.1 : critères 14 à 18 et 23 ;
+   - ✅ test rapide de l'îlot dans le spike : distance `d` dans les deux configurations de la barre des menus, `glassEffect` dans le `NSPanel`, clic seul sans effet (§ 7.1).
 4. **Projet Xcode** : bundle ID provisoire, sandbox, entitlements, Info.plist (UTType, chiffrement), String Catalog, privacy manifest.
 5. **Planificateur** : `DocumentGroup` (lecture des `.md`), liste avec interrupteur Pause, frise, menu Session, Réglages, fenêtre Accueil, export PDF et impression.
 6. **Session et barre** :

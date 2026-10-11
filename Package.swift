@@ -7,8 +7,11 @@ let package = Package(
     products: [
         .library(name: "TalkTimerCore", targets: ["TalkTimerCore"]),  // lu par le futur projet Xcode (SPECS § 9)
     ],
+    dependencies: [
+        .package(url: "https://github.com/swiftlang/swift-markdown.git", exact: "0.9.0"),  // version exacte (SPECS § 9)
+    ],
     targets: [
-        .target(name: "TalkTimerCore"),
+        .target(name: "TalkTimerCore", dependencies: [.product(name: "Markdown", package: "swift-markdown")]),
         .executableTarget(name: "TalkTimer", dependencies: ["TalkTimerCore"]),  // spike de la barre
         .testTarget(name: "TalkTimerCoreTests", dependencies: ["TalkTimerCore"]),
     ]

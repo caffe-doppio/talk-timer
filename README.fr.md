@@ -54,7 +54,7 @@ open Package.swift   # ouvrir dans Xcode
 swift run TalkTimer fixtures/borrowed-from-the-lab.json --screen 1
 
 # Options : --auto passe seul au bloc suivant ; --offset D place la barre à D points du haut de l'écran
-swift run TalkTimer fixtures/borrowed-from-the-lab.json --screen 1 --auto --offset 96
+swift run TalkTimer fixtures/borrowed-from-the-lab.json --screen 1 --auto --offset 130
 ```
 
 Au lancement, l'appli affiche dans le terminal la liste des écrans et leurs numéros.
@@ -109,9 +109,10 @@ Les raccourcis sont globaux : ils fonctionnent même quand une autre appli a le 
 ```
 Package.swift                              bibliothèque TalkTimerCore, spike de la barre, tests
 Sources/TalkTimerCore/Model.swift          format de fichier, règles du planificateur, horloge de session, phases de la barre (ni AppKit ni SwiftUI)
+Sources/TalkTimerCore/Markdown.swift       import et export Markdown
 Sources/TalkTimer/Bar.swift                spike : panneau flottant, vue de la barre, raccourcis globaux
 Sources/TalkTimer/App.swift                spike : point d'entrée
-Tests/TalkTimerCoreTests/ModelTests.swift  critères d'acceptation (SPECS.md § 10)
+Tests/TalkTimerCoreTests/                  critères d'acceptation (SPECS.md § 10)
 fixtures/                                  talks de référence (JSON, Markdown)
 docs/GLOSSARY.md                           un nom par concept (FR, EN, Swift, JSON)
 assets/screenshots/                        captures de la barre

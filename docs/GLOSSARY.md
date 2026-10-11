@@ -29,7 +29,7 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Ajouter un bloc (règle § 4) | Ajouter un bloc | Add Block | `Talk.addBlock(title:)` | — | existant |
 | Changer la durée totale (règle § 4) | — | — | `Talk.setTotal(_:)` | — | existant |
 | Fichier de talk | fichier `.talk` | `.talk` file | `TalkDocument`, UTType `.talk` | — | prévu |
-| Talk au format Markdown (import et export) | Markdown | Markdown | `Talk(markdown:)`, `Talk.markdown` | — | prévu |
+| Talk au format Markdown (import et export) | Markdown | Markdown | `Talk(markdown:)`, `Talk.markdown` | — | existant |
 | Export imprimable | Exporter en PDF, Imprimer | Export as PDF, Print | `TalkPrintView` | — | prévu |
 | Fenêtre d'ouverture | Accueil | Welcome | `WelcomeView` | — | prévu |
 | Talks ouverts récemment | talks récents | recent talks | récents du système (`NSDocumentController`) | — | prévu |
@@ -61,6 +61,8 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Jauge du bloc en cours dans la barre des menus | élément de la barre des menus | menu bar extra | `MenuBarExtra` | — | prévu |
 | Raccourci global | raccourci | shortcut | `KeyboardShortcuts.Name` (`.nextBlock`, `.previousBlock`, `.togglePause`, `.endSession`) | — | prévu |
 | Erreur de chargement | — | — | `TalkError` (données), `TalkError.message` (texte, côté app) | — | existant |
+| Titre de bloc Markdown sans durée | — | — | `TalkError.missingDuration` | — | existant |
+| Refus Markdown et sa ligne | ligne | line | `TalkError.atLine` | — | existant |
 
 ### Noms écartés
 
@@ -104,6 +106,7 @@ Une ligne par déclaration de premier niveau dans `Sources/`. `TalkTimerCore` (l
 | `Block` | struct | `Sources/TalkTimerCore/Model.swift` | Un bloc : titre, minutes, transition | § 3 |
 | `Talk` | struct | `Sources/TalkTimerCore/Model.swift` | Un talk, sa marge, son chargement validé, les règles du planificateur | § 3, § 4 |
 | `TalkError` | enum | `Sources/TalkTimerCore/Model.swift` | Motifs de refus au chargement, sans texte | § 3, § 8 |
+| `extension Talk` | extension | `Sources/TalkTimerCore/Markdown.swift` | Import et export Markdown : `init(markdown:)`, `markdown` | § 3.1 |
 | `Session` | struct | `Sources/TalkTimerCore/Model.swift` | État d'une session en direct, calculé depuis `now` | § 6 |
 | `Phase` | enum | `Sources/TalkTimerCore/Model.swift` | Phase de la barre | § 7.3 |
 | `phase(remaining:duration:)` | func | `Sources/TalkTimerCore/Model.swift` | Phase selon le temps restant et le seuil | § 7.3 |
