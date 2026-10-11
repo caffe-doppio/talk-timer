@@ -355,7 +355,7 @@ Package.swift                              paquet local : bibliothèque TalkTime
 Sources/TalkTimerCore/Model.swift          Talk, Block, règles § 4, calculs § 6.2
 Sources/TalkTimerCore/Markdown.swift       import et export Markdown (§ 3.1)
 Tests/TalkTimerCoreTests/ModelTests.swift  Swift Testing, critères § 10
-TalkTimer.xcodeproj                        projet de l'app, dossiers synchronisés
+TalkTimer.xcodeproj                        projet de l'app, dossier App/ synchronisé, schéma partagé talk-timer
 App/                                       @main, DocumentGroup, planificateur, barre, Réglages
 App/Info.plist                             UTType .talk exporté, ITSAppUsesNonExemptEncryption = NO
 App/TalkTimer.entitlements                 sandbox + fichiers choisis par l'utilisateur
@@ -377,7 +377,7 @@ fixtures/borrowed-from-the-lab.json
 
 - `TalkTimerCore` n'importe ni AppKit ni SwiftUI. Il n'utilise que Foundation et swift-markdown, qui fonctionne aussi sous Linux.
 
-État actuel : le modèle est dans `Sources/TalkTimerCore/` (bibliothèque, symboles `public`) et testé par `Tests/TalkTimerCoreTests/`. L'exécutable SwiftPM `Sources/TalkTimer/` (`Bar.swift`, `App.swift`) reste le spike de la barre, en attendant le projet Xcode.
+État actuel : le modèle est dans `Sources/TalkTimerCore/` (bibliothèque, symboles `public`) et testé par `Tests/TalkTimerCoreTests/`. L'exécutable SwiftPM `Sources/TalkTimer/` (`Bar.swift`, `App.swift`) reste le spike de la barre, jusqu'à son transfert dans `App/` (§ 11, étape 6). Le projet Xcode (`TalkTimer.xcodeproj`, `App/`) dépend du paquet local ; l'icône (`AppIcon.icon`) arrive à l'étape 8. Réglages du projet : Swift 6, isolation par défaut `MainActor` (`SWIFT_DEFAULT_ACTOR_ISOLATION`), comme les modèles d'Xcode 26 ; module `TalkTimerApp`, pour ne pas se confondre avec l'exécutable `TalkTimer` du spike.
 
 ## 10. Critères d'acceptation
 
@@ -445,7 +445,7 @@ fixtures/borrowed-from-the-lab.json
    - ✅ `autoAdvance`, `furthestIndex`, `catchUp(at:)`, et « Fin » seule passe `isFinished` à vrai (§ 6.3) : critères 12 et 19 à 22 ;
    - ✅ ajouter swift-markdown, écrire l'import et l'export du § 3.1 : critères 14 à 18 et 23 ;
    - ✅ test rapide de l'îlot dans le spike : distance `d` dans les deux configurations de la barre des menus, `glassEffect` dans le `NSPanel`, clic seul sans effet (§ 7.1).
-4. **Projet Xcode** : bundle ID provisoire, sandbox, entitlements, Info.plist (UTType, chiffrement), String Catalog, privacy manifest.
+4. ✅ **Projet Xcode** (2026-10-12) : bundle ID provisoire `io.github.caffe-doppio.talk-timer`, sandbox, entitlements, Info.plist (UTType, chiffrement), String Catalog, privacy manifest. Schéma partagé `talk-timer`, compilé en CI sans signature. Reportés à l'étape 5 avec `DocumentGroup` : les types de documents (`CFBundleDocumentTypes`) et la traduction du nom du type (`UTTypeDescription`).
 5. **Planificateur** : `DocumentGroup` (lecture des `.md`), liste avec interrupteur Pause, frise, menu Session, Réglages, fenêtre Accueil, export PDF et impression.
 6. **Session et barre** :
    - branchement de la session sur la barre ;
@@ -483,7 +483,7 @@ fixtures/borrowed-from-the-lab.json
 
 ## 13. Questions ouvertes
 
-- **Nom définitif, bundle ID et identifiant du UTType**, à trancher ensemble avant de créer l'app dans App Store Connect : le bundle ID n'est plus modifiable ensuite. Préfixes possibles : `fr.etdeuxmains.` ou `io.github.caffe-doppio.`. Vérifier que le nom est libre sur l'App Store. Un futur canal Developer ID devra avoir son propre bundle ID : avec le même, les deux builds partageraient conteneur et réglages, et le système afficherait des invites.
+- **Nom définitif**, à trancher avant de créer l'app dans App Store Connect : le bundle ID, qui en dépend, n'est plus modifiable ensuite. Le préfixe est décidé (§ 15) : `io.github.caffe-doppio.`. Provisoirement : `io.github.caffe-doppio.talk-timer`, et le UTType `io.github.caffe-doppio.talk-timer.talk`. Vérifier que le nom est libre sur l'App Store. Un futur canal Developer ID devra avoir son propre bundle ID : avec le même, les deux builds partageraient conteneur et réglages, et le système afficherait des invites.
 - **Raccourcis par défaut** : on garde ⌃⌥ + flèches (conflit Rectangle et Magnet géré au § 7.4), ou on choisit des valeurs par défaut moins exposées ? Et lequel pour Fin : ⌃⌥⌫ est la restauration de Rectangle.
 - **Ouvrir récent en sandbox avec `DocumentGroup`** : supposé fourni par le système (documenté pour `NSDocument`, et seulement par des rapports de forum pour SwiftUI). À confirmer par la recette 8.
 - **Granularité** : la minute suffit-elle, ou faut-il des blocs de 30 s (pitchs courts) ?
@@ -553,6 +553,7 @@ Fiches de langage et de frameworks à produire en parallèle : `DocumentGroup`, 
 | 2026-10-11 | Un `.md` s'ouvre par Fichier › Ouvrir, en lecture seule, rang `Alternate` | Le Finder et le Dock fonctionnent sans code ; talk-timer ne prend pas les `.md` à l'éditeur habituel |
 | 2026-10-11 | Pause prévue = bloc `break: true` ; pause imprévue = Suspendre, fin fixe | La salle se libère à l'heure prévue : une suspension consomme la marge, puis l'écart |
 | 2026-10-11 | Fenêtre Accueil sur les récents du système, pas de bibliothèque | Les talks restent des fichiers (le fichier est le contrat, § 3) |
+| 2026-10-12 | Préfixe du bundle ID et du UTType : `io.github.caffe-doppio.` | Suit le dépôt GitHub, indépendant d'une structure juridique |
 | 2026-10-11 | Barre en îlot (capsule Liquid Glass) sous la bande du haut, au lieu d'une bande pleine largeur. Le concept garde le nom « barre » | La bande recouvrait la poignée « ··· » des apps en plein écran ; la capsule est la forme native du matériau |
 | 2026-10-11 | Couleurs système dans la barre ; palette beta.gouv retirée | Recommandation Apple. Les variantes sombre et contraste augmenté sont fournies par le système |
 | 2026-10-11 | Un clic seul sur la barre ne fait rien ; Suivant par ⌘-clic, bouton ou raccourci | Un clic involontaire faisait avancer le bloc, et fermait la barre sur le dernier sans retour possible |

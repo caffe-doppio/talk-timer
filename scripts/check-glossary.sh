@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Échoue si une déclaration de premier niveau de Sources/ est absente de docs/GLOSSARY.md.
+# Échoue si une déclaration de premier niveau de Sources/ ou App/ est absente de docs/GLOSSARY.md.
 # ponytail: repère les déclarations en colonne 0 sur une seule ligne ; un attribut à parenthèses
 # sur la même ligne (`@available(...) struct X`) passe inaperçu, à traiter s'il apparaît.
 set -euo pipefail
@@ -20,7 +20,7 @@ while read -r kind name; do
         echo "absent de $glossary : $kind $name"
         missing=1
     fi
-done < <(find Sources -name '*.swift' -exec sed -nE \
+done < <(find Sources App -name '*.swift' -exec sed -nE \
     "s/^(($modifiers) +)*($kinds) +([A-Za-z_][A-Za-z0-9_]*).*/\3 \4/p" {} +)
 
 exit $missing

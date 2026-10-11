@@ -48,7 +48,7 @@ The tool never cuts you off. Moving to the next block can be automatic if you ch
 ```bash
 swift build          # build
 swift test           # run the tests
-open Package.swift   # open in Xcode
+open TalkTimer.xcodeproj   # the App Store app, in Xcode (scheme talk-timer)
 
 # Bar spike: shows the bar for a talk, on screen N (default 0, the one with the menu bar)
 swift run TalkTimer fixtures/borrowed-from-the-lab.json --screen 1
@@ -108,6 +108,8 @@ Shortcuts are global: they work while another app has focus, and do not need the
 
 ```
 Package.swift                              TalkTimerCore library, bar spike, tests
+TalkTimer.xcodeproj                        the App Store app, depends on the local package
+App/                                       app sources, Info.plist, entitlements, privacy manifest, String Catalog
 Sources/TalkTimerCore/Model.swift          file format, planner rules, session clock, bar phases (no AppKit, no SwiftUI)
 Sources/TalkTimerCore/Markdown.swift       Markdown import and export
 Sources/TalkTimer/Bar.swift                bar spike: floating panel, bar view, global shortcuts
@@ -120,7 +122,7 @@ scripts/check-glossary.sh                  fails if a top-level declaration is m
 DEVSTORY.md                                development log
 ```
 
-Next: the Xcode project for the App Store build, which depends on `TalkTimerCore` ([`SPECS.md` § 9](SPECS.md#9-architecture)).
+Next: the planner and Welcome windows in the Xcode app ([`SPECS.md` § 5](SPECS.md#5-fenêtre-du-planificateur)).
 
 CI runs SwiftLint (`.swiftlint.yml`, adapted from [exelban/stats](https://github.com/exelban/stats)) and the glossary check on Linux, then build and tests on macOS 26.
 

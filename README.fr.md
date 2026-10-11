@@ -48,7 +48,7 @@ L'outil ne coupe jamais la parole. Le passage au bloc suivant peut être automat
 ```bash
 swift build          # compiler
 swift test           # lancer les tests
-open Package.swift   # ouvrir dans Xcode
+open TalkTimer.xcodeproj   # l'app du Mac App Store, dans Xcode (schéma talk-timer)
 
 # Spike de la barre : affiche la barre d'un talk sur l'écran N (0 par défaut, celui de la barre de menus)
 swift run TalkTimer fixtures/borrowed-from-the-lab.json --screen 1
@@ -108,6 +108,8 @@ Les raccourcis sont globaux : ils fonctionnent même quand une autre appli a le 
 
 ```
 Package.swift                              bibliothèque TalkTimerCore, spike de la barre, tests
+TalkTimer.xcodeproj                        l'app du Mac App Store, qui dépend du paquet local
+App/                                       sources de l'app, Info.plist, entitlements, privacy manifest, String Catalog
 Sources/TalkTimerCore/Model.swift          format de fichier, règles du planificateur, horloge de session, phases de la barre (ni AppKit ni SwiftUI)
 Sources/TalkTimerCore/Markdown.swift       import et export Markdown
 Sources/TalkTimer/Bar.swift                spike : panneau flottant, vue de la barre, raccourcis globaux
@@ -120,7 +122,7 @@ scripts/check-glossary.sh                  échoue si une déclaration de premie
 DEVSTORY.md                                journal de développement
 ```
 
-Prochaine étape : le projet Xcode du build App Store, qui dépendra de `TalkTimerCore` ([`SPECS.md` § 9](SPECS.md#9-architecture)).
+Prochaine étape : les fenêtres du planificateur et d'Accueil dans l'app Xcode ([`SPECS.md` § 5](SPECS.md#5-fenêtre-du-planificateur)).
 
 La CI lance SwiftLint (`.swiftlint.yml`, adapté de [exelban/stats](https://github.com/exelban/stats)) et le contrôle du dictionnaire sous Linux, puis la compilation et les tests sous macOS 26.
 

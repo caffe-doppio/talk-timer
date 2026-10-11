@@ -1,0 +1,16 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Planner: coming soon" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Planificateur : à venir"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

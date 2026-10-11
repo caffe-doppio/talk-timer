@@ -226,3 +226,42 @@ Notes prises avant de toucher au code ni aux SPECS. Chaque point remet en cause 
 - **`Package.resolved`.** Il fige la révision exacte de swift-markdown et de swift-cmark, comme `Cargo.lock` ou `Gemfile.lock`. Il est versionné.
 
 **Suite.** Étape 4 : le projet Xcode (bundle ID provisoire, sandbox, entitlements, Info.plist, String Catalog, privacy manifest). Il faut d'abord trancher le nom et le bundle ID (§ 13).
+
+---
+
+## 2026-10-12 · Étape 4 : le projet Xcode
+
+**Fait.** Commit à venir.
+
+- `TalkTimer.xcodeproj`, écrit à la main au format d'Xcode 16 et suivants (`objectVersion = 77`), avec le dossier `App/` synchronisé : tout fichier ajouté au dossier entre dans la cible, sans toucher au projet.
+- Le paquet local (`Package.swift`) est une dépendance du projet : l'app importe `TalkTimerCore`.
+- Le bundle ID provisoire est `io.github.caffe-doppio.talk-timer`. Le préfixe est décidé, le nom pas encore (§ 13).
+- `App/` contient :
+  - `TalkTimer.entitlements` : sandbox et fichiers choisis par l'utilisateur ;
+  - `Info.plist` : UTType `.talk` exporté et conforme à `public.json`, `ITSAppUsesNonExemptEncryption = NO` ;
+  - `PrivacyInfo.xcprivacy` : aucune collecte, `UserDefaults` avec la raison `CA92.1` ;
+  - `Localizable.xcstrings` : anglais, plus le français.
+- Un schéma partagé, `talk-timer`, compilé en CI sans signature.
+- Vérifié en local :
+  - l'app compile et démarre ;
+  - macOS crée son conteneur `~/Library/Containers/io.github.caffe-doppio.talk-timer`, preuve que le sandbox est actif ;
+  - `codesign -d --entitlements -` montre les deux entitlements.
+
+**Pourquoi à la main.** XcodeGen ou Tuist auraient ajouté un outil. Avec les dossiers synchronisés, le projet tient en 250 lignes stables, qui ne changent plus quand on ajoute un fichier. `xcodebuild -list`, puis `xcodebuild build`, ont validé le format.
+
+**Pièges.**
+
+1. **Deux `TalkTimer`.** Le paquet contient déjà l'exécutable du spike, nommé `TalkTimer`, et Xcode en fait un schéma. D'où le schéma partagé `talk-timer` pour l'app, et son module nommé `TalkTimerApp` (`PRODUCT_MODULE_NAME`).
+2. **Ce qu'il ne faut pas copier dans l'app.** Avec un dossier synchronisé, `Info.plist` et le fichier d'entitlements seraient copiés dans les ressources : ils sont listés en exception.
+3. **`PIPESTATUS` n'existe pas en zsh** (c'est `pipestatus`). Un code de sortie lu après un `|` doit se vérifier sans tube.
+4. **Signer sans équipe.** `CODE_SIGN_IDENTITY = "-"` signe pour un usage local, ce qui suffit au sandbox. L'équipe (Signing & Capabilities) s'ajoutera dans Xcode avant l'archive de l'étape 8.
+
+**Notions.**
+
+- **Entitlements.** Ce sont des autorisations déclarées dans la signature de l'app, et non demandées à l'exécution. Le sandbox enferme l'app dans son conteneur. `user-selected.read-write` lui ouvre seulement les fichiers que la personne choisit dans un panneau. C'est proche d'une liste `--allow-read` de Deno. Fiche : `/apple-dev-docs https://developer.apple.com/documentation/security/app-sandbox`.
+- **UTType exporté.** L'app déclare au système qu'elle définit le type `.talk`, conforme à `public.json` : le Finder sait alors que c'est du JSON. C'est un type MIME enregistré, en plus riche. Fiche : `/apple-dev-docs https://developer.apple.com/documentation/uniformtypeidentifiers/defining-file-and-data-types-for-your-app`.
+- **Privacy manifest.** Une déclaration lue par l'App Store : données collectées et API « à raison requise ». Fiche : `/apple-dev-docs https://developer.apple.com/documentation/bundleresources/privacy-manifest-files`.
+- **String Catalog.** Un fichier JSON par app, où chaque chaîne du code a ses traductions. Xcode le complète à la compilation. C'est l'équivalent d'un `.po` de gettext. Fiche : `/apple-dev-docs https://developer.apple.com/documentation/xcode/localizing-and-varying-text-with-a-string-catalog`.
+- **`SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`.** Tout le code de l'app est isolé au thread principal par défaut, comme dans les modèles d'Xcode 26. Le spike devait écrire `@MainActor` à la main. Le paquet, lui, garde le réglage par défaut : le modèle n'a pas de thread. Fiche : `/apple-dev-docs tspl:LanguageGuide/Concurrency`.
+
+**Suite.** Étape 5 : le planificateur et la fenêtre Accueil, avec `DocumentGroup`, les types de documents (`CFBundleDocumentTypes`) et la traduction du nom du type.

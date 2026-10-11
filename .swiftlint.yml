@@ -3,6 +3,7 @@
 included:
   - Sources
   - Tests
+  - App
   - Package.swift
 
 disabled_rules:

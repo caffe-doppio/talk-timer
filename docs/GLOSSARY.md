@@ -99,7 +99,7 @@ SF Symbols standard uniquement. Une action a une seule icône, partout : barre, 
 
 ## Déclarations de premier niveau
 
-Une ligne par déclaration de premier niveau dans `Sources/`. `TalkTimerCore` (le modèle) expose ses déclarations en `public` ; `TalkTimer` est le spike de la barre. Les membres (propriétés, méthodes, cas d'`enum`) sont dans la table « Concepts ».
+Une ligne par déclaration de premier niveau dans `Sources/` et `App/`. `TalkTimerCore` (le modèle) expose ses déclarations en `public` ; `TalkTimer` est le spike de la barre ; `App/` est l'app du Mac App Store (projet Xcode). Les membres (propriétés, méthodes, cas d'`enum`) sont dans la table « Concepts ».
 
 | Déclaration | Genre | Fichier | Rôle | Spec |
 |---|---|---|---|---|
@@ -117,6 +117,6 @@ Une ligne par déclaration de premier niveau dans `Sources/`. `TalkTimerCore` (l
 | `FirstClickHostingView` | class | `Sources/TalkTimer/Bar.swift` | Hôte SwiftUI dont les boutons répondent au premier clic, la barre n'étant jamais clé | § 7.1 |
 | `BarView` | struct | `Sources/TalkTimer/Bar.swift` | Contenu SwiftUI de la barre | § 7.2 |
 | `HotKeys` | enum | `Sources/TalkTimer/Bar.swift` | Raccourcis Carbon du spike, remplacés par KeyboardShortcuts (§ 11) | § 7.4 |
-| `TalkTimerApp` | struct | `Sources/TalkTimer/App.swift` | Point d'entrée `@main` | § 5 |
+| `TalkTimerApp` | struct | `App/TalkTimerApp.swift`, `Sources/TalkTimer/App.swift` (spike) | Point d'entrée `@main` | § 5 |
 | `AppDelegate` | class | `Sources/TalkTimer/App.swift` | Lancement du spike en ligne de commande | § 11 |
 | `extension TalkError` | extension | `Sources/TalkTimer/App.swift` | `message` : texte des refus, en attendant le String Catalog | § 8 |
