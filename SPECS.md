@@ -261,14 +261,14 @@ Un `NSPanel` qui affiche une vue SwiftUI :
 | `hidesOnDeactivate` | `false` | Reste visible quand talk-timer n'est pas l'appli active |
 | `sharingType` | `.none` | Précaution contre la capture d'écran, **sans garantie** (voir plus bas) |
 | Forme | Îlot : capsule centrée horizontalement, largeur ajustée au contenu, au plus 60 % de l'écran (point de départ, à ajuster au test rapide) | Forme native de Liquid Glass (§ 7.3) |
-| Position | À une distance `d` sous le haut de l'écran choisi (voir plus bas) | Ne recouvre ni la bande du haut d'une app en plein écran ni la zone de survol du système |
+| Position | À une distance `d` sous le haut de l'écran choisi (voir plus bas) | Ne recouvre ni la bande du haut d'une app en plein écran, ni sa barre d'outils quand elle a deux étages (onglets et outils : Safari, VS Code), ni la zone de survol du système |
 
 **Position verticale.** Elle dépend du réglage système « Masquer/afficher automatiquement la barre des menus » :
 
 - barre des menus affichée en plein écran : `visibleFrame.maxY` est sous la barre des menus, là où une app en plein écran dessine sa bande du haut, avec la poignée « ··· ». Le spike s'y collait et la recouvrait ;
 - barre des menus masquée en plein écran : `visibleFrame.maxY` est le bord haut de l'écran, qui est la zone de survol du système.
 
-`d` est donc mesuré par le test rapide de l'îlot (§ 11, étape 3), dans les deux configurations et sur un écran à encoche (`NSScreen.safeAreaInsets`).
+`d` est donc mesuré par le test rapide de l'îlot (§ 11, étape 3), dans les deux configurations et sur un écran à encoche (`NSScreen.safeAreaInsets`). Premières mesures : 32 puis 56 pt sous la barre des menus recouvrent encore les barres d'outils à deux étages ; on essaie 72 pt.
 
 **Élément de la barre des menus** (`MenuBarExtra`), en complément, pendant la session seulement : la jauge du bloc en cours et le temps restant, dessinés comme les graphiques de [exelban/stats](https://github.com/exelban/stats). Son menu reprend les actions du menu Session. Il ne remplace jamais la barre : il disparaît en plein écran quand la barre des menus se masque, et la personne peut le désactiver (Réglages système › Barre des menus › Autoriser dans la barre des menus). [À vérifier : `MenuBarExtra` rend son libellé comme une image. Si la jauge ne s'y dessine pas, on passe par `NSStatusItem` avec une vue.]
 
@@ -282,16 +282,16 @@ Si l'écran choisi est débranché pendant la session (`NSApplication.didChangeS
 ### 7.2 Contenu
 
 ```
-( 3/8  Evidence before a judge  [▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░]  3:12   marge 0:00   ⏮ ⏯ ⏭   🏁 )
+( 3/8  Evidence before a judge  [▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░]  3:12   → From the field   marge 0:00   ⏮  ⏯  ⏭    🏁 )
 ```
 
-En phase d'alerte, la suite s'ajoute à droite :
+Le titre du bloc suivant est toujours affiché, en texte secondaire : on sait à tout moment ce qui vient. En phase d'alerte, il passe en texte principal et en gras, et la transition (`cue`) s'ajoute :
 
 ```
-( 3/8  Evidence before a judge  [▓▓▓░░░░░░░░░░░░░░░]  0:48   → From the field · « cue »   ⏮ ⏯ ⏭   🏁 )
+( 3/8  Evidence before a judge  [▓▓▓░░░░░░░░░░░░░░░]  0:48   → From the field · « cue »   ⏮  ⏯  ⏭    🏁 )
 ```
 
-- **Boutons**, à droite : Précédent, Suspendre / Reprendre, Suivant, puis Fin, séparée des trois autres. Icônes de GLOSSARY (section « Icônes »), style de bouton système `.glass`.
+- **Boutons**, à droite, espacés pour être cliqués sans viser : Précédent, Suspendre / Reprendre, Suivant, puis Fin, plus à l'écart des trois autres. Icônes de GLOSSARY (section « Icônes »), boutons sans bordure (`.borderless`) : la capsule porte déjà le verre, et Apple déconseille d'empiler des éléments en verre.
 - Pendant l'attente du second appui sur Fin, « Fin ? » remplace le temps restant.
 - La **jauge se vide de droite à gauche** : elle est pleine au début du bloc et vide à zéro.
 - Les chiffres utilisent `.monospacedDigit()`, pour que le texte ne bouge pas chaque seconde.
@@ -302,8 +302,8 @@ En phase d'alerte, la suite s'ajoute à droite :
 | Phase | Condition | Jauge | Texte supplémentaire |
 |---|---|---|---|
 | `normal` | `remaining > seuil` | bleu système (`Color.blue`) | — |
-| `alert` | `0 ≤ remaining ≤ seuil` | orange système (`Color.orange`) | `→ titre suivant` et `cue` du bloc en cours |
-| `overtime` | `remaining < 0` | rouge système (`Color.red`), jauge vide | compteur `+m:ss` qui monte, en rouge système ; `→ titre suivant` et `cue` restent affichés |
+| `alert` | `0 ≤ remaining ≤ seuil` | orange système (`Color.orange`), hachurée | `→ titre suivant` passe en texte principal et en gras ; `cue` du bloc en cours |
+| `overtime` | `remaining < 0` | rouge système (`Color.red`), jauge vide | compteur `+m:ss` qui monte, en rouge système ; `→ titre suivant` (en gras) et `cue` restent affichés |
 | `paused` | `pausedAt ≠ nil` (prioritaire sur les autres) | gris système (`Color.gray`) | `SUSPENDU` / `PAUSED` |
 
 **Bloc de pause prévue** (`isBreak`) : les phases s'appliquent normalement, mais en phase `normal` la jauge prend le vert système (`Color.green`). Le texte commence par `PAUSE` / `BREAK`, et `Reprise : titre suivant` reste affiché en permanence :
@@ -317,7 +317,7 @@ En phase d'alerte, la suite s'ajoute à droite :
   - bloc de 3 min : alerte à 1:00 de la fin.
 - **Matériau.** Un seul `glassEffect(.regular, in: Capsule())` pour toute la barre, posé après les autres modificateurs. Aucune couleur de fond : le verre prend la teinte de ce qui passe derrière. Le texte utilise les styles `.primary` et `.secondary`, qui s'adaptent à ce fond.
 - **Couleurs système**, sans palette propre : elles ont leurs variantes claire, sombre et contraste augmenté. La couleur d'accentuation n'est pas utilisée : choisie par la personne, elle peut être orange ou rouge et brouiller les phases.
-- **L'information ne passe jamais par la couleur seule** : l'alerte ajoute « → suivant », le dépassement ajoute « + », la suspension ajoute « SUSPENDU », la pause prévue ajoute « PAUSE ».
+- **L'information ne passe jamais par la couleur seule** : l'alerte hachure la jauge, met « → suivant » en gras et ajoute la transition, le dépassement ajoute « + », la suspension ajoute « SUSPENDU », la pause prévue ajoute « PAUSE ».
 - **Contrastes.** Le fond n'est plus fixe, donc aucun calcul ne vaut une fois pour toutes. Les seuils (texte ≥ 4,5:1, jauges ≥ 3:1) se vérifient à la recette avec l'Inspecteur d'accessibilité, au-dessus d'un fond clair, d'un fond sombre et d'une image chargée, puis avec « Augmenter le contraste » et « Réduire la transparence », qui rend le verre opaque (§ 10).
 
 ### 7.4 Raccourcis
@@ -409,7 +409,7 @@ fixtures/borrowed-from-the-lab.json
 
 **Recette manuelle** (deuxième écran en mode étendu, build Release signé et sandboxé) :
 
-1. Safari en plein écran sur l'écran principal, avec la barre des menus masquée en plein écran, puis toujours affichée (Réglages système › Barre des menus) : la barre reste visible, et ne recouvre ni la poignée « ··· » de Safari ni la zone de survol du système.
+1. Safari en plein écran sur l'écran principal, avec la barre des menus masquée en plein écran, puis toujours affichée (Réglages système › Barre des menus) : la barre reste visible, et ne recouvre ni la poignée « ··· » de Safari, ni sa barre d'outils avec la barre d'onglets séparée, ni la zone de survol du système. Même vérification avec VS Code.
 2. Keynote en mode présentation : la barre reste visible au-dessus.
 3. Le focus est dans Safari : ⌃⌥→ fait avancer le bloc et Safari garde le focus.
 4. Un clic sur le fond de la barre ne fait rien. ⌘-clic et le bouton Suivant font avancer le bloc, sans activer talk-timer.
@@ -525,7 +525,7 @@ Sources consultées le 2026-10-11 :
 | P20 | Icône Icon Composer (`.icon`, variantes par défaut, sombre, transparente, teintée) | [HIG App icons](https://developer.apple.com/design/human-interface-guidelines/app-icons) | recommandé | obligatoire | Sans elle, macOS 26 place l'icône dans un carré gris | à faire |
 | P21 | Raccourcis clavier : éviter les conflits | [HIG Keyboards](https://developer.apple.com/design/human-interface-guidelines/keyboards) | recommandé | obligatoire | Raccourcis modifiables, conflit signalé (§ 7.4) | à faire |
 | P22 | Panneaux et fenêtres flottantes | [HIG Panels](https://developer.apple.com/design/human-interface-guidelines/panels) | recommandé | obligatoire | Barre non activante, sans ombre, ne prend jamais le focus (§ 7.1) | à faire |
-| P23 | Liquid Glass sur les vues personnalisées, couleurs système | [Adopting Liquid Glass](https://developer.apple.com/documentation/technologyoverviews/adopting-liquid-glass), [Applying Liquid Glass to custom views](https://developer.apple.com/documentation/swiftui/applying-liquid-glass-to-custom-views) | recommandé | obligatoire | Un seul `glassEffect` en capsule sur la barre, boutons `.glass`, couleurs système, recette avec Réduire la transparence (§ 7.3) | faite |
+| P23 | Liquid Glass sur les vues personnalisées, couleurs système | [Adopting Liquid Glass](https://developer.apple.com/documentation/technologyoverviews/adopting-liquid-glass), [Applying Liquid Glass to custom views](https://developer.apple.com/documentation/swiftui/applying-liquid-glass-to-custom-views) | recommandé | obligatoire | Un seul `glassEffect` en capsule sur la barre, boutons sans bordure à l'intérieur, couleurs système, recette avec Réduire la transparence (§ 7.3) | faite |
 
 Points vérifiés qui ne sont pas des exigences :
 

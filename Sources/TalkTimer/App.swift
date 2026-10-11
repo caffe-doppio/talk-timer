@@ -21,7 +21,7 @@ struct TalkTimerApp: App {
     }
 }
 
-/// Spike de la barre (SPECS.md § 11, étape 1) : `swift run TalkTimer <talk.json> [--screen N] [--auto]`.
+/// Spike de la barre (SPECS.md § 11, étape 1) : `swift run TalkTimer <talk.json> [--screen N] [--offset D] [--auto]`.
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var panel: BarPanel?
@@ -39,14 +39,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             exit(1)
         }
 
-        let wanted = args.firstIndex(of: "--screen").flatMap { args.indices.contains($0 + 1) ? Int(args[$0 + 1]) : nil } ?? 0
+        func value(_ flag: String) -> Int? { args.firstIndex(of: flag).flatMap { args.indices.contains($0 + 1) ? Int(args[$0 + 1]) : nil } }
+        let wanted = value("--screen") ?? 0
         let screens = NSScreen.screens
         let screen = screens.indices.contains(wanted) ? screens[wanted] : screens[0]  // [0] porte la barre de menus
 
         if args.contains("--auto") { talk.autoAdvance = true }  // passage automatique sans éditer la fixture (§ 6.3)
         let live = Live(Session(talk: talk, now: .now))
-        let next = { live.session.next(at: .now) }  // sans effet sur le dernier bloc ; le spike se quitte par ⌘Q (§ 6.3)
-        panel = BarPanel(screen: screen, rootView: BarView(live: live), onClick: next)
+        live.onEnd = { NSApp.terminate(nil) }  // pas encore de planificateur où revenir (§ 6.3)
+        let next = { live.session.next(at: .now) }  // sans effet sur le dernier bloc (§ 6.3)
+        // Calibrage de `d` (§ 7.1) : sous la barre des menus et sous une barre d'outils à deux étages, à ajuster avec --offset.
+        let offset = CGFloat(value("--offset") ?? Int(NSStatusBar.system.thickness + screen.safeAreaInsets.top) + 72)
+        print("îlot à \(Int(offset)) pt du haut de l'écran (--offset)")
+        panel = BarPanel(screen: screen, offset: offset, rootView: BarView(live: live), onCommandClick: next)
         panel?.orderFrontRegardless()
 
         HotKeys.register(keyCode: kVK_RightArrow, action: next)

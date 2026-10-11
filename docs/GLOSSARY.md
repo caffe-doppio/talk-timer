@@ -108,11 +108,10 @@ Une ligne par déclaration de premier niveau dans `Sources/`. `TalkTimerCore` (l
 | `Phase` | enum | `Sources/TalkTimerCore/Model.swift` | Phase de la barre | § 7.3 |
 | `phase(remaining:duration:)` | func | `Sources/TalkTimerCore/Model.swift` | Phase selon le temps restant et le seuil | § 7.3 |
 | `clock(_:)` | func | `Sources/TalkTimerCore/Model.swift` | Formatage `m:ss` et `+m:ss` | § 7.2 |
-| `Live` | class | `Sources/TalkTimer/Bar.swift` | Enveloppe `@Observable` de la `Session`, pour SwiftUI | § 6.4 |
-| `Palette` | enum | `Sources/TalkTimer/Bar.swift` | Couleurs de la barre (palette beta.gouv) | § 7.3 |
-| `extension Color` | extension | `Sources/TalkTimer/Bar.swift` | `Color(hex:)` | § 7.3 |
-| `extension Phase` | extension | `Sources/TalkTimer/Bar.swift` | Couleur de jauge par phase | § 7.3 |
+| `Live` | class | `Sources/TalkTimer/Bar.swift` | Enveloppe `@Observable` de la `Session` pour SwiftUI, et attente du second appui sur Fin | § 6.3, § 6.4 |
+| `extension Phase` | extension | `Sources/TalkTimer/Bar.swift` | Couleur système de jauge par phase | § 7.3 |
 | `BarPanel` | class | `Sources/TalkTimer/Bar.swift` | `NSPanel` flottant non activant | § 7.1 |
+| `FirstClickHostingView` | class | `Sources/TalkTimer/Bar.swift` | Hôte SwiftUI dont les boutons répondent au premier clic, la barre n'étant jamais clé | § 7.1 |
 | `BarView` | struct | `Sources/TalkTimer/Bar.swift` | Contenu SwiftUI de la barre | § 7.2 |
 | `HotKeys` | enum | `Sources/TalkTimer/Bar.swift` | Raccourcis Carbon du spike, remplacés par KeyboardShortcuts (§ 11) | § 7.4 |
 | `TalkTimerApp` | struct | `Sources/TalkTimer/App.swift` | Point d'entrée `@main` | § 5 |
