@@ -39,7 +39,7 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Début de la session | — | — | `Session.talkStart` | — | existant |
 | Début du bloc en cours | — | — | `Session.blockStart` | — | existant |
 | Pile des débuts précédents | — | — | `Session.history` | — | existant |
-| Bloc le plus avancé atteint | — | — | `Session.furthestIndex` | — | prévu |
+| Bloc le plus avancé atteint | — | — | `Session.furthestIndex` | — | existant |
 | Instant de la suspension | — | — | `Session.pausedAt` | — | existant |
 | Temps restant du bloc | restant | remaining | `Session.remaining(at:)` | — | existant |
 | Fin projetée | fin projetée | projected end | `Session.projectedEnd(at:)` | — | existant |
@@ -47,9 +47,9 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Passer au bloc suivant | Suivant | Next | `Session.next(at:)` | — | existant |
 | Revenir au bloc précédent | Précédent | Back | `Session.back()` | — | existant |
 | Pause imprévue en direct | Suspendre / Reprendre | Pause / Resume | `Session.togglePause(at:)` | — | existant |
-| Fin de session (seule action qui ferme la barre) | Fin | End | `Session.end()` (prévu), `Session.isFinished` | — | existant |
-| Passage automatique au bloc suivant (sinon : dépassement). Jamais après une pause prévue, après le dernier bloc ni sur un bloc retrouvé par Précédent | passage automatique | advance automatically | `Talk.autoAdvance` | `autoAdvance` (facultatif, `false` par défaut) ; `auto` dans le titre Markdown | prévu |
-| Application du passage automatique selon l'horloge | — | — | `Session.catchUp(at:)` | — | prévu |
+| Fin de session (seule action qui ferme la barre) | Fin | End | `Session.end()`, `Session.isFinished` | — | existant |
+| Passage automatique au bloc suivant (sinon : dépassement). Jamais après une pause prévue, après le dernier bloc ni sur un bloc retrouvé par Précédent | passage automatique | advance automatically | `Talk.autoAdvance` | `autoAdvance` (facultatif, `false` par défaut) ; `auto` dans le titre Markdown | existant |
+| Application du passage automatique selon l'horloge | — | — | `Session.catchUp(at:)` | — | existant |
 | Affichage de la barre selon le temps | phase | phase | `Phase`, `Session.phase(at:)` | — | existant |
 | Phase normale | normal | normal | `Phase.normal` | — | existant |
 | Fin de bloc proche | alerte | alert | `Phase.alert` | — | existant |

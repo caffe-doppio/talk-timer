@@ -21,7 +21,7 @@ struct TalkTimerApp: App {
     }
 }
 
-/// Spike de la barre (SPECS.md § 11, étape 1) : `swift run TalkTimer <talk.json> [--screen N]`.
+/// Spike de la barre (SPECS.md § 11, étape 1) : `swift run TalkTimer <talk.json> [--screen N] [--auto]`.
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var panel: BarPanel?
@@ -31,7 +31,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         for (index, screen) in NSScreen.screens.enumerated() { print("écran \(index) : \(screen.localizedName)") }
         guard let path = args.first(where: { $0.hasSuffix(".json") }) else { return }
 
-        let talk: Talk
+        var talk: Talk
         do {
             talk = try Talk.load(from: URL(filePath: path))
         } catch {
@@ -43,11 +43,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let screens = NSScreen.screens
         let screen = screens.indices.contains(wanted) ? screens[wanted] : screens[0]  // [0] porte la barre de menus
 
+        if args.contains("--auto") { talk.autoAdvance = true }  // passage automatique sans éditer la fixture (§ 6.3)
         let live = Live(Session(talk: talk, now: .now))
-        let next = { [weak self] in
-            live.session.next(at: .now)
-            if live.session.isFinished { self?.panel?.close() }  // Suivant sur le dernier bloc termine la session (§ 6.3)
-        }
+        let next = { live.session.next(at: .now) }  // sans effet sur le dernier bloc ; le spike se quitte par ⌘Q (§ 6.3)
         panel = BarPanel(screen: screen, rootView: BarView(live: live), onClick: next)
         panel?.orderFrontRegardless()
 

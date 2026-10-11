@@ -47,11 +47,32 @@ public struct Talk: Codable, Equatable, Sendable {
     public var title: String
     public var totalMinutes: Int
     public var blocks: [Block]
+    public var autoAdvance = false  // passage automatique (§ 6.3)
 
-    public init(title: String, totalMinutes: Int, blocks: [Block]) {
+    enum CodingKeys: String, CodingKey { case title, totalMinutes, blocks, autoAdvance }
+
+    public init(title: String, totalMinutes: Int, blocks: [Block], autoAdvance: Bool = false) {
         self.title = title
         self.totalMinutes = totalMinutes
         self.blocks = blocks
+        self.autoAdvance = autoAdvance
+    }
+
+    // Écrit à la main, comme `Block` : `autoAdvance` est facultatif et n'est écrit que s'il vaut `true` (§ 3).
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        title = try container.decode(String.self, forKey: .title)
+        totalMinutes = try container.decode(Int.self, forKey: .totalMinutes)
+        blocks = try container.decode([Block].self, forKey: .blocks)
+        autoAdvance = try container.decodeIfPresent(Bool.self, forKey: .autoAdvance) ?? false
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(title, forKey: .title)
+        try container.encode(totalMinutes, forKey: .totalMinutes)
+        try container.encode(blocks, forKey: .blocks)
+        if autoAdvance { try container.encode(true, forKey: .autoAdvance) }
     }
 
     public var margin: Int { totalMinutes - blocks.reduce(0) { $0 + $1.minutes } }
@@ -117,6 +138,7 @@ public struct Session: Sendable {
     public private(set) var talkStart: Date  // jamais décalé : la fin prévue est fixe
     public private(set) var blockStart: Date
     public private(set) var pausedAt: Date?
+    public private(set) var furthestIndex = 0  // un bloc d'indice inférieur a été retrouvé par « Précédent »
     public private(set) var isFinished = false
     private var history: [Date] = []
 
@@ -148,16 +170,29 @@ public struct Session: Sendable {
         pausedAt == nil ? TalkTimerCore.phase(remaining: remaining(at: now), duration: duration) : .paused
     }
 
+    /// Sans effet sur le dernier bloc : seule `end()` termine (§ 6.3).
     /// Pendant une suspension, le bloc suivant démarre figé à sa durée pleine (`blockStart = pausedAt`).
     public mutating func next(at now: Date) {
-        guard nextBlock != nil else {
-            isFinished = true
-            return
-        }
+        guard nextBlock != nil else { return }
         history.append(blockStart)
         index += 1
+        furthestIndex = max(furthestIndex, index)
         blockStart = pausedAt ?? now
     }
+
+    /// Passage automatique (§ 6.3), déduit de l'horloge : un seul appel rattrape plusieurs blocs après une veille.
+    /// Le bloc suivant commence à la fin exacte du précédent, pas à `now` : un rafraîchissement en retard ne décale rien.
+    public mutating func catchUp(at now: Date) {
+        guard talk.autoAdvance, pausedAt == nil else { return }
+        while index == furthestIndex, !block.isBreak, nextBlock != nil, remaining(at: now) <= 0 {
+            history.append(blockStart)
+            blockStart += duration
+            index += 1
+            furthestIndex = index
+        }
+    }
+
+    public mutating func end() { isFinished = true }
 
     // ponytail: une suspension faite après « Suivant » puis annulée par « Précédent » compte comme du temps
     // écoulé dans le bloc précédent ; décaler aussi `history` à la reprise si ce cas gêne en vrai.

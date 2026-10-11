@@ -110,6 +110,7 @@ struct BarView: View {
             .padding(.horizontal, 12)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Palette.background)
+            .onChange(of: context.date) { live.session.catchUp(at: context.date) }  // passage automatique (§ 6.4)
         }
     }
 

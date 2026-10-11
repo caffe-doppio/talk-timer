@@ -442,7 +442,7 @@ fixtures/borrowed-from-the-lab.json
    - écrire les règles du § 4 ;
    - faire passer les critères automatiques 1 à 13.
 3. **Modèle, suite, et Markdown** :
-   - `autoAdvance`, `furthestIndex`, `catchUp(at:)`, et « Fin » seule passe `isFinished` à vrai (§ 6.3) : critères 12 et 19 à 22 ;
+   - ✅ `autoAdvance`, `furthestIndex`, `catchUp(at:)`, et « Fin » seule passe `isFinished` à vrai (§ 6.3) : critères 12 et 19 à 22 ;
    - ajouter swift-markdown, écrire l'import et l'export du § 3.1 : critères 14 à 18 et 23 ;
    - test rapide de l'îlot dans le spike : distance `d` dans les deux configurations de la barre des menus, `glassEffect` dans le `NSPanel`, clic seul sans effet (§ 7.1).
 4. **Projet Xcode** : bundle ID provisoire, sandbox, entitlements, Info.plist (UTType, chiffrement), String Catalog, privacy manifest.

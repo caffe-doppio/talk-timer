@@ -155,14 +155,73 @@ func decode(_ json: String) throws -> Talk {
     #expect(session.blockStart == t0)
 }
 
-@Test func nextOnLastBlockFinishes() throws {  // 12
+@Test func onlyEndFinishes() throws {  // 12
     var session = Session(talk: try Talk.load(from: fixture), now: t0)
     for _ in 0..<7 { session.next(at: t0) }
     #expect(session.index == 7)
-    #expect(!session.isFinished)
     session.next(at: t0)
     #expect(session.index == 7)
+    #expect(!session.isFinished)
+    session.end()
     #expect(session.isFinished)
+}
+
+// MARK: - Passage automatique (§ 6.3)
+
+func autoSession(breakAt: Int? = nil) throws -> Session {
+    var talk = try Talk.load(from: fixture)
+    talk.autoAdvance = true
+    if let breakAt { talk.blocks[breakAt].isBreak = true }
+    return Session(talk: talk, now: t0)
+}
+
+@Test func autoAdvanceIsOptionalInFile() throws {  // 19
+    var talk = try Talk.load(from: fixture)
+    #expect(!talk.autoAdvance)
+    let written = try #require(String(bytes: JSONEncoder().encode(talk), encoding: .utf8))
+    #expect(!written.contains("autoAdvance"))
+    talk.autoAdvance = true
+    let decoded = try JSONDecoder().decode(Talk.self, from: JSONEncoder().encode(talk))
+    #expect(decoded.autoAdvance)
+}
+
+@Test func catchUpJumpsSeveralBlocksAtOnce() throws {  // 20
+    var session = try autoSession()
+    session.catchUp(at: t0 + minutes(16))  // blocs de 3, 5, 7 min écoulés : bloc 4 commencé à 15 min
+    #expect(session.index == 3)
+    #expect(session.blockStart == t0 + minutes(15))
+    #expect(session.remaining(at: t0 + minutes(16)) == minutes(2))
+    session.back()
+    #expect(session.blockStart == t0 + minutes(8))  // `history` complet
+}
+
+@Test func catchUpStopsAtBreakSuspensionAndLastBlock() throws {  // 21
+    var session = try autoSession(breakAt: 2)
+    session.catchUp(at: t0 + minutes(30))
+    #expect(session.index == 2)  // entre dans la pause prévue, n'en sort pas
+
+    session = try autoSession()
+    session.togglePause(at: t0 + minutes(1))
+    session.catchUp(at: t0 + minutes(30))
+    #expect(session.index == 0)  // figé pendant la suspension
+
+    session = try autoSession()
+    session.catchUp(at: t0 + minutes(70))
+    #expect(session.index == 7)
+    #expect(session.phase(at: t0 + minutes(70)) == .overtime)
+    #expect(!session.isFinished)
+}
+
+@Test func catchUpLeavesRevisitedBlockManual() throws {  // 22
+    var session = try autoSession()
+    session.catchUp(at: t0 + minutes(4))
+    #expect(session.index == 1)
+    session.back()
+    session.catchUp(at: t0 + minutes(4))
+    #expect(session.index == 0)  // bloc retrouvé, déjà écoulé : attend « Suivant »
+    session.next(at: t0 + minutes(4))
+    session.catchUp(at: t0 + minutes(10))
+    #expect(session.index == 2)  // reprend depuis `furthestIndex`
 }
 
 // MARK: - Affichage de la barre (§ 7.3)
