@@ -15,7 +15,10 @@ struct WelcomeView: View {
         HStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 12) {
                 Text("talk-timer").font(.largeTitle.bold())
-                Text("Plan a talk, then keep time with a floating bar.")
+                // Dans l'ordre d'usage : préparer, puis présenter.
+                Text("Split your talk into blocks, within a time limit that never overflows.")
+                    .foregroundStyle(.secondary)
+                Text("While you present, a bar above your slides shows the time left in each block.")
                     .foregroundStyle(.secondary)
                 Spacer()
                 Button("New Talk", systemImage: "plus") { newDocument(TalkDocument()) }

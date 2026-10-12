@@ -223,22 +223,22 @@
         }
       }
     },
-    "Plan a talk, then keep time with a floating bar." : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Planifiez un talk, puis tenez le temps avec une barre flottante."
-          }
-        }
-      }
-    },
     "Privacy Policy" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Politique de confidentialité"
+          }
+        }
+      }
+    },
+    "Split your talk into blocks, within a time limit that never overflows." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Découpez votre talk en blocs, dans un temps qui ne déborde jamais."
           }
         }
       }
@@ -367,6 +367,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Accueil"
+          }
+        }
+      }
+    },
+    "While you present, a bar above your slides shows the time left in each block." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pendant la présentation, une barre au-dessus de vos diapositives montre le temps restant de chaque bloc."
           }
         }
       }
