@@ -13,7 +13,9 @@ Un planificateur de discours avec une barre de temps flottante, pour macOS.
 Pour qui a un plan solide mais perd le fil du temps en parlant : un sous-sujet passionnant prévu pour 5 minutes en prend 15, et c'est pire en langue étrangère.
 
 1. **Planifier.** On fixe une durée totale, puis on range, allonge ou raccourcit des blocs. Le total ne peut jamais être dépassé : allonger un bloc consomme la marge, et quand la marge est vide, il faut raccourcir ailleurs.
-<!--TODO: Ajouter screenshots de l'écran du plan-->
+
+![La fenêtre du planificateur pour « Borrowed from the Lab », 60 minutes. Sous le titre, une frise de segments proportionnels : quatre pauses prévues en vert, puis les blocs en bleu, puis une marge grise de 3 minutes. En dessous, une ligne par bloc avec son titre, sa durée et ses flèches, sa phrase de transition et un interrupteur Pause. En bas, « Ajouter un bloc », la case « Passage automatique », le choix de l'écran et le bouton Démarrer.](assets/screenshots/planner.png)\
+**Planificateur.** Une fenêtre par talk. La frise montre chaque bloc en proportion de sa durée, les pauses prévues en vert et la marge non attribuée en gris. Allonger un bloc au-delà de la marge est refusé avec un bip, et ⌘Z annule toute modification.
 
 2. **Tenir le temps.** Pendant la présentation, un îlot en verre en haut de l'écran, au-dessus de toutes les applis, affiche le bloc en cours et une jauge qui se vide. On voit la fin arriver et on a le temps de préparer sa transition.
 
@@ -29,12 +31,12 @@ Pour qui a un plan solide mais perd le fil du temps en parlant : un sous-sujet p
 ![La barre suspendue : une jauge grise figée à 0:52, le mot « SUSPENDU », puis le bloc suivant et la phrase de transition.](assets/screenshots/bar_paused.png)\
 **Suspendu.** ⌃⌥Espace fige le bloc à 0:52 et affiche `SUSPENDU`. L'heure de fin, elle, ne bouge pas : une pause imprévue consomme la marge.
 
-3. **Partager** *(prévu)*. Créer un talk à partir d'un plan en Markdown, l'exporter en Markdown ou en PDF.
+3. **Partager.** Ouvrir un plan en Markdown comme nouveau talk, exporter un talk en Markdown. Export PDF *(prévu)*.
 
 L'outil ne coupe jamais la parole. Le passage au bloc suivant peut être automatique, si on le choisit pour un talk ; la fin du talk, elle, est toujours décidée par la personne.
 
 > [!NOTE]
-> **Statut : modèle + spike de la barre.** Le modèle (format de fichier, règles du planificateur, session en direct avec suspension) est une bibliothèque testée, `TalkTimerCore`. La barre flottante fonctionne à partir d'un fichier de talk. La fenêtre du planificateur n'est pas encore faite. Cible : le Mac App Store, en gratuit.
+> **Statut : planificateur + spike de la barre.** Le modèle (format de fichier, règles du planificateur, session en direct, Markdown) est une bibliothèque testée, `TalkTimerCore`. L'app du Mac App Store modifie les fichiers `.talk` dans son planificateur ; Démarrer n'est pas encore branché sur la barre. La barre flottante fonctionne à partir d'un fichier de talk, dans un spike à part. Cible : le Mac App Store, en gratuit.
 > Journal de développement : [`DEVSTORY.md`](DEVSTORY.md).
 > Spécifications complètes : [`SPECS.md`](SPECS.md). Vocabulaire : [`docs/GLOSSARY.md`](docs/GLOSSARY.md).
 

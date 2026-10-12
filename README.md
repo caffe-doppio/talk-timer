@@ -13,7 +13,9 @@ A talk planner with a floating time bar, for macOS.
 For people who have a solid outline but lose track of time once they start talking. A fascinating sub-topic planned for 5 minutes takes 15, and it gets worse in a foreign language.
 
 1. **Plan.** Set the total length, then reorder, extend or shorten blocks. The total can never be exceeded: extending a block uses up the margin, and once the margin is empty you have to shorten something else.
-<!--TODO: Ajouter screenshots de l'écran du plan-->
+
+![The planner window for "Borrowed from the Lab", 60 minutes. Under the title, a strip of proportional segments: four green planned breaks, then the blocks in blue, then a grey margin of 3 minutes. Below, one row per block with its title, its length and arrows, its transition line and a Break switch. At the bottom, "Add Block", the "Advance automatically" checkbox, the screen picker and the Start button.](assets/screenshots/planner.png)\
+**Planner.** One window per talk. The strip shows each block in proportion to its length, planned breaks in green and the unassigned margin in grey. Extending a block beyond the margin is refused with a beep, and ⌘Z undoes any change.
 
 2. **Keep time.** While you present, a glass island at the top of the screen, above every app, shows the current block and a gauge that runs out. You see the end coming and have time to find your transition.
 
@@ -29,12 +31,12 @@ For people who have a solid outline but lose track of time once they start talki
 ![The paused bar: a grey gauge frozen at 0:52, the word "SUSPENDU", then the next block and the transition line.](assets/screenshots/bar_paused.png)\
 **Paused.** ⌃⌥Space freezes the block at 0:52 and shows `SUSPENDU` (the spike is in French only). The end time does not move: an unplanned pause uses up the margin.
 
-3. **Share** *(planned)*. Start a talk from a Markdown outline, export it to Markdown or PDF.
+3. **Share.** Open a Markdown outline as a new talk, export a talk to Markdown. PDF export *(planned)*.
 
 The tool never cuts you off. Moving to the next block can be automatic if you choose so for a talk; ending the talk is always up to you.
 
 > [!NOTE]
-> **Status: core model + bar spike.** The model (file format, planner rules, live session with pause) is a tested library, `TalkTimerCore`. The floating bar runs from a talk file. The planner window is not built yet. Target: the Mac App Store, free.
+> **Status: planner + bar spike.** The model (file format, planner rules, live session, Markdown) is a tested library, `TalkTimerCore`. The App Store app edits `.talk` files in its planner; Start is not wired to the bar yet. The floating bar runs from a talk file in a separate spike. Target: the Mac App Store, free.
 > Development log: [`DEVSTORY.md`](DEVSTORY.md) (French).
 > Full specification (French): [`SPECS.md`](SPECS.md). Vocabulary: [`docs/GLOSSARY.md`](docs/GLOSSARY.md).
 
