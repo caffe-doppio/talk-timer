@@ -57,6 +57,16 @@
         }
       }
     },
+    "Block" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bloc"
+          }
+        }
+      }
+    },
     "Block title" : {
       "localizations" : {
         "fr" : {
@@ -73,6 +83,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pause"
+          }
+        }
+      }
+    },
+    "BREAK" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PAUSE"
           }
         }
       }
@@ -103,6 +123,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Exporter en Markdown…"
+          }
+        }
+      }
+    },
+    "Export as PDF…" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exporter en PDF…"
           }
         }
       }
@@ -139,6 +169,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ligne %1$lld : %2$@"
+          }
+        }
+      }
+    },
+    "Margin" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marge"
           }
         }
       }
@@ -223,6 +263,16 @@
         }
       }
     },
+    "Print…" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imprimer…"
+          }
+        }
+      }
+    },
     "Privacy Policy" : {
       "localizations" : {
         "fr" : {
@@ -249,6 +299,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Démarrer"
+          }
+        }
+      }
+    },
+    "Starts at" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Début"
           }
         }
       }

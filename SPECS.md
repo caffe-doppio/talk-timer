@@ -95,7 +95,7 @@ Le PDF sert à relire ou à imprimer le plan. Contenu :
 - la marge en dernière ligne ;
 - les pauses prévues signalées par le mot « pause », pas seulement par une couleur.
 
-La mise en page est claire même en mode sombre, au format de papier choisi, et paginée si le talk ne tient pas sur une page. Elle est produite par une seule vue d'impression (`NSPrintOperation`) qui sert deux entrées de menu : Imprimer… et Exporter en PDF….
+La mise en page est claire même en mode sombre, au format de papier choisi (Fichier › Mise en page…), et paginée si le talk ne tient pas sur une page. Elle est produite par une seule vue, `TalkPrintView`, rendue en PDF vectoriel par `ImageRenderer` : Exporter en PDF… écrit ce PDF, et Imprimer… (⌘P) imprime le même PDF par PDFKit. L'impression d'une `NSHostingView` par `NSPrintOperation` perd les formes de SwiftUI (frise, séparateurs) : vérifié le 2026-10-12. Les pages sont découpées à hauteur fixe : une ligne peut être coupée entre deux pages.
 
 ## 4. Règles du planificateur
 
@@ -342,7 +342,7 @@ Le titre du bloc suivant est toujours affiché, en texte secondaire : on sait à
 ## 8. Exigences non fonctionnelles
 
 - **Aucun accès réseau**, aucune télémétrie, aucun entitlement réseau. Les talks restent des fichiers locaux.
-- **Sandbox** : seuls `com.apple.security.app-sandbox` et `com.apple.security.files.user-selected.read-write` sont activés.
+- **Sandbox** : seuls `com.apple.security.app-sandbox`, `com.apple.security.files.user-selected.read-write` et `com.apple.security.print` (Imprimer…, § 3.2) sont activés.
 - Démarrage de la barre en moins d'une seconde après le clic sur « Démarrer ».
 - Une précision d'affichage à la seconde suffit. Sur la durée d'une session, l'erreur est nulle, puisque le temps est calculé depuis l'horloge.
 - **Localisation** : anglais (langue de développement) et français, dans un String Catalog (`Localizable.xcstrings`). Aucune chaîne d'interface en dur. Le modèle ne contient aucune chaîne d'interface : `TalkError` porte des données, et l'app les formule.
@@ -362,7 +362,7 @@ Tests/TalkTimerCoreTests/ModelTests.swift  Swift Testing, critères § 10
 TalkTimer.xcodeproj                        projet de l'app, dossier App/ synchronisé, schéma partagé talk-timer
 App/                                       @main, DocumentGroup, planificateur, barre, Réglages
 App/Info.plist                             UTType .talk exporté, ITSAppUsesNonExemptEncryption = NO
-App/TalkTimer.entitlements                 sandbox + fichiers choisis par l'utilisateur
+App/TalkTimer.entitlements                 sandbox + fichiers choisis par l'utilisateur + impression
 App/PrivacyInfo.xcprivacy                  privacy manifest (§ 14)
 App/Localizable.xcstrings                  EN + FR
 App/AppIcon.icon                           icône Icon Composer
@@ -455,7 +455,7 @@ fixtures/borrowed-from-the-lab.json
    - ✅ 5b. Vue du planificateur : en-tête (titre, total), frise, marge, liste avec interrupteur Pause et menu contextuel, ajout de bloc, pied (passage automatique, écran, Démarrer désactivé jusqu'à l'étape 6) ;
    - ✅ 5c. Menus : Fichier › Exporter en Markdown…, Aide › Politique de confidentialité. Le menu Session et la scène Réglages passent à l'étape 6, avec la session et KeyboardShortcuts dont ils dépendent ;
    - ✅ 5d. Fenêtre Accueil ;
-   - 5e. Export PDF et impression (§ 3.2).
+   - ✅ 5e. Export PDF et impression (§ 3.2), avec l'entitlement `com.apple.security.print` (§ 8, § 15).
 6. **Session et barre** :
    - branchement de la session sur la barre ;
    - menu Session et scène Réglages (les quatre raccourcis), venus de l'étape 5 ;
@@ -513,7 +513,7 @@ Sources consultées le 2026-10-11 :
 
 | # | Exigence | Source | `exigence_apple` | `exigence_projet` | Pour talk-timer | Fiche |
 |---|---|---|---|---|---|---|
-| P1 | App Sandbox | Guideline 2.4.5 (i), [App Sandbox](https://developer.apple.com/documentation/security/app-sandbox) | obligatoire | obligatoire | Sandbox + `files.user-selected.read-write`, rien d'autre (§ 8) | à faire |
+| P1 | App Sandbox | Guideline 2.4.5 (i), [App Sandbox](https://developer.apple.com/documentation/security/app-sandbox) | obligatoire | obligatoire | Sandbox + `files.user-selected.read-write` + `print`, rien d'autre (§ 8) | à faire |
 | P2 | Accès aux fichiers en sandbox | [Accessing files from the macOS App Sandbox](https://developer.apple.com/documentation/security/accessing-files-from-the-macos-app-sandbox) | obligatoire | obligatoire | Délégué à `DocumentGroup` ; pas de chemin mémorisé (§ 5) | à faire |
 | P3 | Empaquetage par Xcode, bundle autonome, aucun installeur | 2.4.5 (ii) | obligatoire | obligatoire | Projet Xcode, archive (§ 9) | à faire |
 | P4 | Pas de lancement à l'ouverture de session ni de processus après fermeture sans consentement | 2.4.5 (iii) | obligatoire | obligatoire | Aucun élément d'ouverture ; raccourcis désenregistrés à ⌘Q (recette 10) | à faire |
@@ -564,6 +564,7 @@ Fiches de langage et de frameworks à produire en parallèle : `DocumentGroup`, 
 | 2026-10-12 | Un `.md` ouvert est détaché de son fichier, et `fileWrapper` n'écrit que des `.talk` | `DocumentGroup` réécrivait le `.md` en JSON à l'enregistrement automatique (§ 5) |
 | 2026-10-11 | Pause prévue = bloc `break: true` ; pause imprévue = Suspendre, fin fixe | La salle se libère à l'heure prévue : une suspension consomme la marge, puis l'écart |
 | 2026-10-11 | Fenêtre Accueil sur les récents du système, pas de bibliothèque | Les talks restent des fichiers (le fichier est le contrat, § 3) |
+| 2026-10-12 | Entitlement `com.apple.security.print` pour Fichier › Imprimer… | En sandbox, imprimer l'exige. Imprimer le plan sans passer par Aperçu ; l'entitlement n'ouvre ni réseau ni fichier |
 | 2026-10-12 | Préfixe du bundle ID et du UTType : `io.github.caffe-doppio.` | Suit le dépôt GitHub, indépendant d'une structure juridique |
 | 2026-10-11 | Barre en îlot (capsule Liquid Glass) sous la bande du haut, au lieu d'une bande pleine largeur. Le concept garde le nom « barre » | La bande recouvrait la poignée « ··· » des apps en plein écran ; la capsule est la forme native du matériau |
 | 2026-10-11 | Couleurs système dans la barre ; palette beta.gouv retirée | Recommandation Apple. Les variantes sombre et contraste augmenté sont fournies par le système |

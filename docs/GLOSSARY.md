@@ -30,7 +30,7 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Changer la durée totale (règle § 4) | — | — | `Talk.setTotal(_:)` | — | existant |
 | Fichier de talk | fichier `.talk` | `.talk` file | `TalkDocument`, `UTType.talk` | — | existant |
 | Talk au format Markdown (import et export) | Markdown | Markdown | `Talk(markdown:)`, `Talk.markdown` | — | existant |
-| Export imprimable | Exporter en PDF, Imprimer | Export as PDF, Print | `TalkPrintView` | — | prévu |
+| Export imprimable | Exporter en PDF, Imprimer | Export as PDF, Print | `TalkPrintView`, `TalkPrintView.pdf(_:)` | — | existant |
 | Fenêtre d'ouverture | Accueil | Welcome | `WelcomeView` | — | existant |
 | Talks ouverts récemment | talks récents | recent talks | récents du système (`NSDocumentController`) | — | prévu |
 | Exécution en direct | session | session | `Session` | — | existant |
@@ -131,5 +131,6 @@ Une ligne par déclaration de premier niveau dans `Sources/` et `App/`. `TalkTim
 | `StripView` | struct | `App/PlannerView.swift` | Frise des blocs et de la marge | § 5 |
 | `WelcomeView` | struct | `App/WelcomeView.swift` | Fenêtre Accueil : nouveau talk, ouvrir, talks récents | § 5 |
 | `RecentRow` | struct | `App/WelcomeView.swift` | Un talk récent : nom du fichier et dossier | § 5 |
+| `TalkPrintView` | struct | `App/TalkPrintView.swift` | Mise en page imprimable d'un talk, rendue en PDF paginé pour l'export et l'impression | § 3.2 |
 | `TalkCommands` | struct | `App/TalkCommands.swift` | Menus : Fichier › Exporter en Markdown…, Aide › Politique de confidentialité | § 5 |
 | `extension FocusedValues` | extension | `App/TalkCommands.swift` | `talk` : le talk de la fenêtre au premier plan, pour les menus | § 5 |

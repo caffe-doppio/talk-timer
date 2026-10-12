@@ -265,3 +265,40 @@ Notes prises avant de toucher au code ni aux SPECS. Chaque point remet en cause 
 - **`SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`.** Tout le code de l'app est isolé au thread principal par défaut, comme dans le modèle d'app d'Xcode 27 (`App Base.xctemplate`, vérifié dans le bundle d'Xcode). Le spike devait écrire `@MainActor` à la main. Le paquet, lui, garde le réglage par défaut : le modèle n'a pas de thread. Fiche : `/apple-dev-docs tspl:LanguageGuide/Concurrency`.
 
 **Suite.** Étape 5 : le planificateur et la fenêtre Accueil, avec `DocumentGroup`, les types de documents (`CFBundleDocumentTypes`) et la traduction du nom du type.
+
+---
+
+## 2026-10-12 · Étape 5 : planificateur, Accueil, PDF
+
+**Fait.**
+
+- `3a05f51` : `TalkDocument` et `DocumentGroup`, vue du planificateur (en-tête, frise, liste, pied), règles du § 4 avec bip et clignotement de la marge, ouverture des `.md` en talk sans titre.
+- `8ae17df` : Fichier › Exporter en Markdown…, Aide › Politique de confidentialité, et `PRIVACY.md` provisoire (`7b43376`).
+- `0d4a76d` : colonnes alignées d'une ligne à l'autre (titre | transition | Pause | durée et flèches).
+- `050dba5`, `dc3f9d4` : fenêtre Accueil, avec les talks récents du système, fermée dès qu'un talk s'ouvre.
+- Export PDF et impression (commit à venir) : une seule mise en page, `TalkPrintView`, rendue en PDF par `ImageRenderer` ; l'impression passe ce PDF à PDFKit. Troisième entitlement : `com.apple.security.print`.
+- Le menu Session et la scène Réglages passent à l'étape 6, avec la session et KeyboardShortcuts dont ils dépendent.
+
+**Pièges.**
+
+1. **`DocumentGroup` a réécrit un `.md` en JSON.** L'enregistrement automatique écrit « sur place » même hors de `writableContentTypes`, et `fileWrapper` ne regardait pas le type demandé. La fixture a été restaurée depuis git. Correctif à deux étages :
+   - le document d'un `.md` est détaché de son fichier dès que sa fenêtre apparaît (`fileURL = nil`) ;
+   - `fileWrapper` refuse d'écrire autre chose qu'un `.talk`.
+   Vérifié : empreinte du `.md` identique, et un brouillon `.talk` dans le conteneur.
+2. **L'impression d'une `NSHostingView` perd les formes.** Avec `NSPrintOperation`, le texte s'imprimait mais pas la frise ni les séparateurs (dessinés par des calques). `ImageRenderer` dessine toute la vue dans un contexte PDF. Vérifié sur 30 et 60 blocs avec un programme jetable, compilé hors du projet.
+3. **`.onDelete` donne un balayage pleine largeur sur macOS 26.** Remplacé par `.swipeActions(allowsFullSwipe: false)`, avec l'icône `trash`. `.onDelete` reste pour ⌫.
+4. **`xcodebuild build` ne met pas à jour le String Catalog**, contrairement à Xcode. `xcodebuild -exportLocalizations` le fait, et échoue avec `-derivedDataPath`.
+5. **L'enregistrement automatique modifie les fixtures ouvertes pour les regarder.** Pour essayer, ouvrir une copie.
+6. **`DocumentGroupLaunchScene` n'existe pas sur macOS**, ce que confirme le `.swiftinterface` du SDK. L'Accueil est une scène `Window` avec `defaultLaunchBehavior(.presented)`.
+7. **Un motif `.gitignore` qui contient `/` part de la racine du dépôt.** `*.xcodeproj/xcuserdata/` ne couvrait pas `project.xcworkspace/xcuserdata/` : remplacé par `xcuserdata/`.
+
+**Notions.**
+
+- **`FileDocument` et `nonisolated`.** `DocumentGroup` lit et écrit hors du thread principal, d'où `nonisolated struct TalkDocument`, alors que le reste de l'app est isolé au `MainActor`. Fiche : `/apple-dev-docs https://developer.apple.com/documentation/swiftui/filedocument`.
+- **Descendre sous SwiftUI.** `DocumentGroup` repose sur `NSDocument`, et `NSDocumentController.shared` y donne accès quand SwiftUI n'expose pas ce qu'il faut (détacher un document de son fichier, lister les récents). Fiche : `/apple-dev-docs https://developer.apple.com/documentation/appkit/nsdocumentcontroller`.
+- **`@FocusedValue`.** Un menu appartient à l'app entière, et la fenêtre au premier plan lui publie son talk (`focusedSceneValue`). C'est l'équivalent SwiftUI de la chaîne de répondeurs. Fiche : `/apple-dev-docs https://developer.apple.com/documentation/swiftui/focusedvalue`.
+- **`@retroactive`.** Faire adopter un protocole de Foundation à un type d'un autre module se déclare, comme une règle d'orphelin en Rust, mais signalée au lieu d'être interdite.
+- **`ImageRenderer`.** Il rend une vue SwiftUI en image ou en PDF vectoriel, dans un `CGContext` dont l'origine est en bas à gauche. Fiche : `/apple-dev-docs https://developer.apple.com/documentation/swiftui/imagerenderer`.
+- **Colonnes dans une `List`.** `Grid` ne s'y emploie pas : des largeurs fixes à droite et deux colonnes souples à parts égales donnent le même alignement.
+
+**Suite.** Étape 6 : la barre dans l'app (branchée sur la session), KeyboardShortcuts, le menu Session, la scène Réglages, l'élément de la barre des menus, et le retrait du spike.
