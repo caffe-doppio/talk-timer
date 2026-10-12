@@ -183,12 +183,52 @@
         }
       }
     },
+    "New Talk" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nouveau talk"
+          }
+        }
+      }
+    },
     "No margin left: shorten a block" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Plus de marge : raccourcissez un bloc"
+          }
+        }
+      }
+    },
+    "No recent talks" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun talk récent"
+          }
+        }
+      }
+    },
+    "Open…" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir…"
+          }
+        }
+      }
+    },
+    "Plan a talk, then keep time with a floating bar." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Planifiez un talk, puis tenez le temps avec une barre flottante."
           }
         }
       }
@@ -209,6 +249,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Démarrer"
+          }
+        }
+      }
+    },
+    "talk-timer" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "talk-timer"
           }
         }
       }
@@ -307,6 +357,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sans titre"
+          }
+        }
+      }
+    },
+    "Welcome" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accueil"
           }
         }
       }

@@ -7,6 +7,7 @@ import TalkTimerCore
 
 struct PlannerView: View {
     @Binding var document: TalkDocument
+    @Environment(\.dismissWindow) private var dismissWindow
     @State private var marginFlash = false
     @State private var totalRefused = false
     @State private var screenIndex = 0  // 0 : l'écran qui porte la barre des menus (§ 5)
@@ -43,6 +44,7 @@ struct PlannerView: View {
         }
         .frame(minWidth: 560, minHeight: 360)
         .focusedSceneValue(\.talk, document.talk)  // pour Fichier › Exporter en Markdown… (`TalkCommands`)
+        .onAppear { dismissWindow(id: WelcomeView.id) }  // un talk ouvert remplace l'Accueil (§ 5)
     }
 
     private var header: some View {

@@ -123,7 +123,7 @@ talk-timer est une **app document** (`DocumentGroup` + `FileDocument`) : **une f
 
 **Fenêtre Accueil** (`WelcomeView`, scène `Window`) :
 
-- Elle s'affiche au lancement quand aucun talk n'est restauré, et reste accessible par Fenêtre › Accueil (⇧⌘1).
+- Elle s'affiche au lancement (`defaultLaunchBehavior(.presented)`), n'est jamais restaurée, et se ferme dès qu'une fenêtre de talk apparaît : au lancement avec des talks restaurés, seuls ceux-ci restent. Elle reste accessible par Fenêtre › Accueil (⇧⌘1). `DocumentGroupLaunchScene`, l'écran d'accueil des apps document, n'existe pas sur macOS (`@available(macOS, unavailable)` dans le SDK macOS 27).
 - Elle contient « Nouveau talk » (⌘N), « Ouvrir… » (⌘O, `.talk` ou `.md`) et la liste des talks récents.
 - La liste vient des récents du système (`NSDocumentController.recentDocumentURLs`). Elle affiche le nom du fichier et son dossier, sans lire le contenu des fichiers.
 - Ce n'est pas une bibliothèque : les talks restent des fichiers, là où on les a rangés.
@@ -454,7 +454,7 @@ fixtures/borrowed-from-the-lab.json
    - ✅ 5a. Document : `TalkDocument` (`FileDocument`), `DocumentGroup`, ouverture des `.md` en talk sans titre, types de documents dans Info.plist, noms des types traduits (`InfoPlist.xcstrings`) ;
    - ✅ 5b. Vue du planificateur : en-tête (titre, total), frise, marge, liste avec interrupteur Pause et menu contextuel, ajout de bloc, pied (passage automatique, écran, Démarrer désactivé jusqu'à l'étape 6) ;
    - ✅ 5c. Menus : Fichier › Exporter en Markdown…, Aide › Politique de confidentialité. Le menu Session et la scène Réglages passent à l'étape 6, avec la session et KeyboardShortcuts dont ils dépendent ;
-   - 5d. Fenêtre Accueil ;
+   - ✅ 5d. Fenêtre Accueil ;
    - 5e. Export PDF et impression (§ 3.2).
 6. **Session et barre** :
    - branchement de la session sur la barre ;

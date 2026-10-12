@@ -31,7 +31,7 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Fichier de talk | fichier `.talk` | `.talk` file | `TalkDocument`, `UTType.talk` | — | existant |
 | Talk au format Markdown (import et export) | Markdown | Markdown | `Talk(markdown:)`, `Talk.markdown` | — | existant |
 | Export imprimable | Exporter en PDF, Imprimer | Export as PDF, Print | `TalkPrintView` | — | prévu |
-| Fenêtre d'ouverture | Accueil | Welcome | `WelcomeView` | — | prévu |
+| Fenêtre d'ouverture | Accueil | Welcome | `WelcomeView` | — | existant |
 | Talks ouverts récemment | talks récents | recent talks | récents du système (`NSDocumentController`) | — | prévu |
 | Exécution en direct | session | session | `Session` | — | existant |
 | Bloc en cours | bloc en cours | current block | `Session.block`, `Session.index` | — | existant |
@@ -129,5 +129,7 @@ Une ligne par déclaration de premier niveau dans `Sources/` et `App/`. `TalkTim
 | `PlannerView` | struct | `App/PlannerView.swift` | Fenêtre d'un talk : en-tête, frise, liste, pied | § 5 |
 | `BlockRow` | struct | `App/PlannerView.swift` | Ligne d'un bloc : titre, durée, transition, pause | § 5 |
 | `StripView` | struct | `App/PlannerView.swift` | Frise des blocs et de la marge | § 5 |
+| `WelcomeView` | struct | `App/WelcomeView.swift` | Fenêtre Accueil : nouveau talk, ouvrir, talks récents | § 5 |
+| `RecentRow` | struct | `App/WelcomeView.swift` | Un talk récent : nom du fichier et dossier | § 5 |
 | `TalkCommands` | struct | `App/TalkCommands.swift` | Menus : Fichier › Exporter en Markdown…, Aide › Politique de confidentialité | § 5 |
 | `extension FocusedValues` | extension | `App/TalkCommands.swift` | `talk` : le talk de la fenêtre au premier plan, pour les menus | § 5 |

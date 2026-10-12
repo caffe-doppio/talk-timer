@@ -10,5 +10,12 @@ struct TalkTimerApp: App {
                 .onAppear { TalkDocument.detachMarkdownFiles() }
         }
         .commands { TalkCommands() }
+
+        // Présentée au lancement, jamais restaurée ; Fenêtre › Accueil (⇧⌘1). Se ferme quand un talk s'ouvre.
+        Window("Welcome", id: WelcomeView.id) { WelcomeView() }
+            .windowResizability(.contentSize)
+            .defaultLaunchBehavior(.presented)
+            .restorationBehavior(.disabled)
+            .keyboardShortcut("1", modifiers: [.command, .shift])
     }
 }
