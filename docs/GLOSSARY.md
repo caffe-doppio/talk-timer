@@ -28,7 +28,7 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Changer la durée d'un bloc (règle § 4) | — | — | `Talk.setMinutes(_:at:)` | — | existant |
 | Ajouter un bloc (règle § 4) | Ajouter un bloc | Add Block | `Talk.addBlock(title:)` | — | existant |
 | Changer la durée totale (règle § 4) | — | — | `Talk.setTotal(_:)` | — | existant |
-| Fichier de talk | fichier `.talk` | `.talk` file | `TalkDocument`, UTType `.talk` | — | prévu |
+| Fichier de talk | fichier `.talk` | `.talk` file | `TalkDocument`, `UTType.talk` | — | existant |
 | Talk au format Markdown (import et export) | Markdown | Markdown | `Talk(markdown:)`, `Talk.markdown` | — | existant |
 | Export imprimable | Exporter en PDF, Imprimer | Export as PDF, Print | `TalkPrintView` | — | prévu |
 | Fenêtre d'ouverture | Accueil | Welcome | `WelcomeView` | — | prévu |
@@ -56,7 +56,9 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Temps dépassé | dépassement | overtime | `Phase.overtime` | — | existant |
 | Session suspendue | suspendu | paused | `Phase.paused` | — | existant |
 | Seuil d'alerte | seuil | alert threshold | calculé dans `phase(remaining:duration:)` | — | existant |
-| Fenêtre d'édition | planificateur | planner | `PlannerView` | — | prévu |
+| Fenêtre d'édition | planificateur | planner | `PlannerView` | — | existant |
+| Ligne d'un bloc dans le planificateur | — | — | `BlockRow` | — | existant |
+| Dessin proportionnel des blocs et de la marge | frise | strip | `StripView` | — | existant |
 | Barre flottante | barre | bar | `BarPanel` (fenêtre), `BarView` (contenu) | — | existant |
 | Jauge du bloc en cours dans la barre des menus | élément de la barre des menus | menu bar extra | `MenuBarExtra` | — | prévu |
 | Raccourci global | raccourci | shortcut | `KeyboardShortcuts.Name` (`.nextBlock`, `.previousBlock`, `.togglePause`, `.endSession`) | — | prévu |
@@ -73,6 +75,7 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 |---|---|---|
 | état, `State` | phase | « État » désigne l'état de la session (§ 6.1). La barre a des phases (§ 7.3) |
 | Annuler, undo | Précédent, `back()` | Dans le planificateur, « Annuler » est ⌘Z |
+| timeline (pour la frise) | frise, `StripView` | `TimelineView` est la vue SwiftUI qui rafraîchit la barre chaque seconde |
 | `drift`, dérive | écart, `endOffset` | « Dérive » est réservé à la dérive d'horloge que le § 6.1 évite |
 | durée (seule) en Swift | `minutes` ou `duration` | `minutes` : entier, dans le fichier. `duration` : secondes, à l'exécution |
 | section, séquence, segment, étape, item, élément (pour un bloc) | bloc | Un seul mot pour la séquence. « Segment » désigne seulement le dessin d'un bloc dans la frise |
@@ -119,4 +122,10 @@ Une ligne par déclaration de premier niveau dans `Sources/` et `App/`. `TalkTim
 | `HotKeys` | enum | `Sources/TalkTimer/Bar.swift` | Raccourcis Carbon du spike, remplacés par KeyboardShortcuts (§ 11) | § 7.4 |
 | `TalkTimerApp` | struct | `App/TalkTimerApp.swift`, `Sources/TalkTimer/App.swift` (spike) | Point d'entrée `@main` | § 5 |
 | `AppDelegate` | class | `Sources/TalkTimer/App.swift` | Lancement du spike en ligne de commande | § 11 |
-| `extension TalkError` | extension | `Sources/TalkTimer/App.swift` | `message` : texte des refus, en attendant le String Catalog | § 8 |
+| `extension TalkError` | extension | `App/TalkDocument.swift`, `Sources/TalkTimer/App.swift` (spike) | `message` : texte des refus, traduit par le String Catalog ; `LocalizedError` pour `DocumentGroup` | § 8 |
+| `extension UTType` | extension | `App/TalkDocument.swift` | `.talk` (exporté) et `.markdownText` (importé, lu seulement) | § 3, § 5 |
+| `TalkDocument` | struct | `App/TalkDocument.swift` | `FileDocument` : lit `.talk` et `.md`, n'écrit que `.talk` ; `detachMarkdownFiles()` fait d'un `.md` ouvert un talk sans titre | § 5 |
+| `extension TalkDocument` | extension | `App/TalkDocument.swift` | `detachMarkdownFiles()`, côté AppKit (`NSDocumentController`) | § 5 |
+| `PlannerView` | struct | `App/PlannerView.swift` | Fenêtre d'un talk : en-tête, frise, liste, pied | § 5 |
+| `BlockRow` | struct | `App/PlannerView.swift` | Ligne d'un bloc : titre, durée, transition, pause | § 5 |
+| `StripView` | struct | `App/PlannerView.swift` | Frise des blocs et de la marge | § 5 |

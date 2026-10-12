@@ -19,7 +19,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
-				TalkTimer.entitlements,
 			);
 			target = A10000000000000000000005 /* TalkTimer */;
 		};

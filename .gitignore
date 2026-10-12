@@ -3,7 +3,7 @@ build/
 .build/
 .swiftpm/
 DerivedData/
-*.xcodeproj/xcuserdata/
+xcuserdata/
 .vscode/
 .claude/settings.local.json
 logs/

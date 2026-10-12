@@ -86,8 +86,11 @@ public struct Talk: Codable, Equatable, Sendable {
         }
     }
 
-    public static func load(from url: URL) throws -> Talk {
-        let talk = try JSONDecoder().decode(Talk.self, from: Data(contentsOf: url))
+    public static func load(from url: URL) throws -> Talk { try load(from: Data(contentsOf: url)) }
+
+    /// Décode puis valide (§ 3) : rien n'est corrigé en silence.
+    public static func load(from data: Data) throws -> Talk {
+        let talk = try JSONDecoder().decode(Talk.self, from: data)
         try talk.validate()
         return talk
     }

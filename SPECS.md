@@ -128,7 +128,10 @@ talk-timer est une **app document** (`DocumentGroup` + `FileDocument`) : **une f
 - La liste vient des récents du système (`NSDocumentController.recentDocumentURLs`). Elle affiche le nom du fichier et son dossier, sans lire le contenu des fichiers.
 - Ce n'est pas une bibliothèque : les talks restent des fichiers, là où on les a rangés.
 
-**Markdown en entrée.** Fichier › Ouvrir, le glisser-déposer sur l'icône du Dock et « Ouvrir avec » dans le Finder acceptent un `.md` (UTType `net.daringfireball.markdown`, déclaré en lecture seule avec le rôle *Viewer* et le rang `Alternate`). talk-timer ne devient donc jamais l'app par défaut des `.md`. Le `.md` s'ouvre comme un nouveau talk sans titre. L'enregistrement crée un `.talk`, et le `.md` n'est **jamais réécrit**. [À vérifier : la façon dont `DocumentGroup` gère un type lisible mais non inscriptible. Si le comportement ne convient pas, on passe par un menu Fichier › Importer, sans rien changer d'autre.]
+**Markdown en entrée.** Fichier › Ouvrir, le glisser-déposer sur l'icône du Dock et « Ouvrir avec » dans le Finder acceptent un `.md` (UTType `net.daringfireball.markdown`, déclaré avec le rôle *Viewer* et le rang `Alternate`). talk-timer ne devient donc jamais l'app par défaut des `.md`. Le `.md` s'ouvre comme un **nouveau talk sans titre** : dès l'apparition de la fenêtre, avant toute modification, le document est détaché de son fichier (`TalkDocument.detachMarkdownFiles()`). L'enregistrement crée un `.talk`, et le `.md` n'est **jamais réécrit**.
+
+> [!WARNING]
+> Vérifié le 2026-10-12 : sans ce détachement, `DocumentGroup` **réécrit le `.md` en JSON** à l'enregistrement automatique, même quand son type ne figure pas dans `writableContentTypes`. D'où un garde-fou en plus : `fileWrapper` refuse d'écrire autre chose qu'un `.talk`. Au pire une erreur, jamais un `.md` perdu.
 
 **Menu Fichier**, en plus des entrées du système :
 
@@ -151,7 +154,8 @@ talk-timer est une **app document** (`DocumentGroup` + `FileDocument`) : **une f
 └──────────────────────────────────────────────────────────────┘
 ```
 
-- **Liste** : `List` avec `.onMove`, pour le glisser-déposer natif par la poignée `≡`. Sur chaque ligne :
+- **Nouveau talk** : 30 min et un premier bloc « Introduction » de 5 min. Un talk sans bloc serait refusé au chargement (§ 3).
+- **Liste** : `List` avec `.onMove`, pour le glisser-déposer natif (sur macOS, la ligne entière se glisse ; la poignée `≡` du schéma n'est pas dessinée). Sur chaque ligne :
   - un titre modifiable ;
   - un `Stepper` ± 1 min, borné par les règles du § 4 ;
   - un champ `cue` facultatif ;
@@ -377,7 +381,7 @@ fixtures/borrowed-from-the-lab.json
 
 - `TalkTimerCore` n'importe ni AppKit ni SwiftUI. Il n'utilise que Foundation et swift-markdown, qui fonctionne aussi sous Linux.
 
-État actuel : le modèle est dans `Sources/TalkTimerCore/` (bibliothèque, symboles `public`) et testé par `Tests/TalkTimerCoreTests/`. L'exécutable SwiftPM `Sources/TalkTimer/` (`Bar.swift`, `App.swift`) reste le spike de la barre, jusqu'à son transfert dans `App/` (§ 11, étape 6). Le projet Xcode (`TalkTimer.xcodeproj`, `App/`) dépend du paquet local ; l'icône (`AppIcon.icon`) arrive à l'étape 8. Réglages du projet : Swift 6, isolation par défaut `MainActor` (`SWIFT_DEFAULT_ACTOR_ISOLATION`), comme les modèles d'Xcode 26 ; module `TalkTimerApp`, pour ne pas se confondre avec l'exécutable `TalkTimer` du spike.
+État actuel : le modèle est dans `Sources/TalkTimerCore/` (bibliothèque, symboles `public`) et testé par `Tests/TalkTimerCoreTests/`. L'exécutable SwiftPM `Sources/TalkTimer/` (`Bar.swift`, `App.swift`) reste le spike de la barre, jusqu'à son transfert dans `App/` (§ 11, étape 6). Le projet Xcode (`TalkTimer.xcodeproj`, `App/`) dépend du paquet local ; l'icône (`AppIcon.icon`) arrive à l'étape 8. Réglages du projet : Swift 6, isolation par défaut `MainActor` (`SWIFT_DEFAULT_ACTOR_ISOLATION`), comme le modèle d'app d'Xcode 27 (`App Base.xctemplate`) ; module `TalkTimerApp`, pour ne pas se confondre avec l'exécutable `TalkTimer` du spike.
 
 ## 10. Critères d'acceptation
 
@@ -427,7 +431,7 @@ fixtures/borrowed-from-the-lab.json
 16. `xcodebuild archive`, puis « Validate App » dans l'Organizer : aucune erreur.
 17. Créer un talk, ne pas l'enregistrer, quitter, relancer : le brouillon est restauré.
 18. Fenêtre Accueil : elle apparaît au lancement sans talk restauré, liste les récents, et chacun s'ouvre sans erreur de permission.
-19. Un `.md` ouvert par « Ouvrir avec » devient un talk sans titre. ⌘S propose un `.talk`, et le `.md` est inchangé (même empreinte). talk-timer n'est pas devenue l'app par défaut des `.md`.
+19. Un `.md` ouvert par ⌘O, par « Ouvrir avec » ou par dépôt sur le Dock devient un talk sans titre. ⌘S propose un `.talk`, et le `.md` est inchangé (même empreinte), même après une modification et l'enregistrement automatique. talk-timer n'est pas devenue l'app par défaut des `.md`.
 20. Export PDF d'un talk de 30 blocs en mode sombre : fond clair, pagination, pauses lisibles sans couleur.
 21. Fin : un appui sur son raccourci affiche « Fin ? », et rien ne change 3 s plus tard. Deux appuis rapprochés terminent la session.
 22. Élément de la barre des menus : présent pendant la session seulement, sa jauge suit celle de la barre. Désactivé dans Réglages système, la session fonctionne à l'identique.
@@ -446,7 +450,12 @@ fixtures/borrowed-from-the-lab.json
    - ✅ ajouter swift-markdown, écrire l'import et l'export du § 3.1 : critères 14 à 18 et 23 ;
    - ✅ test rapide de l'îlot dans le spike : distance `d` dans les deux configurations de la barre des menus, `glassEffect` dans le `NSPanel`, clic seul sans effet (§ 7.1).
 4. ✅ **Projet Xcode** (2026-10-12) : bundle ID provisoire `io.github.caffe-doppio.talk-timer`, sandbox, entitlements, Info.plist (UTType, chiffrement), String Catalog, privacy manifest. Schéma partagé `talk-timer`, compilé en CI sans signature. Reportés à l'étape 5 avec `DocumentGroup` : les types de documents (`CFBundleDocumentTypes`) et la traduction du nom du type (`UTTypeDescription`).
-5. **Planificateur** : `DocumentGroup` (lecture des `.md`), liste avec interrupteur Pause, frise, menu Session, Réglages, fenêtre Accueil, export PDF et impression.
+5. **Planificateur**, en sous-étapes :
+   - ✅ 5a. Document : `TalkDocument` (`FileDocument`), `DocumentGroup`, ouverture des `.md` en talk sans titre, types de documents dans Info.plist, noms des types traduits (`InfoPlist.xcstrings`) ;
+   - ✅ 5b. Vue du planificateur : en-tête (titre, total), frise, marge, liste avec interrupteur Pause et menu contextuel, ajout de bloc, pied (passage automatique, écran, Démarrer désactivé jusqu'à l'étape 6) ;
+   - 5c. Menus : Fichier (Exporter en Markdown), menu Session, menu Aide, scène Réglages ;
+   - 5d. Fenêtre Accueil ;
+   - 5e. Export PDF et impression (§ 3.2).
 6. **Session et barre** :
    - branchement de la session sur la barre ;
    - KeyboardShortcuts à la place de `HotKeys` ;
@@ -551,6 +560,7 @@ Fiches de langage et de frameworks à produire en parallèle : `DocumentGroup`, 
 | 2026-10-11 | « talk » reste le mot français ; « plan » écarté pour le document | Un seul mot par langue (GLOSSARY) |
 | 2026-10-11 | Import et export Markdown avec `swiftlang/swift-markdown`, export PDF par l'impression | Arbre typé, numéros de ligne, échappement à l'export donc aller-retour sans perte ; le PDF réutilise le panneau d'impression du système |
 | 2026-10-11 | Un `.md` s'ouvre par Fichier › Ouvrir, en lecture seule, rang `Alternate` | Le Finder et le Dock fonctionnent sans code ; talk-timer ne prend pas les `.md` à l'éditeur habituel |
+| 2026-10-12 | Un `.md` ouvert est détaché de son fichier, et `fileWrapper` n'écrit que des `.talk` | `DocumentGroup` réécrivait le `.md` en JSON à l'enregistrement automatique (§ 5) |
 | 2026-10-11 | Pause prévue = bloc `break: true` ; pause imprévue = Suspendre, fin fixe | La salle se libère à l'heure prévue : une suspension consomme la marge, puis l'écart |
 | 2026-10-11 | Fenêtre Accueil sur les récents du système, pas de bibliothèque | Les talks restent des fichiers (le fichier est le contrat, § 3) |
 | 2026-10-12 | Préfixe du bundle ID et du UTType : `io.github.caffe-doppio.` | Suit le dépôt GitHub, indépendant d'une structure juridique |

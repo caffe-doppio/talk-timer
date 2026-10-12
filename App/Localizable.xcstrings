@@ -1,12 +1,272 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "Planner: coming soon" : {
+    "%@ · %lld min" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · %2$lld min"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ · %2$lld min"
+          }
+        }
+      }
+    },
+    "%lld min" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Planificateur : à venir"
+            "value" : "%lld min"
+          }
+        }
+      }
+    },
+    "Add Block" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter un bloc"
+          }
+        }
+      }
+    },
+    "Advance automatically" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passage automatique"
+          }
+        }
+      }
+    },
+    "Bar on" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Barre sur"
+          }
+        }
+      }
+    },
+    "Block title" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Titre du bloc"
+          }
+        }
+      }
+    },
+    "Break" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pause"
+          }
+        }
+      }
+    },
+    "Cue" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transition"
+          }
+        }
+      }
+    },
+    "Delete" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer"
+          }
+        }
+      }
+    },
+    "Introduction" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Introduction"
+          }
+        }
+      }
+    },
+    "Line %lld: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Line %1$lld: %2$@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ligne %1$lld : %2$@"
+          }
+        }
+      }
+    },
+    "Margin: %lld min" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marge : %lld min"
+          }
+        }
+      }
+    },
+    "min" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "min"
+          }
+        }
+      }
+    },
+    "Minimum: %lld min" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minimum : %lld min"
+          }
+        }
+      }
+    },
+    "New block" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nouveau bloc"
+          }
+        }
+      }
+    },
+    "No margin left: shorten a block" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plus de marge : raccourcissez un bloc"
+          }
+        }
+      }
+    },
+    "Start" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Démarrer"
+          }
+        }
+      }
+    },
+    "The block “%@” has no length: end its title with (N min)." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le bloc « %@ » n'a pas de durée : terminez son titre par (N min)."
+          }
+        }
+      }
+    },
+    "The block “%@” must last between 1 and %lld min." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "The block “%1$@” must last between 1 and %2$lld min."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le bloc « %1$@ » doit durer entre 1 et %2$lld min."
+          }
+        }
+      }
+    },
+    "The blocks add up to %lld min, for a total of %lld min." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "The blocks add up to %1$lld min, for a total of %2$lld min."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les blocs totalisent %1$lld min, pour un total de %2$lld min."
+          }
+        }
+      }
+    },
+    "The talk has no blocks." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le talk ne contient aucun bloc."
+          }
+        }
+      }
+    },
+    "The total length (%lld min) must be between 1 and %lld min." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "The total length (%1$lld min) must be between 1 and %2$lld min."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La durée totale (%1$lld min) doit être comprise entre 1 et %2$lld min."
+          }
+        }
+      }
+    },
+    "Title" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Titre"
+          }
+        }
+      }
+    },
+    "Total" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total"
           }
         }
       }
