@@ -14,6 +14,9 @@ For people who have a solid outline but lose track of time once they start talki
 
 1. **Plan.** Set the total length, then reorder, extend or shorten blocks. The total can never be exceeded: extending a block uses up the margin, and once the margin is empty you have to shorten something else.
 
+![The Welcome window. On the left, the app name, two sentences: "Split your talk into blocks, within a time limit that never overflows." and "While you present, a bar above your slides shows the time left in each block.", then the New Talk and Open buttons. On the right, the recent talks: "borrowed-from-the-lab", in the "fixtures" folder.](assets/screenshots/welcome.png)\
+**Welcome.** Shown at launch, and from Window › Welcome (⇧⌘1). Recent talks come from macOS: talks stay files, wherever you keep them. A `.md` outline opens too, as a new untitled talk.
+
 ![The planner window for "Borrowed from the Lab", 60 minutes. Under the title, a strip of proportional segments: four green planned breaks, then the blocks in blue, then a grey margin of 3 minutes. Below, one row per block with its title, its length and arrows, its transition line and a Break switch. At the bottom, "Add Block", the "Advance automatically" checkbox, the screen picker and the Start button.](assets/screenshots/planner.png)\
 **Planner.** One window per talk. The strip shows each block in proportion to its length, planned breaks in green and the unassigned margin in grey. Extending a block beyond the margin is refused with a beep, and ⌘Z undoes any change.
 

@@ -14,6 +14,9 @@ Pour qui a un plan solide mais perd le fil du temps en parlant : un sous-sujet p
 
 1. **Planifier.** On fixe une durée totale, puis on range, allonge ou raccourcit des blocs. Le total ne peut jamais être dépassé : allonger un bloc consomme la marge, et quand la marge est vide, il faut raccourcir ailleurs.
 
+![La fenêtre Accueil. À gauche, le nom de l'app, deux phrases : « Découpez votre talk en blocs, dans un temps qui ne déborde jamais. » et « Pendant la présentation, une barre au-dessus de vos diapositives montre le temps restant de chaque bloc. », puis les boutons Nouveau talk et Ouvrir. À droite, les talks récents : « borrowed-from-the-lab », dans le dossier « fixtures ».](assets/screenshots/welcome.png)\
+**Accueil.** Affichée au lancement, et par Fenêtre › Accueil (⇧⌘1). Les talks récents viennent de macOS : les talks restent des fichiers, là où on les range. Un plan `.md` s'ouvre aussi, comme nouveau talk sans titre.
+
 ![La fenêtre du planificateur pour « Borrowed from the Lab », 60 minutes. Sous le titre, une frise de segments proportionnels : quatre pauses prévues en vert, puis les blocs en bleu, puis une marge grise de 3 minutes. En dessous, une ligne par bloc avec son titre, sa durée et ses flèches, sa phrase de transition et un interrupteur Pause. En bas, « Ajouter un bloc », la case « Passage automatique », le choix de l'écran et le bouton Démarrer.](assets/screenshots/planner.png)\
 **Planificateur.** Une fenêtre par talk. La frise montre chaque bloc en proportion de sa durée, les pauses prévues en vert et la marge non attribuée en gris. Allonger un bloc au-delà de la marge est refusé avec un bip, et ⌘Z annule toute modification.
 
