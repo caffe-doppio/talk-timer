@@ -97,6 +97,16 @@
         }
       }
     },
+    "Export as Markdown…" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exporter en Markdown…"
+          }
+        }
+      }
+    },
     "Introduction" : {
       "localizations" : {
         "fr" : {
@@ -169,6 +179,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Plus de marge : raccourcissez un bloc"
+          }
+        }
+      }
+    },
+    "Privacy Policy" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Politique de confidentialité"
           }
         }
       }
@@ -267,6 +287,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Total"
+          }
+        }
+      }
+    },
+    "Untitled" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sans titre"
           }
         }
       }

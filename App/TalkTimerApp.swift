@@ -9,5 +9,6 @@ struct TalkTimerApp: App {
             PlannerView(document: file.$document)
                 .onAppear { TalkDocument.detachMarkdownFiles() }
         }
+        .commands { TalkCommands() }
     }
 }

@@ -42,6 +42,7 @@ struct PlannerView: View {
             footer.padding()
         }
         .frame(minWidth: 560, minHeight: 360)
+        .focusedSceneValue(\.talk, document.talk)  // pour Fichier › Exporter en Markdown… (`TalkCommands`)
     }
 
     private var header: some View {

@@ -453,11 +453,12 @@ fixtures/borrowed-from-the-lab.json
 5. **Planificateur**, en sous-étapes :
    - ✅ 5a. Document : `TalkDocument` (`FileDocument`), `DocumentGroup`, ouverture des `.md` en talk sans titre, types de documents dans Info.plist, noms des types traduits (`InfoPlist.xcstrings`) ;
    - ✅ 5b. Vue du planificateur : en-tête (titre, total), frise, marge, liste avec interrupteur Pause et menu contextuel, ajout de bloc, pied (passage automatique, écran, Démarrer désactivé jusqu'à l'étape 6) ;
-   - 5c. Menus : Fichier (Exporter en Markdown), menu Session, menu Aide, scène Réglages ;
+   - ✅ 5c. Menus : Fichier › Exporter en Markdown…, Aide › Politique de confidentialité. Le menu Session et la scène Réglages passent à l'étape 6, avec la session et KeyboardShortcuts dont ils dépendent ;
    - 5d. Fenêtre Accueil ;
    - 5e. Export PDF et impression (§ 3.2).
 6. **Session et barre** :
    - branchement de la session sur la barre ;
+   - menu Session et scène Réglages (les quatre raccourcis), venus de l'étape 5 ;
    - KeyboardShortcuts à la place de `HotKeys` ;
    - `Logger` à la place de `print` ;
    - phase `paused` et accessibilité du § 7.5 ;

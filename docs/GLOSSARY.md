@@ -129,3 +129,5 @@ Une ligne par déclaration de premier niveau dans `Sources/` et `App/`. `TalkTim
 | `PlannerView` | struct | `App/PlannerView.swift` | Fenêtre d'un talk : en-tête, frise, liste, pied | § 5 |
 | `BlockRow` | struct | `App/PlannerView.swift` | Ligne d'un bloc : titre, durée, transition, pause | § 5 |
 | `StripView` | struct | `App/PlannerView.swift` | Frise des blocs et de la marge | § 5 |
+| `TalkCommands` | struct | `App/TalkCommands.swift` | Menus : Fichier › Exporter en Markdown…, Aide › Politique de confidentialité | § 5 |
+| `extension FocusedValues` | extension | `App/TalkCommands.swift` | `talk` : le talk de la fenêtre au premier plan, pour les menus | § 5 |
