@@ -117,6 +117,16 @@
         }
       }
     },
+    "Length" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durée"
+          }
+        }
+      }
+    },
     "Line %lld: %@" : {
       "localizations" : {
         "en" : {

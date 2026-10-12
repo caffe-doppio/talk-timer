@@ -141,21 +141,21 @@ talk-timer est une **app document** (`DocumentGroup` + `FileDocument`) : **une f
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│ Borrowed from the Lab                   Total [ 60 ] min      │
+│ Borrowed from the Lab                       [ 60 ] min ⇕     │
 │ ▕▏███▕█████▕███████▕███▕███████████████▕████████▕█████████…▕ │ ← frise proportionnelle
-│                                         Marge : 0 min         │
+│                                         Marge : 0 min        │
 ├──────────────────────────────────────────────────────────────┤
-│ ≡  Why the digital is political          [ 3 ] [−][+]   cue… │
-│ ≡  Evidence before a judge               [ 5 ] [−][+]   cue… │
-│ ≡  …                                                          │
-│ [+ Bloc]                                                      │
+│ Why the digital is political  cue…      Pause ○   3 min ⇕    │
+│ Evidence before a judge       cue…      Pause ○   5 min ⇕    │
+│ …                                                            │
+│ [+ Bloc]                                                     │
 ├──────────────────────────────────────────────────────────────┤
-│ [ ] Passage auto.  Barre sur : [Écran intégré ▾]  ▶ Démarrer  │
+│ [ ] Passage auto.  Barre sur : [Écran intégré ▾]  ▶ Démarrer │
 └──────────────────────────────────────────────────────────────┘
 ```
 
 - **Nouveau talk** : 30 min et un premier bloc « Introduction » de 5 min. Un talk sans bloc serait refusé au chargement (§ 3).
-- **Liste** : `List` avec `.onMove`, pour le glisser-déposer natif (sur macOS, la ligne entière se glisse ; la poignée `≡` du schéma n'est pas dessinée). Sur chaque ligne :
+- **Liste** : `List` avec `.onMove`, pour le glisser-déposer natif (sur macOS, la ligne entière se glisse, sans poignée). Colonnes alignées d'une ligne à l'autre : titre | transition | Pause | durée et flèches. La partie droite a une largeur fixe, et la durée est séparée de l'interrupteur pour que les flèches se lisent avec les minutes. Sur chaque ligne :
   - un titre modifiable ;
   - un `Stepper` ± 1 min, borné par les règles du § 4 ;
   - un champ `cue` facultatif ;

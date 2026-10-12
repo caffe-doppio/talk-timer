@@ -55,13 +55,13 @@ struct PlannerView: View {
                 TextField("Total", value: totalBinding, format: .number)
                     .frame(width: 52)
                     .multilineTextAlignment(.trailing)
+                Text("min")  // même ordre que les lignes : valeur, « min », flèches
                 Stepper("Total") {
                     totalBinding.wrappedValue = talk.totalMinutes + 1
                 } onDecrement: {
                     totalBinding.wrappedValue = talk.totalMinutes - 1
                 }
                 .labelsHidden()
-                Text("min")
             }
             StripView(talk: talk)
             HStack {
@@ -120,8 +120,13 @@ struct PlannerView: View {
     }
 }
 
-/// Une ligne du planificateur : titre, durée, transition, pause prévue (§ 5).
+/// Une ligne du planificateur, en colonnes : titre | transition | pause | durée et flèches (§ 5).
+/// Tout ce qui suit la transition a une largeur fixe : titre et transition se partagent le reste à parts égales,
+/// donc la colonne Transition commence au même endroit sur chaque ligne.
 struct BlockRow: View {
+    /// Largeur de « 1440 min », la plus longue durée possible (§ 3).
+    static let minutesWidth: CGFloat = 64
+
     @Binding var block: Block
     let onStep: (Int) -> Void
 
@@ -130,21 +135,27 @@ struct BlockRow: View {
             TextField("Block title", text: $block.title)
                 .textFieldStyle(.plain)
                 .fontWeight(.medium)
-            Stepper {
-                Text("\(block.minutes) min").monospacedDigit()
-            } onIncrement: {
-                onStep(1)
-            } onDecrement: {
-                onStep(-1)
-            }
-            .fixedSize()  // la durée reste collée à ses flèches
+                .frame(maxWidth: .infinity, alignment: .leading)
             TextField("Cue", text: Binding { block.cue ?? "" } set: { block.cue = $0.isEmpty ? nil : $0 })
                 .textFieldStyle(.plain)
                 .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, 12)
             Toggle("Break", isOn: $block.isBreak)
                 .toggleStyle(.switch)
                 .controlSize(.mini)
                 .fixedSize()  // le libellé reste collé à l'interrupteur
+            Text("\(block.minutes) min")
+                .monospacedDigit()
+                .frame(width: Self.minutesWidth, alignment: .trailing)
+                .padding(.leading, 12)  // sépare la durée de l'interrupteur : les flèches vont avec les minutes
+            Stepper("Length") {
+                onStep(1)
+            } onDecrement: {
+                onStep(-1)
+            }
+            .labelsHidden()
+            .accessibilityValue(Text("\(block.minutes) min"))
         }
     }
 }
