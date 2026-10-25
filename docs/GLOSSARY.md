@@ -62,6 +62,9 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Barre flottante | barre | bar | `BarPanel` (fenêtre), `BarView` (contenu) | — | existant |
 | Jauge du bloc en cours dans la barre des menus | élément de la barre des menus | menu bar extra | `MenuBarExtra` | — | prévu |
 | Raccourci global | raccourci | shortcut | `KeyboardShortcuts.Name` (`.nextBlock`, `.previousBlock`, `.togglePause`, `.endSession`) | — | prévu |
+| Contrainte sur les raccourcis par défaut (disposition, coexistence) | exigence | requirement | — | `requirements[]` (brouillon `docs/shortcuts-draft.json`) | existant |
+| Touche atteignable d'une main, ⌃⌥ gauche tenus | portée | reach | — (`REACH`, `scripts/check-shortcuts.py`) | — | existant |
+| Schéma de la couche ⌃⌥ d'un clavier ISO ou ANSI | plan du clavier | keyboard map | — (`docs/keyboard/*.svg`, généré) | — | existant |
 | Erreur de chargement | — | — | `TalkError` (données), `TalkError.message` (texte, côté app) | — | existant |
 | Titre de bloc Markdown sans durée | — | — | `TalkError.missingDuration` | — | existant |
 | Refus Markdown et sa ligne | ligne | line | `TalkError.atLine` | — | existant |

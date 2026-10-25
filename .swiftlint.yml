@@ -4,6 +4,7 @@ included:
   - Sources
   - Tests
   - App
+  - scripts
   - Package.swift
 
 disabled_rules:
