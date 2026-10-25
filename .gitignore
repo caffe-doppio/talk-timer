@@ -9,3 +9,6 @@ xcuserdata/
 .claude/plans/
 logs/
 *.log
+
+# Captures locales (visualiseur de clavier…), jamais versionnées
+docs/captures/
