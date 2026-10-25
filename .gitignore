@@ -6,5 +6,6 @@ DerivedData/
 xcuserdata/
 .vscode/
 .claude/settings.local.json
+.claude/plans/
 logs/
 *.log
