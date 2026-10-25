@@ -90,10 +90,10 @@ SF Symbols standard uniquement. Une action a une seule icône, partout : barre, 
 
 | Action | SF Symbol | Statut |
 |---|---|---|
-| Précédent | `backward.end` | prévu |
-| Suivant | `forward.end` | prévu |
-| Suspendre / Reprendre | `playpause` | prévu |
-| Fin | `flag.pattern.checkered.2.crossed` | prévu |
+| Précédent | `backward.end` | existant |
+| Suivant | `forward.end` | existant |
+| Suspendre / Reprendre | `playpause` | existant |
+| Fin | `flag.pattern.checkered.2.crossed` | existant |
 
 | Ne pas utiliser | Pour | Raison |
 |---|---|---|
@@ -102,7 +102,7 @@ SF Symbols standard uniquement. Une action a une seule icône, partout : barre, 
 
 ## Déclarations de premier niveau
 
-Une ligne par déclaration de premier niveau dans `Sources/` et `App/`. `TalkTimerCore` (le modèle) expose ses déclarations en `public` ; `TalkTimer` est le spike de la barre ; `App/` est l'app du Mac App Store (projet Xcode). Les membres (propriétés, méthodes, cas d'`enum`) sont dans la table « Concepts ».
+Une ligne par déclaration de premier niveau dans `Sources/` et `App/`. `TalkTimerCore` (le modèle) expose ses déclarations en `public` ; `App/` est l'app du Mac App Store (projet Xcode). Les membres (propriétés, méthodes, cas d'`enum`) sont dans la table « Concepts ».
 
 | Déclaration | Genre | Fichier | Rôle | Spec |
 |---|---|---|---|---|
@@ -114,15 +114,14 @@ Une ligne par déclaration de premier niveau dans `Sources/` et `App/`. `TalkTim
 | `Phase` | enum | `Sources/TalkTimerCore/Model.swift` | Phase de la barre | § 7.3 |
 | `phase(remaining:duration:)` | func | `Sources/TalkTimerCore/Model.swift` | Phase selon le temps restant et le seuil | § 7.3 |
 | `clock(_:)` | func | `Sources/TalkTimerCore/Model.swift` | Formatage `m:ss` et `+m:ss` | § 7.2 |
-| `Live` | class | `Sources/TalkTimer/Bar.swift` | Enveloppe `@Observable` de la `Session` pour SwiftUI, et attente du second appui sur Fin | § 6.3, § 6.4 |
-| `extension Phase` | extension | `Sources/TalkTimer/Bar.swift` | Couleur système de jauge par phase | § 7.3 |
-| `BarPanel` | class | `Sources/TalkTimer/Bar.swift` | `NSPanel` flottant non activant | § 7.1 |
-| `FirstClickHostingView` | class | `Sources/TalkTimer/Bar.swift` | Hôte SwiftUI dont les boutons répondent au premier clic, la barre n'étant jamais clé | § 7.1 |
-| `BarView` | struct | `Sources/TalkTimer/Bar.swift` | Contenu SwiftUI de la barre | § 7.2 |
-| `HotKeys` | enum | `Sources/TalkTimer/Bar.swift` | Raccourcis Carbon du spike, remplacés par KeyboardShortcuts (§ 11) | § 7.4 |
-| `TalkTimerApp` | struct | `App/TalkTimerApp.swift`, `Sources/TalkTimer/App.swift` (spike) | Point d'entrée `@main` | § 5 |
-| `AppDelegate` | class | `Sources/TalkTimer/App.swift` | Lancement du spike en ligne de commande | § 11 |
-| `extension TalkError` | extension | `App/TalkDocument.swift`, `Sources/TalkTimer/App.swift` (spike) | `message` : texte des refus, traduit par le String Catalog ; `LocalizedError` pour `DocumentGroup` | § 8 |
+| `Live` | class | `App/Bar.swift` | La session en cours, une seule pour l'app (`Live.shared`) : `Session`, barre, raccourcis, attente du second appui sur Fin. `@Observable`, pour la barre et les boutons Démarrer | § 5, § 6.3, § 6.4 |
+| `extension Phase` | extension | `App/Bar.swift` | Couleur système de jauge par phase | § 7.3 |
+| `BarPanel` | class | `App/Bar.swift` | `NSPanel` flottant non activant | § 7.1 |
+| `FirstClickHostingView` | class | `App/Bar.swift` | Hôte SwiftUI dont les boutons répondent au premier clic, la barre n'étant jamais clé | § 7.1 |
+| `BarView` | struct | `App/Bar.swift` | Contenu SwiftUI de la barre | § 7.2 |
+| `HotKeys` | enum | `App/Bar.swift` | Raccourcis Carbon, enregistrés à Démarrer et désenregistrés à Fin ; remplacés par KeyboardShortcuts (§ 11, étape 6b) | § 7.4 |
+| `TalkTimerApp` | struct | `App/TalkTimerApp.swift` | Point d'entrée `@main` | § 5 |
+| `extension TalkError` | extension | `App/TalkDocument.swift` | `message` : texte des refus, traduit par le String Catalog ; `LocalizedError` pour `DocumentGroup` | § 8 |
 | `extension UTType` | extension | `App/TalkDocument.swift` | `.talk` (exporté) et `.markdownText` (importé, lu seulement) | § 3, § 5 |
 | `TalkDocument` | struct | `App/TalkDocument.swift` | `FileDocument` : lit `.talk` et `.md`, n'écrit que `.talk` ; `detachMarkdownFiles()` fait d'un `.md` ouvert un talk sans titre | § 5 |
 | `extension TalkDocument` | extension | `App/TalkDocument.swift` | `detachMarkdownFiles()`, côté AppKit (`NSDocumentController`) | § 5 |

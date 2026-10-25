@@ -381,7 +381,7 @@ fixtures/borrowed-from-the-lab.json
 
 - `TalkTimerCore` n'importe ni AppKit ni SwiftUI. Il n'utilise que Foundation et swift-markdown, qui fonctionne aussi sous Linux.
 
-État actuel : le modèle est dans `Sources/TalkTimerCore/` (bibliothèque, symboles `public`) et testé par `Tests/TalkTimerCoreTests/`. L'exécutable SwiftPM `Sources/TalkTimer/` (`Bar.swift`, `App.swift`) reste le spike de la barre, jusqu'à son transfert dans `App/` (§ 11, étape 6). Le projet Xcode (`TalkTimer.xcodeproj`, `App/`) dépend du paquet local ; l'icône (`AppIcon.icon`) arrive à l'étape 8. Réglages du projet : Swift 6, isolation par défaut `MainActor` (`SWIFT_DEFAULT_ACTOR_ISOLATION`), comme le modèle d'app d'Xcode 27 (`App Base.xctemplate`) ; module `TalkTimerApp`, pour ne pas se confondre avec l'exécutable `TalkTimer` du spike.
+État actuel : le modèle est dans `Sources/TalkTimerCore/` (bibliothèque, symboles `public`) et testé par `Tests/TalkTimerCoreTests/`. La barre est dans `App/Bar.swift` depuis l'étape 6a ; le spike SwiftPM qui la portait (`Sources/TalkTimer/`) est retiré. Le projet Xcode (`TalkTimer.xcodeproj`, `App/`) dépend du paquet local ; l'icône (`AppIcon.icon`) arrive à l'étape 8. Réglages du projet : Swift 6, isolation par défaut `MainActor` (`SWIFT_DEFAULT_ACTOR_ISOLATION`), comme le modèle d'app d'Xcode 27 (`App Base.xctemplate`) ; module `TalkTimerApp`, pour ne pas se confondre avec l'exécutable `TalkTimer` du spike.
 
 ## 10. Critères d'acceptation
 
@@ -456,17 +456,13 @@ fixtures/borrowed-from-the-lab.json
    - ✅ 5c. Menus : Fichier › Exporter en Markdown…, Aide › Politique de confidentialité. Le menu Session et la scène Réglages passent à l'étape 6, avec la session et KeyboardShortcuts dont ils dépendent ;
    - ✅ 5d. Fenêtre Accueil ;
    - ✅ 5e. Export PDF et impression (§ 3.2), avec l'entitlement `com.apple.security.print` (§ 8, § 15).
-6. **Session et barre** :
-   - branchement de la session sur la barre ;
-   - menu Session et scène Réglages (les quatre raccourcis), venus de l'étape 5 ;
-   - KeyboardShortcuts à la place de `HotKeys` ;
-   - `Logger` à la place de `print` ;
-   - phase `paused` et accessibilité du § 7.5 ;
-   - retrait de `AppDelegate`, du mode ligne de commande et du contournement `setActivationPolicy` ;
-   - îlot en Liquid Glass et couleurs système, retrait de `Palette` (§ 7.3) ;
-   - boutons, ⌘-clic et double appui de Fin (§ 6.3, § 7.2) ;
-   - élément de la barre des menus (§ 7.1) ;
-   - affichage des blocs de pause prévue.
+6. **Session et barre**, en sous-étapes :
+   - ✅ 6a. Barre dans l'app : `Bar.swift` passe du spike à `App/`, avec l'îlot en Liquid Glass, les couleurs système, les boutons, le ⌘-clic et le double appui de Fin déjà faits dans le spike (§ 7.2, § 7.3). Démarrer ouvre la barre sur l'écran choisi, une seule session à la fois (§ 5) ; Fin la ferme et rend la main au planificateur (§ 6.3). `Logger` à la place de `print`, chaînes de la barre dans le String Catalog, `sharingType = .none` (§ 7.1). Retrait du spike : `AppDelegate`, mode ligne de commande, contournement `setActivationPolicy`, cible exécutable du paquet ;
+   - 6b. Raccourcis : KeyboardShortcuts à la place de `HotKeys`, les quatre noms du § 7.4, scène Réglages et menu Session (venus de l'étape 5), message de conflit. Préalable : choisir le raccourci de Fin (§ 13) ;
+   - 6c. Contenu de la barre : blocs de pause prévue (§ 7.3), marge ou écart (§ 7.2), largeur ajustée au contenu (§ 7.1) ;
+   - 6d. Accessibilité du § 7.5 : libellé de synthèse, annonces VoiceOver au passage en alerte, en dépassement et au premier appui sur Fin ;
+   - 6e. Écran débranché pendant la session : la barre revient sur l'écran principal (§ 7.1) ;
+   - 6f. Élément de la barre des menus (§ 7.1), ou `NSStatusItem` si `MenuBarExtra` ne dessine pas la jauge.
 7. **Recette manuelle** complète (§ 10).
 8. **Publication** :
    - icône ;
@@ -498,6 +494,7 @@ fixtures/borrowed-from-the-lab.json
 - **Ouvrir récent en sandbox avec `DocumentGroup`** : supposé fourni par le système (documenté pour `NSDocument`, et seulement par des rapports de forum pour SwiftUI). À confirmer par la recette 8.
 - **Granularité** : la minute suffit-elle, ou faut-il des blocs de 30 s (pitchs courts) ?
 - **Hauteur de l'îlot** : la hauteur se lit-elle de loin, quand on est debout à un mètre de l'écran ? Les boutons doivent aussi rester cliquables sans viser.
+- **Écran tactile à anticiper** : Apple présente le 28 octobre 2026 de nouveaux produits, dont un MacBook Pro OLED annoncé tactile ([Les Numériques](https://www.lesnumeriques.com/ordinateur-portable/apple-donne-rendez-vous-le-28-octobre-pour-decouvrir-4-nouveaux-produits-macbook-pro-oled-tactile-imac-m6-n263551.html), article consulté le 2026-10-25, à confirmer après l'annonce). À vérifier alors : taille des cibles des boutons de la barre (§ 7.2), équivalent tactile du ⌘-clic (§ 6.3), un toucher sur le fond de la barre sans effet comme le clic (§ 6.3), et poignées de déplacement dans la liste du planificateur (§ 5).
 - **Langue des commentaires du code** : français aujourd'hui. À revoir si des personnes extérieures contribuent.
 
 ## 14. Exigences de publication (Mac App Store)

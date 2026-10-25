@@ -39,7 +39,7 @@ Pour qui a un plan solide mais perd le fil du temps en parlant : un sous-sujet p
 L'outil ne coupe jamais la parole. Le passage au bloc suivant peut être automatique, si on le choisit pour un talk ; la fin du talk, elle, est toujours décidée par la personne.
 
 > [!NOTE]
-> **Statut : planificateur + spike de la barre.** Le modèle (format de fichier, règles du planificateur, session en direct, Markdown) est une bibliothèque testée, `TalkTimerCore`. L'app du Mac App Store modifie les fichiers `.talk` dans son planificateur ; Démarrer n'est pas encore branché sur la barre. La barre flottante fonctionne à partir d'un fichier de talk, dans un spike à part. Cible : le Mac App Store, en gratuit.
+> **Statut : planificateur + barre.** Le modèle (format de fichier, règles du planificateur, session en direct, Markdown) est une bibliothèque testée, `TalkTimerCore`. L'app du Mac App Store modifie les fichiers `.talk` dans son planificateur, et Démarrer affiche la barre flottante sur l'écran choisi. Les raccourcis sont fixes pour l'instant ; le menu Session et les Réglages arrivent ensuite. Cible : le Mac App Store, en gratuit.
 > Journal de développement : [`DEVSTORY.md`](DEVSTORY.md).
 > Spécifications complètes : [`SPECS.md`](SPECS.md). Vocabulaire : [`docs/GLOSSARY.md`](docs/GLOSSARY.md).
 
@@ -54,15 +54,9 @@ L'outil ne coupe jamais la parole. Le passage au bloc suivant peut être automat
 swift build          # compiler
 swift test           # lancer les tests
 open TalkTimer.xcodeproj   # l'app du Mac App Store, dans Xcode (schéma talk-timer)
-
-# Spike de la barre : affiche la barre d'un talk sur l'écran N (0 par défaut, celui de la barre de menus)
-swift run TalkTimer fixtures/borrowed-from-the-lab.json --screen 1
-
-# Options : --auto passe seul au bloc suivant ; --offset D place la barre à D points du haut de l'écran
-swift run TalkTimer fixtures/borrowed-from-the-lab.json --screen 1 --auto --offset 130
 ```
 
-Au lancement, l'appli affiche dans le terminal la liste des écrans et leurs numéros.
+Dans le planificateur, choisir l'écran dans **Barre sur**, puis cliquer sur **Démarrer**.
 
 > [!IMPORTANT]
 > Pour présenter, mettez les écrans en **mode étendu**, pas en recopie, et affichez la barre sur l'écran du portable. En recopie, le public voit la barre.
@@ -86,7 +80,7 @@ Un talk est un fichier JSON, écrit à la main ou par le planificateur :
 - La marge, `totalMinutes − Σ minutes`, est calculée et jamais stockée.
 - `cue` est une phrase de transition facultative, affichée quand la fin du bloc approche.
 - `autoAdvance: true` passe seul au bloc suivant, sauf en sortie de pause prévue et à la fin du talk.
-- `break: true` marque une pause prévue. Elle compte dans le total comme n'importe quel bloc (le spike ne l'affiche pas encore différemment).
+- `break: true` marque une pause prévue. Elle compte dans le total comme n'importe quel bloc (la barre ne l'affiche pas encore différemment).
 - Toute durée est comprise entre 1 et 1440 minutes (24 h). Un fichier dont la somme des blocs dépasse le total est refusé au chargement.
 
 Exemple complet : [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from-the-lab.json), la timeline d'un workshop de 60 minutes en 8 blocs.
@@ -112,13 +106,11 @@ Les raccourcis sont globaux : ils fonctionnent même quand une autre appli a le 
 ## Structure
 
 ```
-Package.swift                              bibliothèque TalkTimerCore, spike de la barre, tests
+Package.swift                              bibliothèque TalkTimerCore, tests
 TalkTimer.xcodeproj                        l'app du Mac App Store, qui dépend du paquet local
 App/                                       sources de l'app, Info.plist, entitlements, privacy manifest, String Catalog
 Sources/TalkTimerCore/Model.swift          format de fichier, règles du planificateur, horloge de session, phases de la barre (ni AppKit ni SwiftUI)
 Sources/TalkTimerCore/Markdown.swift       import et export Markdown
-Sources/TalkTimer/Bar.swift                spike : panneau flottant, vue de la barre, raccourcis globaux
-Sources/TalkTimer/App.swift                spike : point d'entrée
 Tests/TalkTimerCoreTests/                  critères d'acceptation (SPECS.md § 10)
 fixtures/                                  talks de référence (JSON, Markdown)
 docs/GLOSSARY.md                           un nom par concept (FR, EN, Swift, JSON)

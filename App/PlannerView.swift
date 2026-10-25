@@ -89,9 +89,9 @@ struct PlannerView: View {
                 }
             }
             .fixedSize()
-            Button("Start", systemImage: "play.fill") {}
+            Button("Start", systemImage: "play.fill") { Live.shared.start(talk, screen: screenIndex) }
                 .buttonStyle(.borderedProminent)
-                .disabled(true)  // branché sur la barre à l'étape 6 (§ 11)
+                .disabled(talk.blocks.isEmpty || Live.shared.session != nil)  // une seule session à la fois (§ 5)
         }
     }
 

@@ -12,7 +12,6 @@ let package = Package(
     ],
     targets: [
         .target(name: "TalkTimerCore", dependencies: [.product(name: "Markdown", package: "swift-markdown")]),
-        .executableTarget(name: "TalkTimer", dependencies: ["TalkTimerCore"]),  // spike de la barre
         .testTarget(name: "TalkTimerCoreTests", dependencies: ["TalkTimerCore"]),
     ]
 )

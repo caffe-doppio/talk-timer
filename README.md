@@ -32,14 +32,14 @@ For people who have a solid outline but lose track of time once they start talki
 **Overtime.** Past zero, the gauge is empty and a red `+0:18` counts up. The next block starts when you say so, unless the talk is set to advance automatically.
 
 ![The paused bar: a grey gauge frozen at 0:52, the word "SUSPENDU", then the next block and the transition line.](assets/screenshots/bar_paused.png)\
-**Paused.** ⌃⌥Space freezes the block at 0:52 and shows `SUSPENDU` (the spike is in French only). The end time does not move: an unplanned pause uses up the margin.
+**Paused.** ⌃⌥Space freezes the block at 0:52 and shows `PAUSED` (`SUSPENDU` in French). The end time does not move: an unplanned pause uses up the margin.
 
 3. **Share.** Open a Markdown outline as a new talk, export a talk to Markdown. PDF export *(planned)*.
 
 The tool never cuts you off. Moving to the next block can be automatic if you choose so for a talk; ending the talk is always up to you.
 
 > [!NOTE]
-> **Status: planner + bar spike.** The model (file format, planner rules, live session, Markdown) is a tested library, `TalkTimerCore`. The App Store app edits `.talk` files in its planner; Start is not wired to the bar yet. The floating bar runs from a talk file in a separate spike. Target: the Mac App Store, free.
+> **Status: planner + bar.** The model (file format, planner rules, live session, Markdown) is a tested library, `TalkTimerCore`. The App Store app edits `.talk` files in its planner, and Start shows the floating bar on the chosen screen. Shortcuts are fixed for now; the Session menu and Settings come next. Target: the Mac App Store, free.
 > Development log: [`DEVSTORY.md`](DEVSTORY.md) (French).
 > Full specification (French): [`SPECS.md`](SPECS.md). Vocabulary: [`docs/GLOSSARY.md`](docs/GLOSSARY.md).
 
@@ -54,15 +54,9 @@ The tool never cuts you off. Moving to the next block can be automatic if you ch
 swift build          # build
 swift test           # run the tests
 open TalkTimer.xcodeproj   # the App Store app, in Xcode (scheme talk-timer)
-
-# Bar spike: shows the bar for a talk, on screen N (default 0, the one with the menu bar)
-swift run TalkTimer fixtures/borrowed-from-the-lab.json --screen 1
-
-# Options: --auto moves to the next block on its own; --offset D sets the bar D points below the top of the screen
-swift run TalkTimer fixtures/borrowed-from-the-lab.json --screen 1 --auto --offset 130
 ```
 
-On launch, the app lists the available screens and their numbers in the terminal.
+In the planner, pick the screen under **Bar on**, then click **Start**.
 
 > [!IMPORTANT]
 > To present, set your displays to **extended**, not mirrored, and put the bar on the laptop screen. When mirrored, the audience sees the bar.
@@ -86,7 +80,7 @@ A talk is a JSON file, written by hand or by the planner:
 - The margin, `totalMinutes − Σ minutes`, is computed and never stored.
 - `cue` is an optional transition line, shown when the end of the block gets close.
 - `autoAdvance: true` moves to the next block on its own, except out of a planned break and at the end of the talk.
-- `break: true` marks a planned break. It counts in the total like any block (not shown differently by the spike yet).
+- `break: true` marks a planned break. It counts in the total like any block (not shown differently in the bar yet).
 - Every length is between 1 and 1440 minutes (24 h). A file whose blocks add up to more than the total is refused on load.
 
 Full example: [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from-the-lab.json), the timeline of a 60-minute workshop in 8 blocks.
@@ -98,7 +92,7 @@ Full example: [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from-the
 | Normal | More than 20 % of the block left, and more than 1 minute | Blue gauge, countdown, next block |
 | Alert | 20 % of the block or the last minute, whichever comes first | Orange hatched gauge, next block in bold, transition line |
 | Overtime | Past zero | Empty gauge, red `+m:ss` counting up |
-| Paused | After ⌃⌥Space | Grey gauge, frozen countdown, `PAUSED` label (`SUSPENDU` in the French-only spike) |
+| Paused | After ⌃⌥Space | Grey gauge, frozen countdown, `PAUSED` label |
 
 | Shortcut | Button | Action |
 |---|---|---|
@@ -112,13 +106,11 @@ Shortcuts are global: they work while another app has focus, and do not need the
 ## Layout
 
 ```
-Package.swift                              TalkTimerCore library, bar spike, tests
+Package.swift                              TalkTimerCore library, tests
 TalkTimer.xcodeproj                        the App Store app, depends on the local package
 App/                                       app sources, Info.plist, entitlements, privacy manifest, String Catalog
 Sources/TalkTimerCore/Model.swift          file format, planner rules, session clock, bar phases (no AppKit, no SwiftUI)
 Sources/TalkTimerCore/Markdown.swift       Markdown import and export
-Sources/TalkTimer/Bar.swift                bar spike: floating panel, bar view, global shortcuts
-Sources/TalkTimer/App.swift                bar spike: entry point
 Tests/TalkTimerCoreTests/                  acceptance criteria (SPECS.md § 10)
 fixtures/                                  reference talks (JSON, Markdown)
 docs/GLOSSARY.md                           one name per concept (FR, EN, Swift, JSON)

@@ -47,6 +47,16 @@
         }
       }
     },
+    "Back" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Précédent"
+          }
+        }
+      }
+    },
     "Bar on" : {
       "localizations" : {
         "fr" : {
@@ -113,6 +123,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Supprimer"
+          }
+        }
+      }
+    },
+    "End" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fin"
+          }
+        }
+      }
+    },
+    "End?" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fin ?"
           }
         }
       }
@@ -233,6 +263,16 @@
         }
       }
     },
+    "Next" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suivant"
+          }
+        }
+      }
+    },
     "No margin left: shorten a block" : {
       "localizations" : {
         "fr" : {
@@ -259,6 +299,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ouvrir…"
+          }
+        }
+      }
+    },
+    "Pause / Resume" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suspendre / Reprendre"
+          }
+        }
+      }
+    },
+    "PAUSED" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SUSPENDU"
           }
         }
       }
@@ -437,6 +497,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pendant la présentation, une barre au-dessus de vos diapositives montre le temps restant de chaque bloc."
+          }
+        }
+      }
+    },
+    "→ %@ · “%@”" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "→ %1$@ · “%2$@”"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "→ %1$@ · « %2$@ »"
           }
         }
       }
