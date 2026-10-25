@@ -1,0 +1,93 @@
+{
+  "about": "Brouillon des raccourcis globaux par défaut (SPECS § 6.3, § 7.4, § 13), à corriger avant la 6b. Actifs seulement pendant une session : pas de raccourci pour Démarrer. Une fois tranché, le contenu passe dans SPECS § 6.3 et § 15, et ce fichier se supprime.",
+  "legend": {
+    "modifiers": "control ⌃, option ⌥, shift ⇧, command ⌘",
+    "key": "nom du cas KeyboardShortcuts.Key (rightArrow, leftArrow, space, escape, period, p…)",
+    "tested": "null tant que non essayé ; puis true ou false, avec la raison dans notes"
+  },
+  "requirements": [
+    {
+      "id": "layout",
+      "rule": "Les raccourcis par défaut fonctionnent et s'affichent de la même façon en AZERTY et en QWERTY US, base de nombreuses dispositions. KeyboardShortcuts enregistre une position de touche (key code Carbon) et affiche le caractère de la disposition active : une touche par défaut porte le même caractère dans les deux dispositions, ou aucun caractère (flèches, Espace, ⎋).",
+      "measured": "imac-m1, 2026-10-25, UCKeyTranslate : P, N, B identiques en AZERTY ; Period (47) donne « : » en AZERTY ; en russe P, N, B donnent з, т, и. A/Q, Z/W et M ne sont pas à la même place en AZERTY et en QWERTY."
+    },
+    {
+      "id": "coexistence",
+      "rule": "Les raccourcis agissent pendant que l'app de présentation a le focus (Keynote, PowerPoint, Canva dans un navigateur, Adobe Acrobat), sans lui prendre le focus ni déclencher une de ses commandes.",
+      "measured": "Une combinaison enregistrée par RegisterEventHotKey est consommée : l'app au premier plan ne la reçoit pas. Elle ne doit donc servir à aucune de ces apps (à tester, voir tests)."
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "nextBlock",
+      "action": { "fr": "Suivant", "en": "Next" },
+      "model": "Session.next(at:)",
+      "proposed": { "shortcut": "⌃⌥→", "modifiers": ["control", "option"], "key": "rightArrow" },
+      "doublePress": false,
+      "alsoOnBar": "bouton forward.end, ⌘-clic n'importe où sur la barre",
+      "conflicts": [
+        "Rectangle et Magnet : moitié droite (défaut, géré par le § 7.4)"
+      ],
+      "fallback": { "shortcut": "⌃⌥N", "modifiers": ["control", "option"], "key": "n", "why": "N comme Next, libre dans les défauts de Rectangle" },
+      "tested": null,
+      "notes": ""
+    },
+    {
+      "name": "previousBlock",
+      "action": { "fr": "Précédent", "en": "Back" },
+      "model": "Session.back()",
+      "proposed": { "shortcut": "⌃⌥←", "modifiers": ["control", "option"], "key": "leftArrow" },
+      "doublePress": false,
+      "alsoOnBar": "bouton backward.end",
+      "conflicts": [
+        "Rectangle et Magnet : moitié gauche (défaut, géré par le § 7.4)"
+      ],
+      "fallback": { "shortcut": "⌃⌥B", "modifiers": ["control", "option"], "key": "b", "why": "B comme Back, libre dans les défauts de Rectangle" },
+      "tested": null,
+      "notes": ""
+    },
+    {
+      "name": "togglePause",
+      "action": { "fr": "Suspendre / Reprendre", "en": "Pause / Resume" },
+      "model": "Session.togglePause(at:)",
+      "proposed": { "shortcut": "⌃⌥P", "modifiers": ["control", "option"], "key": "p" },
+      "doublePress": false,
+      "alsoOnBar": "bouton playpause",
+      "conflicts": [
+        "aucun connu : P est libre dans les défauts de Rectangle"
+      ],
+      "fallback": {
+        "shortcut": "⌃⌥Espace", "modifiers": ["control", "option"], "key": "space",
+        "why": "défaut actuel du spike. Pris par macOS (source de saisie suivante, dès qu'il y a deux sources) et, sur ce Mac, par le raccourci système n° 65 (fenêtre de recherche du Finder)"
+      },
+      "tested": null,
+      "notes": ""
+    },
+    {
+      "name": "endSession",
+      "action": { "fr": "Fin", "en": "End" },
+      "model": "Live.end(at:) puis fermeture de la barre",
+      "proposed": { "shortcut": "⌃⌥⎋", "modifiers": ["control", "option"], "key": "escape" },
+      "doublePress": true,
+      "alsoOnBar": "bouton flag.pattern.checkered.2.crossed, deux appuis en 3 s",
+      "conflicts": [
+        "aucun dans les défauts de Rectangle (vérifié dans WindowAction.swift) ; Magnet non vérifié, code fermé",
+        "à tester : Keynote en présentation ne doit pas recevoir Échap"
+      ],
+      "fallback": { "shortcut": "⌃⌥.", "modifiers": ["control", "option"], "key": "period", "why": "point final, libre dans les défauts de Rectangle. Contraire à l'exigence layout : affiché ⌃⌥: en AZERTY" },
+      "tested": null,
+      "notes": ""
+    }
+  ],
+  "tests": [
+    "Debout, à un mètre de l'écran : chaque raccourci se fait d'une main, sans regarder le clavier",
+    "Les quatre restent distincts au toucher : pas de Suivant au lieu de Fin",
+    "Dans l'app actuelle, seuls ⌃⌥→, ⌃⌥← et ⌃⌥Espace réagissent (HotKeys codé en dur) ; le reste s'essaie au clavier jusqu'à la 6b",
+    "Keynote en présentation : ⌃⌥⎋ deux fois termine la session et la présentation continue",
+    "Même essai dans PowerPoint, Canva (Safari et Firefox, en plein écran) et Adobe Acrobat (mode lecture) : aucune de ces apps ne réagit aux quatre combinaisons",
+    "Oubli d'un modificateur : ⌃⌥→ sans ⌥ donne ⌃→, qui change d'espace et fait sortir de Keynote en plein écran (raccourci système n° 79 à 82 actif sur ce Mac)",
+    "En AZERTY, puis en russe : le raccourci se déclenche sur la même touche physique, et Réglages affiche bien la touche de la disposition active",
+    "Safari en plein écran avec le focus : chaque raccourci agit et Safari garde le focus (recette 3)",
+    "Réglages système › Clavier › Raccourcis : aucune des combinaisons retenues n'y figure"
+  ]
+}
