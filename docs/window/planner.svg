@@ -1,0 +1,180 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif" role="img" aria-labelledby="title desc">
+  <title id="title">Modèle de la fenêtre du planificateur, macOS 26</title>
+  <desc id="desc">Barre d'outils en trois zones : au début, Accueil et le titre du document avec son menu ; au centre, Ajouter un bloc ; à la fin, Enregistrer puis Démarrer en action principale. Dans le contenu : titre du talk et total, frise, réglages de présentation et marge, puis la liste des blocs. Aucune barre en bas.</desc>
+  <style><![CDATA[
+    /* Modèle de fenêtre (SPECS § 5), dessiné à la main d'après la HIG « Toolbars » (fiche dans _apple/dev/01-design).
+       Couleurs système de la HIG, comme assets/css/keyboard.css. */
+    :root {
+      --background: rgb(242 242 247);   /* systemGray6 : fond de page */
+      --window: rgb(255 255 255);
+      --label: rgb(0 0 0);
+      --secondary: rgb(142 142 147);    /* systemGray */
+      --separator: rgb(229 229 234);    /* systemGray5 */
+      --glass: rgb(255 255 255 / 0.85);
+      --glass-border: rgb(209 209 214); /* systemGray4 */
+      --blue: rgb(0 136 255);
+      --green: rgb(52 199 89);
+      --note: rgb(255 141 40);          /* orange : annotations du modèle */
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: rgb(0 0 0);
+        --window: rgb(28 28 30);
+        --label: rgb(255 255 255);
+        --separator: rgb(44 44 46);
+        --glass: rgb(58 58 60 / 0.85);
+        --glass-border: rgb(72 72 74);
+        --blue: rgb(0 145 255);
+        --green: rgb(48 209 88);
+        --note: rgb(255 146 48);
+      }
+    }
+    .page { fill: var(--background); }
+    .window { fill: var(--window); stroke: var(--glass-border); }
+    .glass { fill: var(--glass); stroke: var(--glass-border); }
+    .prominent { fill: var(--blue); }
+    .icon { fill: none; stroke: var(--label); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .icon-on-blue { fill: rgb(255 255 255); }
+    .text { fill: var(--label); font-size: 13px; }
+    .on-blue { fill: rgb(255 255 255); font-size: 13px; font-weight: 600; }
+    .title { fill: var(--label); font-size: 14px; font-weight: 600; }
+    .talk-title { fill: var(--label); font-size: 20px; font-weight: 700; }
+    .secondary { fill: var(--secondary); font-size: 12px; }
+    .separator { stroke: var(--separator); }
+    .block { fill: var(--blue); }
+    .block-alt { fill: var(--blue); opacity: 0.6; }
+    .break { fill: var(--green); }
+    .margin { fill: var(--separator); }
+    .field { fill: none; stroke: var(--glass-border); }
+    .switch { fill: var(--separator); }
+    .knob { fill: var(--window); stroke: var(--glass-border); }
+    .zone { stroke: var(--note); stroke-width: 1.5; fill: none; }
+    .zone-label { fill: var(--note); font-size: 12px; font-weight: 600; text-anchor: middle; }
+    .light { fill: rgb(255 95 87); } .amber { fill: rgb(254 188 46); } .go { fill: rgb(40 200 64); }
+  ]]></style>
+
+  <rect class="page" width="960" height="600"/>
+
+  <!-- Zones de la barre d'outils (HIG, « Item groupings ») -->
+  <path class="zone" d="M128 50 V44 H300 V50 M214 44 V36"/>
+  <text class="zone-label" x="214" y="30">Début : navigation et titre</text>
+  <path class="zone" d="M456 50 V44 H504 V50 M480 44 V36"/>
+  <text class="zone-label" x="480" y="30">Centre : édition</text>
+  <path class="zone" d="M752 50 V44 H908 V50 M830 44 V36"/>
+  <text class="zone-label" x="830" y="30">Fin : Enregistrer, Démarrer</text>
+
+  <!-- Fenêtre : coins plus arrondis sous macOS 26 -->
+  <rect class="window" x="40" y="62" width="880" height="510" rx="18"/>
+
+  <!-- Barre d'outils, intégrée à la barre de titre -->
+  <circle class="light" cx="66" cy="90" r="6"/>
+  <circle class="amber" cx="86" cy="90" r="6"/>
+  <circle class="go" cx="106" cy="90" r="6"/>
+
+  <!-- Début : Accueil (house), puis le titre du document et son menu (Exporter, Imprimer ; Renommer, Déplacer, Dupliquer par le système) -->
+  <circle class="glass" cx="146" cy="90" r="18"/>
+  <path class="icon" d="M138 90 L146 83 L154 90 M140 88.5 V97 H152 V88.5 M144 97 V92 H148 V97"/>
+  <text class="title" x="176" y="95">Sans titre</text>
+  <path class="icon" d="M256 88 L260 92 L264 88" stroke-width="1.5"/>
+
+  <!-- Centre : Ajouter un bloc (plus) -->
+  <circle class="glass" cx="480" cy="90" r="18"/>
+  <path class="icon" d="M480 83 V97 M473 90 H487"/>
+
+  <!-- Fin : Enregistrer (square.and.arrow.down), seul ; Démarrer, seul, en .glassProminent -->
+  <circle class="glass" cx="770" cy="90" r="18"/>
+  <path class="icon" d="M765 86 H762 V98 H778 V86 H775 M770 81 V93 M766 89 L770 93 L774 89"/>
+  <rect class="prominent" x="796" y="72" width="112" height="36" rx="18"/>
+  <path class="icon-on-blue" d="M812 83 L822 90 L812 97 Z"/>
+  <text class="on-blue" x="830" y="95">Démarrer</text>
+
+  <!-- En-tête du contenu : titre du talk, total -->
+  <text class="talk-title" x="64" y="152">Borrowed from the Lab</text>
+  <rect class="field" x="772" y="134" width="44" height="24" rx="5"/>
+  <text class="text" x="808" y="151" text-anchor="end">60</text>
+  <text class="text" x="824" y="151">min</text>
+  <path class="icon" d="M858 140 L862 136 L866 140 M858 152 L862 156 L866 152" stroke-width="1.5"/>
+
+  <!-- Frise : blocs, pauses prévues en vert, marge en gris -->
+  <rect class="block" x="64" y="172" width="42" height="12" rx="3"/>
+  <rect class="block-alt" x="107" y="172" width="69" height="12"/>
+  <rect class="block" x="177" y="172" width="97" height="12"/>
+  <rect class="break" x="275" y="172" width="41" height="12"/>
+  <rect class="block" x="317" y="172" width="208" height="12"/>
+  <rect class="block-alt" x="526" y="172" width="111" height="12"/>
+  <rect class="block" x="638" y="172" width="166" height="12"/>
+  <rect class="margin" x="805" y="172" width="91" height="12" rx="3"/>
+
+  <!-- Réglages de présentation, à gauche ; marge, à droite -->
+  <rect class="switch" x="64" y="200" width="26" height="15" rx="7.5"/>
+  <circle class="knob" cx="72" cy="207.5" r="6"/>
+  <text class="text" x="98" y="212">Passage automatique</text>
+  <text class="text" x="262" y="212">Barre sur</text>
+  <rect class="field" x="324" y="198" width="172" height="20" rx="5"/>
+  <text class="text" x="334" y="212">Écran Retina intégré</text>
+  <path class="icon" d="M482 205 L485 202 L488 205 M482 211 L485 214 L488 211" stroke-width="1.2"/>
+  <text class="secondary" x="896" y="212" text-anchor="end">Marge : 7 min</text>
+
+  <line class="separator" x1="40" y1="232" x2="920" y2="232"/>
+
+  <!-- Liste des blocs : titre | transition | Pause | durée et flèches -->
+  <g>
+    <text class="text" x="64" y="262" font-weight="500">Why the digital is political</text>
+    <text class="secondary" x="380" y="262">Transition</text>
+    <text class="text" x="676" y="262">Pause</text>
+    <rect class="switch" x="724" y="252" width="22" height="13" rx="6.5"/><circle class="knob" cx="730.5" cy="258.5" r="5"/>
+    <text class="text" x="840" y="262" text-anchor="end">3 min</text>
+    <path class="icon" d="M858 252 L862 248 L866 252 M858 264 L862 268 L866 264" stroke-width="1.5"/>
+    <line class="separator" x1="64" y1="276" x2="896" y2="276"/>
+
+    <text class="text" x="64" y="298" font-weight="500">Evidence before a judge</text>
+    <text class="secondary" x="380" y="298">Transition</text>
+    <text class="text" x="676" y="298">Pause</text>
+    <rect class="switch" x="724" y="288" width="22" height="13" rx="6.5"/><circle class="knob" cx="730.5" cy="294.5" r="5"/>
+    <text class="text" x="840" y="298" text-anchor="end">5 min</text>
+    <path class="icon" d="M858 288 L862 284 L866 288 M858 300 L862 304 L866 300" stroke-width="1.5"/>
+    <line class="separator" x1="64" y1="312" x2="896" y2="312"/>
+
+    <text class="text" x="64" y="334" font-weight="500">From the field, limits, disclosure</text>
+    <text class="secondary" x="380" y="334">Transition</text>
+    <text class="text" x="676" y="334">Pause</text>
+    <rect class="switch" x="724" y="324" width="22" height="13" rx="6.5"/><circle class="knob" cx="730.5" cy="330.5" r="5"/>
+    <text class="text" x="840" y="334" text-anchor="end">7 min</text>
+    <path class="icon" d="M858 324 L862 320 L866 324 M858 336 L862 340 L866 336" stroke-width="1.5"/>
+    <line class="separator" x1="64" y1="348" x2="896" y2="348"/>
+
+    <text class="text" x="64" y="370" font-weight="500">Coffee</text>
+    <text class="secondary" x="380" y="370">Transition</text>
+    <text class="text" x="676" y="370">Pause</text>
+    <rect class="break" x="724" y="360" width="22" height="13" rx="6.5"/><circle class="knob" cx="739.5" cy="366.5" r="5"/>
+    <text class="text" x="840" y="370" text-anchor="end">3 min</text>
+    <path class="icon" d="M858 360 L862 356 L866 360 M858 372 L862 376 L866 372" stroke-width="1.5"/>
+    <line class="separator" x1="64" y1="384" x2="896" y2="384"/>
+
+    <text class="text" x="64" y="406" font-weight="500">Live demo on the big screen</text>
+    <text class="secondary" x="380" y="406">Enough talk: let me show it once.</text>
+    <text class="text" x="676" y="406">Pause</text>
+    <rect class="switch" x="724" y="396" width="22" height="13" rx="6.5"/><circle class="knob" cx="730.5" cy="402.5" r="5"/>
+    <text class="text" x="840" y="406" text-anchor="end">15 min</text>
+    <path class="icon" d="M858 396 L862 392 L866 396 M858 408 L862 412 L866 408" stroke-width="1.5"/>
+    <line class="separator" x1="64" y1="420" x2="896" y2="420"/>
+
+    <text class="text" x="64" y="442" font-weight="500">Collect and seal</text>
+    <text class="secondary" x="380" y="442">Transition</text>
+    <text class="text" x="676" y="442">Pause</text>
+    <rect class="switch" x="724" y="432" width="22" height="13" rx="6.5"/><circle class="knob" cx="730.5" cy="438.5" r="5"/>
+    <text class="text" x="840" y="442" text-anchor="end">8 min</text>
+    <path class="icon" d="M858 432 L862 428 L866 432 M858 444 L862 448 L866 444" stroke-width="1.5"/>
+    <line class="separator" x1="64" y1="456" x2="896" y2="456"/>
+
+    <text class="text" x="64" y="478" font-weight="500">Debrief, open issues</text>
+    <text class="secondary" x="380" y="478">Transition</text>
+    <text class="text" x="676" y="478">Pause</text>
+    <rect class="switch" x="724" y="468" width="22" height="13" rx="6.5"/><circle class="knob" cx="730.5" cy="474.5" r="5"/>
+    <text class="text" x="840" y="478" text-anchor="end">12 min</text>
+    <path class="icon" d="M858 468 L862 464 L866 468 M858 480 L862 484 L866 480" stroke-width="1.5"/>
+  </g>
+
+  <!-- Pas de barre en bas : la liste va jusqu'au bord (HIG, « Windows ») -->
+  <text class="zone-label" x="480" y="560">La liste va jusqu'en bas de la fenêtre, sans pied de fenêtre</text>
+</svg>

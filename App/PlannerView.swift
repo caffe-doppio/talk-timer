@@ -42,18 +42,16 @@ struct PlannerView: View {
                 // ⌫ sur la ligne choisie (clavier seul, § 8), sauf le bloc en cours d'une session (§ 6.5).
                 .onDelete { document.talk.blocks.remove(atOffsets: $0.filteredIndexSet { talk.blocks[$0].id != currentBlock }) }
             }
-            HStack {
-                Button("Add Block", systemImage: "plus") { _ = document.talk.addBlock(title: String(localized: "New block")) }
-                    .disabled(talk.margin < 1)
-                    .help(talk.margin < 1 ? String(localized: "No margin left: shorten a block") : "")
-                Spacer()
-            }
-            .padding(.horizontal)
-            .padding(.vertical, 8)
         }
         .frame(minWidth: 560, minHeight: 360)
         .toolbar { toolbar }
-        .focusedSceneValue(\.talk, document.talk)  // pour Fichier › Exporter en Markdown… (`TalkCommands`)
+        // Menu du titre (§ 5) : le système y ajoute Renommer, Déplacer et Dupliquer.
+        .toolbarTitleMenu {
+            Button("Export as Markdown…") { TalkCommands.exportMarkdown(talk) }
+            Button("Export as PDF…") { TalkCommands.exportPDF(talk) }
+            Button("Print…") { TalkCommands.printTalk(talk) }
+        }
+        .focusedSceneValue(\.talk, $document.talk)  // pour les menus Fichier et Édition (`TalkCommands`)
         .onAppear { dismissWindow(id: WelcomeView.id) }  // un talk ouvert remplace l'Accueil (§ 5)
         // Démarrer (⌃⌥D) lance le dernier planificateur actif, même quand Keynote a repris le focus (§ 5).
         .onChange(of: appearsActive, initial: true) { reportIfActive() }
@@ -90,7 +88,18 @@ struct PlannerView: View {
                 .labelsHidden()
             }
             StripView(talk: talk)
-            HStack {
+            // Réglages de présentation, à gauche : des données du talk ou de la fenêtre, pas des commandes (§ 5).
+            HStack(spacing: 16) {
+                Toggle("Advance automatically", isOn: $document.talk.autoAdvance)
+                    .toggleStyle(.switch)
+                    .controlSize(.mini)
+                Picker("Bar on", selection: $screenIndex) {
+                    ForEach(Array(NSScreen.screens.enumerated()), id: \.offset) { index, screen in
+                        Text(screen.localizedName).tag(index)
+                    }
+                }
+                .fixedSize()
+                Spacer()
                 if totalRefused {
                     Text("Minimum: \(talk.totalMinutes - talk.margin) min").foregroundStyle(.red)
                 }
@@ -103,19 +112,16 @@ struct PlannerView: View {
         }
     }
 
-    /// Barre d'outils (§ 5) : Accueil au début ; réglages de la session au centre ; Enregistrer, puis Démarrer,
-    /// l'action principale, à la fin. Chaque bouton existe aussi dans un menu.
+    /// Barre d'outils (§ 5, modèle `docs/window/planner.svg`) : Accueil au début ; Ajouter un bloc au centre ;
+    /// Enregistrer, puis Démarrer, l'action principale, à la fin. Chaque bouton existe aussi dans un menu.
     @ToolbarContentBuilder private var toolbar: some ToolbarContent {
         ToolbarItem(placement: .navigation) {
             Button("Welcome", systemImage: "house") { openWindow(id: WelcomeView.id) }
         }
-        ToolbarItemGroup(placement: .principal) {
-            Toggle("Advance automatically", systemImage: "forward.end.alt", isOn: $document.talk.autoAdvance)
-            Picker("Bar on", systemImage: "display", selection: $screenIndex) {
-                ForEach(Array(NSScreen.screens.enumerated()), id: \.offset) { index, screen in
-                    Text(screen.localizedName).tag(index)
-                }
-            }
+        ToolbarItem(placement: .principal) {
+            Button("Add Block", systemImage: "plus") { _ = document.talk.addBlock(title: String(localized: "New block")) }
+                .disabled(talk.margin < 1)
+                .help(talk.margin < 1 ? String(localized: "No margin left: shorten a block") : String(localized: "Add Block"))
         }
         ToolbarItem {
             // Comme Fichier › Enregistrer (⌘S) : l'action de `NSDocument`, que `DocumentGroup` place sous la fenêtre.

@@ -139,24 +139,29 @@ talk-timer est une **app document** (`DocumentGroup` + `FileDocument`) : **une f
 - Exporter en PDF… (§ 3.2) ;
 - Imprimer… (⌘P).
 
+Les trois se retrouvent dans le **menu du titre** de la fenêtre (`toolbarTitleMenu`), où le système ajoute Renommer, Déplacer et Dupliquer.
+
+**Menu Édition** : Ajouter un bloc, comme le bouton + de la barre d'outils.
+
+Modèle de la fenêtre : [`docs/window/planner.svg`](docs/window/planner.svg), d'après la HIG « Toolbars ».
+
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│ ● ● ●  ⌂  fichier.talk   [⏭ Auto. | Écran ▾]  ⤓  ▶ Démarrer  │ ← barre d'outils
+│ ● ● ●  ⌂ Sans titre ⌄          [+]          ⤓  ▶ Démarrer    │ ← barre d'outils
 ├──────────────────────────────────────────────────────────────┤
 │ Borrowed from the Lab                       [ 60 ] min ⇕     │
 │ ▕▏███▕█████▕███████▕███▕███████████████▕████████▕█████████…▕ │ ← frise proportionnelle
-│                                         Marge : 0 min        │
+│ ○ Passage auto.  Barre sur [Écran ▾]       Marge : 0 min     │
 ├──────────────────────────────────────────────────────────────┤
 │ Why the digital is political  cue…      Pause ○   3 min ⇕    │
 │ Evidence before a judge       cue…      Pause ○   5 min ⇕    │
 │ …                                                            │
-│ [+ Bloc]                                                     │
 └──────────────────────────────────────────────────────────────┘
 ```
 
 - **Barre d'outils** (Liquid Glass, macOS 26). Pas de barre en bas de fenêtre : le bas de l'écran peut la cacher. Chaque bouton existe aussi dans un menu :
-  - au début, Accueil (`house`), qui ouvre la fenêtre Accueil ;
-  - au centre, dans un même groupe, le passage automatique et le choix de l'écran ;
+  - au début, Accueil (`house`), qui ouvre la fenêtre Accueil, puis le titre du document et son menu ;
+  - au centre, Ajouter un bloc (`plus`), désactivé sans marge (§ 4) ;
   - à la fin, Enregistrer (`square.and.arrow.down`, comme Fichier › Enregistrer), seul dans son groupe, puis ▶ Démarrer, l'action principale (`.glassProminent`).
 
 - **Nouveau talk** : 30 min et un premier bloc « Introduction » de 5 min. Un talk sans bloc serait refusé au chargement (§ 3).
@@ -167,8 +172,9 @@ talk-timer est une **app document** (`DocumentGroup` + `FileDocument`) : **une f
   - un interrupteur « Pause », qui marque le bloc comme pause prévue (aussi dans le menu contextuel de la ligne).
 - **Frise** : segments proportionnels à la durée, dans l'ordre de la liste. La marge apparaît en dernier, comme un segment gris. Elle est mise à jour en direct.
 - **Total** : un champ et ses flèches. Le champ ne change le total qu'à ↩ ou quand il perd le focus, et seulement s'il a été modifié ; refusé, il revient au total (§ 4).
-- **Sélection de l'écran** : liste issue de `NSScreen.screens`. Par défaut, c'est l'écran qui porte la barre de menus.
-- **Passage automatique** : bouton à bascule de la barre d'outils. Il modifie le talk (`autoAdvance`, § 6.3), donc passe par ⌘Z.
+- **Réglages de présentation**, sous la frise, à gauche de la marge : dans le contenu et pas dans la barre d'outils, car ce sont des données et non des commandes. La barre d'outils les ferait aussi passer dans le menu de débordement dès que la fenêtre rétrécit.
+  - **Passage automatique** : interrupteur. Il modifie le talk (`autoAdvance`, § 6.3), donc passe par ⌘Z ;
+  - **Sélection de l'écran** : liste issue de `NSScreen.screens`. Par défaut, c'est l'écran qui porte la barre de menus.
 - **▶ Démarrer** : lance une session sur le talk de cette fenêtre et affiche la barre. Une seule session à la fois, donc le bouton est désactivé dans les autres fenêtres pendant une session. Raccourci global ⌃⌥D, hors session, tant qu'un talk avec des blocs est ouvert : il démarre le dernier planificateur actif, sur l'écran choisi dans sa fenêtre, même quand l'app de présentation a repris le focus (§ 7.4).
 - **Menu Session** dans la barre de menus : Démarrer, Suivant, Précédent, Suspendre / Reprendre, Fin. Toute action de la barre et du planificateur est accessible depuis un menu, ce qui sert à Voice Control, à VoiceOver et à la découverte des raccourcis.
 - **Réglages** (scène `Settings`, ⌘,) : les cinq raccourcis globaux, modifiables, et « Rétablir les valeurs par défaut » (§ 7.4).
@@ -595,7 +601,7 @@ Fiches de langage et de frameworks à produire en parallèle : `DocumentGroup`, 
 | 2026-10-11 | Icônes SF Symbols standard, consignées dans GLOSSARY | Une icône par action |
 | 2026-10-11 | `CLAUDE.md` et `.claude/` locaux jusqu'à la publication | Exclus par l'ignore global, réintégrés au § 11, étape 8 |
 | 2026-10-26 | Raccourcis par défaut ⌃⌥S, ⌃⌥D (à tester), ⌃⌥C, ⌃⌥X ; ⌃⌥ + flèches écartés | D'une main, mêmes touches en AZERTY et en QWERTY, aucun raccourci système. Les flèches demandent deux mains, et ⌃→ sans ⌥ change d'espace, ce qui fait sortir de Keynote en plein écran |
-| 2026-10-26 | Barre d'outils à la place du pied de fenêtre : Accueil, passage automatique et écran, Enregistrer, Démarrer | Apparence des fenêtres de macOS 26. Apple déconseille une barre en bas de fenêtre, que le bas de l'écran peut cacher |
+| 2026-10-26 | Barre d'outils à la place du pied de fenêtre : Accueil et menu du titre, Ajouter un bloc, Enregistrer, Démarrer. Passage automatique et écran restent dans le contenu (modèle `docs/window/planner.svg`) | HIG « Toolbars » : trois zones, trois groupes au plus, des commandes et pas des données. Apple déconseille une barre en bas de fenêtre, que le bas de l'écran peut cacher |
 | 2026-10-26 | Bouton Enregistrer dans la barre d'outils, malgré l'enregistrement automatique | Demandé à l'usage : savoir qu'on a enregistré. Apple ne le recommande pas, d'où un seul bouton, à part, qui fait la même chose que ⌘S |
 | 2026-10-26 | Les modifications du planificateur passent à la session en cours (§ 6.5) | On corrige un bloc pendant qu'on présente : la barre doit le montrer tout de suite, pas au prochain Démarrer |
 | 2026-10-26 | Démarrer en raccourci global ⌃⌥D, hors session, sur le dernier talk actif ; Précédent passe sur ⌃⌥E | Démarrer sans quitter l'app de présentation. D, à droite de Suivant, allait contre le geste de Précédent |

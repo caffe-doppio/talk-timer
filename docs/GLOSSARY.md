@@ -68,7 +68,8 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Fin sans double appui, depuis le menu Session | Fin | End | `Live.finish()` | — | existant |
 | Démarrer le dernier planificateur actif, depuis ⌃⌥D ou le menu Session | Démarrer | Start | `Live.startLastActive()` | — | existant |
 | Modification du talk pendant la session, suivie par la barre | — | — | `Session.update(_:)`, `Live.edited(_:talk:)`, `Live.sessionWindow` (la fenêtre qui a démarré la session) | — | existant |
-| Barre d'outils du planificateur | barre d'outils | toolbar | `PlannerView.toolbar` | — | existant |
+| Barre d'outils du planificateur | barre d'outils | toolbar | `PlannerView.toolbar` (modèle `docs/window/planner.svg`) | — | existant |
+| Menu du titre de la fenêtre : exporter, imprimer | menu du titre | title menu | `toolbarTitleMenu` dans `PlannerView` | — | existant |
 | Fenêtre des réglages (⌘,) | Réglages | Settings | `SettingsView` | — | existant |
 | Contrainte sur les raccourcis par défaut (disposition, coexistence) | exigence | requirement | — | `requirements[]` (brouillon `docs/shortcuts-draft.json`) | existant |
 | Touche atteignable d'une main, ⌃⌥ gauche tenus | portée | reach | — (`REACH`, `scripts/check-shortcuts.py`) | — | existant |
@@ -109,8 +110,7 @@ SF Symbols standard uniquement. Une action a une seule icône, partout : barre, 
 | Démarrer | `play.fill` | existant |
 | Accueil | `house` | existant |
 | Enregistrer | `square.and.arrow.down` | existant |
-| Passage automatique | `forward.end.alt` | existant |
-| Écran de la barre | `display` | existant |
+| Ajouter un bloc | `plus` | existant |
 
 | Ne pas utiliser | Pour | Raison |
 |---|---|---|
@@ -149,5 +149,5 @@ Une ligne par déclaration de premier niveau dans `Sources/` et `App/`. `TalkTim
 | `WelcomeView` | struct | `App/WelcomeView.swift` | Fenêtre Accueil : nouveau talk, ouvrir, talks récents | § 5 |
 | `RecentRow` | struct | `App/WelcomeView.swift` | Un talk récent : nom du fichier et dossier | § 5 |
 | `TalkPrintView` | struct | `App/TalkPrintView.swift` | Mise en page imprimable d'un talk, rendue en PDF paginé pour l'export et l'impression | § 3.2 |
-| `TalkCommands` | struct | `App/TalkCommands.swift` | Menus : Fichier › Exporter en Markdown…, Aide › Politique de confidentialité | § 5 |
-| `extension FocusedValues` | extension | `App/TalkCommands.swift` | `talk` : le talk de la fenêtre au premier plan, pour les menus ; `screenIndex` : l'écran choisi pour la barre | § 5 |
+| `TalkCommands` | struct | `App/TalkCommands.swift` | Menus : Fichier › Exporter en Markdown… et en PDF…, Imprimer…, Édition › Ajouter un bloc, Session, Aide › Politique de confidentialité. Les exports et l'impression sont `static`, partagés avec le menu du titre | § 5 |
+| `extension FocusedValues` | extension | `App/TalkCommands.swift` | `talk` : liaison au talk de la fenêtre au premier plan, pour les menus (`@FocusedBinding`) | § 5 |
