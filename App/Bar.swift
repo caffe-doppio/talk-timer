@@ -24,15 +24,18 @@ final class Live {
     /// Le dernier planificateur actif : son talk et son écran, que Démarrer (⌃⌥D) lance (§ 5), et sa fenêtre.
     @ObservationIgnored private var planner: (talk: Talk, screen: Int)?
     @ObservationIgnored private var plannerWindow: UUID?
+    /// La fenêtre qui a démarré la session : ses modifications passent à la session (§ 6.5).
+    private(set) var sessionWindow: UUID?
     @ObservationIgnored private var startArmed = false
 
     private init() {}
 
     /// Démarrer : ouvre la barre sur l'écran `index` de `NSScreen.screens`, ou sur le premier s'il a disparu.
-    func start(_ talk: Talk, screen index: Int) {
+    func start(_ talk: Talk, screen index: Int, window: UUID) {
         let screens = NSScreen.screens
         guard session == nil, let screen = screens.indices.contains(index) ? screens[index] : screens.first else { return }
         session = Session(talk: talk, now: .now)
+        sessionWindow = window
         endRequestedAt = nil
         armStart()  // rend ⌃⌥D pendant la session
         panel = BarPanel(screen: screen, rootView: BarView(live: self)) { self.next() }
@@ -52,6 +55,16 @@ final class Live {
         armStart()
     }
 
+    /// Démarrer depuis le menu Session ou ⌃⌥D : le dernier planificateur actif, sur son écran.
+    func startLastActive() {
+        if let planner, let plannerWindow { start(planner.talk, screen: planner.screen, window: plannerWindow) }
+    }
+
+    /// Le talk de la fenêtre `window` a changé : si elle a démarré la session, la barre suit (§ 6.5).
+    func edited(_ window: UUID, talk: Talk) {
+        if window == sessionWindow { session?.update(talk) }
+    }
+
     /// La fenêtre `window` se ferme : sans elle, ⌃⌥D attend qu'un autre planificateur devienne actif.
     func plannerClosed(_ window: UUID) {
         guard plannerWindow == window else { return }
@@ -67,9 +80,7 @@ final class Live {
         guard armed != startArmed else { return }
         startArmed = armed
         if armed {
-            KeyboardShortcuts.onKeyDown(for: .startSession) { [self] in
-                if let planner { start(planner.talk, screen: planner.screen) }
-            }
+            KeyboardShortcuts.onKeyDown(for: .startSession) { [self] in startLastActive() }
             unavailable = Self.taken([.startSession])
         } else {
             KeyboardShortcuts.removeHandler(for: .startSession)
@@ -104,6 +115,7 @@ final class Live {
         KeyboardShortcuts.Name.session.forEach(KeyboardShortcuts.removeHandler)
         unavailable = []
         session = nil
+        sessionWindow = nil
         armStart()
         NSApp.activate()
     }

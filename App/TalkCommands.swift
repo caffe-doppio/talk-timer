@@ -10,8 +10,6 @@ import UniformTypeIdentifiers
 extension FocusedValues {
     /// Le talk de la fenêtre au premier plan, publié par `PlannerView` pour les menus.
     @Entry var talk: Talk?
-    /// L'écran choisi pour la barre dans cette fenêtre, pour Session › Démarrer.
-    @Entry var screenIndex: Int?
 }
 
 struct TalkCommands: Commands {
@@ -19,7 +17,6 @@ struct TalkCommands: Commands {
     static let privacyPolicy = URL(string: "https://github.com/caffe-doppio/talk-timer/blob/main/PRIVACY.md")!
 
     @FocusedValue(\.talk) private var talk
-    @FocusedValue(\.screenIndex) private var screenIndex
     @Environment(\.openURL) private var openURL
 
     var body: some Commands {
@@ -38,7 +35,7 @@ struct TalkCommands: Commands {
         // `globalKeyboardShortcut` montre la combinaison sans la déclencher : le raccourci global passe avant.
         CommandMenu("Session") {
             let live = Live.shared
-            Button("Start", systemImage: "play.fill") { talk.map { live.start($0, screen: screenIndex ?? 0) } }
+            Button("Start", systemImage: "play.fill") { live.startLastActive() }  // la fenêtre au premier plan, dernier planificateur actif
                 .globalKeyboardShortcut(.startSession)
                 .disabled(talk?.blocks.isEmpty ?? true || live.session != nil)  // comme le bouton du planificateur
             Divider()

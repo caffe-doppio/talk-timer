@@ -117,13 +117,13 @@ Toute modification passe par l'annulation du système (⌘Z / ⇧⌘Z, fournie p
 
 ## 5. Fenêtre du planificateur
 
-talk-timer est une **app document** (`DocumentGroup` + `FileDocument`) : **une fenêtre par talk**. Le système fournit Fichier › Nouveau, Ouvrir, Ouvrir récent, Enregistrer, l'enregistrement automatique, les versions, le double-clic dans le Finder et l'accès aux fichiers en sandbox. Aucun bouton Ouvrir/Enregistrer dans la fenêtre, et aucun chemin mémorisé dans `@AppStorage`.
+talk-timer est une **app document** (`DocumentGroup` + `FileDocument`) : **une fenêtre par talk**. Le système fournit Fichier › Nouveau, Ouvrir, Ouvrir récent, Enregistrer, l'enregistrement automatique, les versions, le double-clic dans le Finder et l'accès aux fichiers en sandbox. Aucun bouton Ouvrir dans la fenêtre, et aucun chemin mémorisé dans `@AppStorage`. Enregistrer est aussi un bouton de la barre d'outils, bien que l'enregistrement soit automatique (§ 15).
 
 **Plusieurs talks, brouillons.** Chaque talk est un fichier `.talk`, et on peut en avoir autant qu'on veut, ouverts en même temps. Un talk jamais enregistré (« Sans titre ») est enregistré automatiquement par le système, puis restauré au lancement suivant : un brouillon ne se perd pas en quittant.
 
 **Fenêtre Accueil** (`WelcomeView`, scène `Window`) :
 
-- Elle s'affiche au lancement (`defaultLaunchBehavior(.presented)`), n'est jamais restaurée, et se ferme dès qu'une fenêtre de talk apparaît : au lancement avec des talks restaurés, seuls ceux-ci restent. Elle reste accessible par Fenêtre › Accueil (⇧⌘1). `DocumentGroupLaunchScene`, l'écran d'accueil des apps document, n'existe pas sur macOS (`@available(macOS, unavailable)` dans le SDK macOS 27).
+- Elle s'affiche au lancement (`defaultLaunchBehavior(.presented)`), n'est jamais restaurée, et se ferme dès qu'une fenêtre de talk apparaît : au lancement avec des talks restaurés, seuls ceux-ci restent. Elle reste accessible par Fenêtre › Accueil (⇧⌘1) et par le bouton Accueil de la barre d'outils du planificateur. `DocumentGroupLaunchScene`, l'écran d'accueil des apps document, n'existe pas sur macOS (`@available(macOS, unavailable)` dans le SDK macOS 27).
 - Elle contient « Nouveau talk » (⌘N), « Ouvrir… » (⌘O, `.talk` ou `.md`) et la liste des talks récents.
 - La liste vient des récents du système (`NSDocumentController.recentDocumentURLs`). Elle affiche le nom du fichier et son dossier, sans lire le contenu des fichiers.
 - Ce n'est pas une bibliothèque : les talks restent des fichiers, là où on les a rangés.
@@ -141,6 +141,8 @@ talk-timer est une **app document** (`DocumentGroup` + `FileDocument`) : **une f
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
+│ ● ● ●  ⌂  fichier.talk   [⏭ Auto. | Écran ▾]  ⤓  ▶ Démarrer  │ ← barre d'outils
+├──────────────────────────────────────────────────────────────┤
 │ Borrowed from the Lab                       [ 60 ] min ⇕     │
 │ ▕▏███▕█████▕███████▕███▕███████████████▕████████▕█████████…▕ │ ← frise proportionnelle
 │                                         Marge : 0 min        │
@@ -149,10 +151,13 @@ talk-timer est une **app document** (`DocumentGroup` + `FileDocument`) : **une f
 │ Evidence before a judge       cue…      Pause ○   5 min ⇕    │
 │ …                                                            │
 │ [+ Bloc]                                                     │
-├──────────────────────────────────────────────────────────────┤
-│ [ ] Passage auto.  Barre sur : [Écran intégré ▾]  ▶ Démarrer │
 └──────────────────────────────────────────────────────────────┘
 ```
+
+- **Barre d'outils** (Liquid Glass, macOS 26). Pas de barre en bas de fenêtre : le bas de l'écran peut la cacher. Chaque bouton existe aussi dans un menu :
+  - au début, Accueil (`house`), qui ouvre la fenêtre Accueil ;
+  - au centre, dans un même groupe, le passage automatique et le choix de l'écran ;
+  - à la fin, Enregistrer (`square.and.arrow.down`, comme Fichier › Enregistrer), seul dans son groupe, puis ▶ Démarrer, l'action principale (`.glassProminent`).
 
 - **Nouveau talk** : 30 min et un premier bloc « Introduction » de 5 min. Un talk sans bloc serait refusé au chargement (§ 3).
 - **Liste** : `List` avec `.onMove`, pour le glisser-déposer natif (sur macOS, la ligne entière se glisse, sans poignée). Colonnes alignées d'une ligne à l'autre : titre | transition | Pause | durée et flèches. La partie droite a une largeur fixe, et la durée est séparée de l'interrupteur pour que les flèches se lisent avec les minutes. Sur chaque ligne :
@@ -161,8 +166,9 @@ talk-timer est une **app document** (`DocumentGroup` + `FileDocument`) : **une f
   - un champ `cue` facultatif ;
   - un interrupteur « Pause », qui marque le bloc comme pause prévue (aussi dans le menu contextuel de la ligne).
 - **Frise** : segments proportionnels à la durée, dans l'ordre de la liste. La marge apparaît en dernier, comme un segment gris. Elle est mise à jour en direct.
+- **Total** : un champ et ses flèches. Le champ ne change le total qu'à ↩ ou quand il perd le focus, et seulement s'il a été modifié ; refusé, il revient au total (§ 4).
 - **Sélection de l'écran** : liste issue de `NSScreen.screens`. Par défaut, c'est l'écran qui porte la barre de menus.
-- **Passage automatique** : interrupteur dans le pied de la fenêtre. Il modifie le talk (`autoAdvance`, § 6.3), donc passe par ⌘Z.
+- **Passage automatique** : bouton à bascule de la barre d'outils. Il modifie le talk (`autoAdvance`, § 6.3), donc passe par ⌘Z.
 - **▶ Démarrer** : lance une session sur le talk de cette fenêtre et affiche la barre. Une seule session à la fois, donc le bouton est désactivé dans les autres fenêtres pendant une session. Raccourci global ⌃⌥D, hors session, tant qu'un talk avec des blocs est ouvert : il démarre le dernier planificateur actif, sur l'écran choisi dans sa fenêtre, même quand l'app de présentation a repris le focus (§ 7.4).
 - **Menu Session** dans la barre de menus : Démarrer, Suivant, Précédent, Suspendre / Reprendre, Fin. Toute action de la barre et du planificateur est accessible depuis un menu, ce qui sert à Voice Control, à VoiceOver et à la découverte des raccourcis.
 - **Réglages** (scène `Settings`, ⌘,) : les cinq raccourcis globaux, modifiables, et « Rétablir les valeurs par défaut » (§ 7.4).
@@ -252,6 +258,15 @@ En passage automatique, seuls une pause prévue, un bloc retrouvé ou le dernier
 ### 6.4 Rafraîchissement
 
 Un `TimelineView(.periodic(from:by: 1))` redessine la barre chaque seconde. Le même rafraîchissement appelle `Session.catchUp(at:)` (§ 6.3). Comme tout est recalculé depuis l'horloge, une seconde perdue (veille, charge) ne fausse rien.
+
+### 6.5 Modifications pendant la session
+
+Le planificateur reste modifiable pendant la session, et la barre suit aussitôt : chaque modification de la fenêtre qui a démarré la session passe à `Session.update(_:)`. Enregistrer n'y change rien : la session suit le talk de la fenêtre, pas le fichier.
+
+- Le bloc en cours est retrouvé par son identifiant et garde son `blockStart` : sa nouvelle durée compte tout de suite, et le raccourcir sous le temps écoulé le fait passer en dépassement.
+- `talkStart` ne bouge pas : un nouveau total déplace la fin prévue, donc l'écart.
+- Le bloc en cours ne se supprime pas : son bouton Supprimer est désactivé, et ⌫ l'ignore. Si ⌘Z le fait disparaître, la session garde le talk d'avant jusqu'à ce qu'il revienne.
+- `history` garde autant de débuts que de blocs avant le bloc en cours. Si des blocs déjà passés sont réordonnés, Précédent les retrouve dans le nouvel ordre, avec les débuts de l'ancien. Limite assumée (`ponytail:` dans le code).
 
 ## 7. Barre flottante
 
@@ -413,6 +428,7 @@ fixtures/borrowed-from-the-lab.json
 21. Passage automatique : il entre dans une pause prévue mais n'en sort pas ; il n'avance pas pendant une suspension ; le dernier bloc passe en dépassement et `isFinished` reste faux.
 22. Passage automatique et Précédent : après « Précédent », `catchUp` laisse le bloc en dépassement ; après « Suivant » jusqu'à `furthestIndex`, il reprend.
 23. Markdown : `# Titre (60 min, auto)` active `autoAdvance`, l'export l'écrit et l'aller-retour le conserve. `# Titre (auto)` donne le titre « Titre (auto) ».
+24. Modification pendant la session (§ 6.5) : bloc 2 en cours depuis 1 min, total passé à 62 et bloc 2 à 7 min. Il reste 6:00 et l'écart vaut 0:00. Le bloc 2 passé en tête devient le bloc 0, et Précédent est sans effet. Un talk sans le bloc en cours ne change rien.
 
 **Recette manuelle** (deuxième écran en mode étendu, build Release signé et sandboxé) :
 
@@ -440,6 +456,8 @@ fixtures/borrowed-from-the-lab.json
 22. Élément de la barre des menus : présent pendant la session seulement, sa jauge suit celle de la barre. Désactivé dans Réglages système, la session fonctionne à l'identique.
 23. Passage automatique : le Mac se met en veille pendant deux blocs. Au réveil, la barre affiche le bon bloc et le bon temps restant.
 24. Deux talks ouverts, Keynote au premier plan : ⌃⌥D démarre le talk de la dernière fenêtre active, sur l'écran choisi dans cette fenêtre. Pendant la session, ⌃⌥D ne démarre rien ; après « Fin », il redémarre.
+25. Champ Total, marge à 2 : un clic dans le champ, puis la flèche du bas deux fois. Le champ affiche chaque nouveau total, et le garder en cliquant ailleurs ne le remonte pas. Taper un total sous la somme des blocs, puis ↩ : bip, minimum affiché, et le champ revient au total.
+26. Pendant une session, allonger le bloc en cours d'une minute dans le planificateur : la barre gagne une minute aussitôt. Le bouton Supprimer du bloc en cours est désactivé. Enregistrer ne change rien à la barre.
 
 ## 11. Ordre d'implémentation
 
@@ -462,7 +480,7 @@ fixtures/borrowed-from-the-lab.json
    - ✅ 5e. Export PDF et impression (§ 3.2), avec l'entitlement `com.apple.security.print` (§ 8, § 15).
 6. **Session et barre**, en sous-étapes :
    - ✅ 6a. Barre dans l'app : `Bar.swift` passe du spike à `App/`, avec l'îlot en Liquid Glass, les couleurs système, les boutons, le ⌘-clic et le double appui de Fin déjà faits dans le spike (§ 7.2, § 7.3). Démarrer ouvre la barre sur l'écran choisi, une seule session à la fois (§ 5) ; Fin la ferme et rend la main au planificateur (§ 6.3). `Logger` à la place de `print`, chaînes de la barre dans le String Catalog, `sharingType = .none` (§ 7.1). Retrait du spike : `AppDelegate`, mode ligne de commande, contournement `setActivationPolicy`, cible exécutable du paquet ;
-   - 6b. Raccourcis : KeyboardShortcuts à la place de `HotKeys`, les quatre noms du § 7.4, scène Réglages et menu Session (venus de l'étape 5), message de conflit. Préalable : choisir le raccourci de Fin (§ 13) ;
+   - ✅ 6b. Raccourcis : KeyboardShortcuts à la place de `HotKeys`, les quatre noms du § 7.4, scène Réglages et menu Session (venus de l'étape 5), message de conflit. Préalable : choisir le raccourci de Fin (§ 13) ;
    - 6c. Contenu de la barre : blocs de pause prévue (§ 7.3), marge ou écart (§ 7.2), largeur ajustée au contenu (§ 7.1) ;
    - 6d. Accessibilité du § 7.5 : libellé de synthèse, annonces VoiceOver au passage en alerte, en dépassement et au premier appui sur Fin ;
    - 6e. Écran débranché pendant la session : la barre revient sur l'écran principal (§ 7.1) ;
@@ -489,6 +507,7 @@ fixtures/borrowed-from-the-lab.json
 | Télécommande de présentation (Page↓ et flèches) | une personne présente sans clavier à portée |
 | Canal Developer ID (notarisation, GitHub Releases, Homebrew) | une demande d'installation hors Store existe. Il faudra un bundle ID distinct (§ 13) |
 | Achat intégré ou pourboire (StoreKit) | jamais tant que l'app est gratuite : ce serait une activité commerciale, donc un statut de trader DSA (§ 14) |
+| Comparer le talk avec une version (blocs ajoutés, supprimés, déplacés, valeurs changées) : le navigateur de versions du système n'affiche que deux fenêtres côte à côte (issue 002) | une personne en a besoin en préparant un vrai talk |
 | Langues d'interface au-delà de EN et FR | une personne le demande et peut relire la traduction |
 
 ## 13. Questions ouvertes
@@ -576,4 +595,7 @@ Fiches de langage et de frameworks à produire en parallèle : `DocumentGroup`, 
 | 2026-10-11 | Icônes SF Symbols standard, consignées dans GLOSSARY | Une icône par action |
 | 2026-10-11 | `CLAUDE.md` et `.claude/` locaux jusqu'à la publication | Exclus par l'ignore global, réintégrés au § 11, étape 8 |
 | 2026-10-26 | Raccourcis par défaut ⌃⌥S, ⌃⌥D (à tester), ⌃⌥C, ⌃⌥X ; ⌃⌥ + flèches écartés | D'une main, mêmes touches en AZERTY et en QWERTY, aucun raccourci système. Les flèches demandent deux mains, et ⌃→ sans ⌥ change d'espace, ce qui fait sortir de Keynote en plein écran |
+| 2026-10-26 | Barre d'outils à la place du pied de fenêtre : Accueil, passage automatique et écran, Enregistrer, Démarrer | Apparence des fenêtres de macOS 26. Apple déconseille une barre en bas de fenêtre, que le bas de l'écran peut cacher |
+| 2026-10-26 | Bouton Enregistrer dans la barre d'outils, malgré l'enregistrement automatique | Demandé à l'usage : savoir qu'on a enregistré. Apple ne le recommande pas, d'où un seul bouton, à part, qui fait la même chose que ⌘S |
+| 2026-10-26 | Les modifications du planificateur passent à la session en cours (§ 6.5) | On corrige un bloc pendant qu'on présente : la barre doit le montrer tout de suite, pas au prochain Démarrer |
 | 2026-10-26 | Démarrer en raccourci global ⌃⌥D, hors session, sur le dernier talk actif ; Précédent passe sur ⌃⌥E | Démarrer sans quitter l'app de présentation. D, à droite de Suivant, allait contre le geste de Précédent |

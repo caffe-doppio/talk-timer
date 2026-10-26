@@ -18,7 +18,7 @@ For people who have a solid outline but lose track of time once they start talki
 **Welcome.** Shown at launch, and from Window › Welcome (⇧⌘1). Recent talks come from macOS: talks stay files, wherever you keep them. A `.md` outline opens too, as a new untitled talk.
 
 ![The planner window for "Borrowed from the Lab", 60 minutes. Under the title, a strip of proportional segments: four green planned breaks, then the blocks in blue, then a grey margin of 3 minutes. Below, one row per block with its title, its length and arrows, its transition line and a Break switch. At the bottom, "Add Block", the "Advance automatically" checkbox, the screen picker and the Start button.](assets/screenshots/planner.png)\
-**Planner.** One window per talk. The strip shows each block in proportion to its length, planned breaks in green and the unassigned margin in grey. Extending a block beyond the margin is refused with a beep, and ⌘Z undoes any change.
+**Planner.** One window per talk. The strip shows each block in proportion to its length, planned breaks in green and the unassigned margin in grey. Extending a block beyond the margin is refused with a beep, and ⌘Z undoes any change. Edits made while you present reach the bar at once.
 
 2. **Keep time.** While you present, a glass island at the top of the screen, above every app, shows the current block and a gauge that runs out. You see the end coming and have time to find your transition.
 

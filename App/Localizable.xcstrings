@@ -363,6 +363,16 @@
         }
       }
     },
+    "Save" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enregistrer"
+          }
+        }
+      }
+    },
     "Session" : {
       "localizations" : {
         "fr" : {

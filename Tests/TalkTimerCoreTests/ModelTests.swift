@@ -166,6 +166,31 @@ func decode(_ json: String) throws -> Talk {
     #expect(session.isFinished)
 }
 
+@Test func updateKeepsCurrentBlockRunning() throws {  // 24
+    var talk = try Talk.load(from: fixture)
+    var session = Session(talk: talk, now: t0)
+    session.next(at: t0 + minutes(3))  // bloc 2 : 5 min, commencé à 3 min
+    #expect(apply(&talk) { $0.setMinutes(7, at: 1) } == false)  // marge à 0
+    #expect(apply(&talk) { $0.setTotal(62) })
+    #expect(apply(&talk) { $0.setMinutes(7, at: 1) })
+    session.update(talk)
+    #expect(session.block.minutes == 7)
+    #expect(session.remaining(at: t0 + minutes(4)) == minutes(6))  // même `blockStart`, nouvelle durée
+    #expect(session.endOffset(at: t0 + minutes(4)) == 0)  // le total suit : 62 min
+
+    talk.blocks.swapAt(0, 1)  // le bloc en cours passe en tête
+    session.update(talk)
+    #expect(session.index == 0)
+    session.back()
+    #expect(session.index == 0)  // plus aucun bloc avant lui : `history` tronqué
+
+    let current = session.block.id
+    talk.blocks.removeAll { $0.id == current }
+    session.update(talk)
+    #expect(session.block.id == current)  // bloc en cours disparu : rien ne change
+    #expect(session.talk.blocks.count == 8)
+}
+
 // MARK: - Passage automatique (§ 6.3)
 
 func autoSession(breakAt: Int? = nil) throws -> Session {

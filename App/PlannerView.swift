@@ -9,9 +9,13 @@ import TalkTimerCore
 struct PlannerView: View {
     @Binding var document: TalkDocument
     @Environment(\.dismissWindow) private var dismissWindow
+    @Environment(\.openWindow) private var openWindow
     @Environment(\.appearsActive) private var appearsActive  // fenêtre active de l'app au premier plan
     @State private var marginFlash = false
     @State private var totalRefused = false
+    /// Texte du champ Total, appliqué à ↩ ou quand le champ perd le focus (issue 001).
+    @State private var totalText = ""
+    @FocusState private var totalFocused: Bool
     @State private var screenIndex = 0  // 0 : l'écran qui porte la barre des menus (§ 5)
     @State private var window = UUID()  // identifie cette fenêtre auprès de `Live`
 
@@ -20,6 +24,9 @@ struct PlannerView: View {
     var body: some View {
         VStack(spacing: 0) {
             header.padding()
+            if !Live.shared.unavailable.isEmpty {
+                conflict.padding([.horizontal, .bottom])
+            }
             Divider()
             List {
                 ForEach($document.talk.blocks) { $block in
@@ -32,7 +39,8 @@ struct PlannerView: View {
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) { deleteButton(block.id) }
                 }
                 .onMove { document.talk.blocks.move(fromOffsets: $0, toOffset: $1) }
-                .onDelete { document.talk.blocks.remove(atOffsets: $0) }  // ⌫ sur la ligne choisie (clavier seul, § 8)
+                // ⌫ sur la ligne choisie (clavier seul, § 8), sauf le bloc en cours d'une session (§ 6.5).
+                .onDelete { document.talk.blocks.remove(atOffsets: $0.filteredIndexSet { talk.blocks[$0].id != currentBlock }) }
             }
             HStack {
                 Button("Add Block", systemImage: "plus") { _ = document.talk.addBlock(title: String(localized: "New block")) }
@@ -42,19 +50,17 @@ struct PlannerView: View {
             }
             .padding(.horizontal)
             .padding(.vertical, 8)
-            Divider()
-            footer.padding()
-            if !Live.shared.unavailable.isEmpty {
-                conflict.padding([.horizontal, .bottom])
-            }
         }
         .frame(minWidth: 560, minHeight: 360)
+        .toolbar { toolbar }
         .focusedSceneValue(\.talk, document.talk)  // pour Fichier › Exporter en Markdown… (`TalkCommands`)
-        .focusedSceneValue(\.screenIndex, screenIndex)  // pour Session › Démarrer
         .onAppear { dismissWindow(id: WelcomeView.id) }  // un talk ouvert remplace l'Accueil (§ 5)
         // Démarrer (⌃⌥D) lance le dernier planificateur actif, même quand Keynote a repris le focus (§ 5).
         .onChange(of: appearsActive, initial: true) { reportIfActive() }
-        .onChange(of: talk) { reportIfActive() }
+        .onChange(of: talk) {
+            Live.shared.edited(window, talk: talk)  // la session suit les modifications (§ 6.5)
+            reportIfActive()
+        }
         .onChange(of: screenIndex) { reportIfActive() }
         .onDisappear { Live.shared.plannerClosed(window) }
     }
@@ -66,7 +72,13 @@ struct PlannerView: View {
                     .textFieldStyle(.plain)
                     .font(.title2.bold())
                 Spacer()
-                TextField("Total", value: totalBinding, format: .number)
+                // Champ texte, pas `TextField(value:format:)` : celui-ci ne se met plus à jour pendant qu'il a le focus,
+                // puis réécrit son ancienne valeur en le perdant, ce qui annulait les flèches (issue 001).
+                TextField("Total", text: $totalText)
+                    .focused($totalFocused)
+                    .onSubmit(applyTotal)
+                    .onChange(of: totalFocused) { if !totalFocused { applyTotal() } }
+                    .onChange(of: talk.totalMinutes, initial: true) { totalText = String(talk.totalMinutes) }
                     .frame(width: 52)
                     .multilineTextAlignment(.trailing)
                 Text("min")  // même ordre que les lignes : valeur, « min », flèches
@@ -91,18 +103,30 @@ struct PlannerView: View {
         }
     }
 
-    private var footer: some View {
-        HStack {
-            Toggle("Advance automatically", isOn: $document.talk.autoAdvance)
-            Spacer()
-            Picker("Bar on", selection: $screenIndex) {
+    /// Barre d'outils (§ 5) : Accueil au début ; réglages de la session au centre ; Enregistrer, puis Démarrer,
+    /// l'action principale, à la fin. Chaque bouton existe aussi dans un menu.
+    @ToolbarContentBuilder private var toolbar: some ToolbarContent {
+        ToolbarItem(placement: .navigation) {
+            Button("Welcome", systemImage: "house") { openWindow(id: WelcomeView.id) }
+        }
+        ToolbarItemGroup(placement: .principal) {
+            Toggle("Advance automatically", systemImage: "forward.end.alt", isOn: $document.talk.autoAdvance)
+            Picker("Bar on", systemImage: "display", selection: $screenIndex) {
                 ForEach(Array(NSScreen.screens.enumerated()), id: \.offset) { index, screen in
                     Text(screen.localizedName).tag(index)
                 }
             }
-            .fixedSize()
-            Button("Start", systemImage: "play.fill") { Live.shared.start(talk, screen: screenIndex) }
-                .buttonStyle(.borderedProminent)
+        }
+        ToolbarItem {
+            // Comme Fichier › Enregistrer (⌘S) : l'action de `NSDocument`, que `DocumentGroup` place sous la fenêtre.
+            Button("Save", systemImage: "square.and.arrow.down") {
+                NSApp.sendAction(#selector(NSDocument.save(_:)), to: nil, from: nil)
+            }
+        }
+        ToolbarSpacer(.fixed)
+        ToolbarItem {
+            Button("Start", systemImage: "play.fill") { Live.shared.start(talk, screen: screenIndex, window: window) }
+                .buttonStyle(.glassProminent)
                 .disabled(talk.blocks.isEmpty || Live.shared.session != nil)  // une seule session à la fois (§ 5)
         }
     }
@@ -124,8 +148,14 @@ struct PlannerView: View {
         if appearsActive { Live.shared.plannerIsActive(window, talk: talk, screen: screenIndex) }
     }
 
+    /// Le bloc en cours, si cette fenêtre a démarré la session : il ne se supprime pas (§ 6.5).
+    private var currentBlock: Block.ID? {
+        Live.shared.sessionWindow == window ? Live.shared.session?.block.id : nil
+    }
+
     private func deleteButton(_ id: Block.ID) -> some View {
         Button("Delete", systemImage: "trash", role: .destructive) { document.talk.blocks.removeAll { $0.id == id } }
+            .disabled(id == currentBlock)
     }
 
     /// Changer le total (§ 4) : autorisé dans `[Σ minutes, 1440]`, sinon bip et minimum affiché.
@@ -136,6 +166,14 @@ struct PlannerView: View {
             totalRefused = !document.talk.setTotal(total)
             if totalRefused { NSSound.beep() }
         }
+    }
+
+    /// Le champ Total ne change le total que s'il a été modifié ; refusé ou illisible, il revient au total.
+    private func applyTotal() {
+        if let total = Int(totalText.trimmingCharacters(in: .whitespaces)), total != talk.totalMinutes {
+            totalBinding.wrappedValue = total
+        }
+        totalText = String(talk.totalMinutes)
     }
 
     /// Changer la durée d'un bloc (§ 4) : autorisé dans `[1, minutes + marge]`.

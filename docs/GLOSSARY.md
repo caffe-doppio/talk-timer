@@ -66,7 +66,9 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Raccourcis réglés mais pris par une autre app, à leur enregistrement | — | — | `Live.unavailable` | — | existant |
 | Dernier planificateur actif, celui que ⌃⌥D démarre | — | — | `Live.plannerIsActive(_:talk:screen:)`, `Live.plannerClosed(_:)` | — | existant |
 | Fin sans double appui, depuis le menu Session | Fin | End | `Live.finish()` | — | existant |
-| Écran de la barre choisi dans la fenêtre active, pour Session › Démarrer | — | — | `FocusedValues.screenIndex` | — | existant |
+| Démarrer le dernier planificateur actif, depuis ⌃⌥D ou le menu Session | Démarrer | Start | `Live.startLastActive()` | — | existant |
+| Modification du talk pendant la session, suivie par la barre | — | — | `Session.update(_:)`, `Live.edited(_:talk:)`, `Live.sessionWindow` (la fenêtre qui a démarré la session) | — | existant |
+| Barre d'outils du planificateur | barre d'outils | toolbar | `PlannerView.toolbar` | — | existant |
 | Fenêtre des réglages (⌘,) | Réglages | Settings | `SettingsView` | — | existant |
 | Contrainte sur les raccourcis par défaut (disposition, coexistence) | exigence | requirement | — | `requirements[]` (brouillon `docs/shortcuts-draft.json`) | existant |
 | Touche atteignable d'une main, ⌃⌥ gauche tenus | portée | reach | — (`REACH`, `scripts/check-shortcuts.py`) | — | existant |
@@ -104,6 +106,11 @@ SF Symbols standard uniquement. Une action a une seule icône, partout : barre, 
 | Suivant | `forward.end` | existant |
 | Suspendre / Reprendre | `playpause` | existant |
 | Fin | `flag.pattern.checkered.2.crossed` | existant |
+| Démarrer | `play.fill` | existant |
+| Accueil | `house` | existant |
+| Enregistrer | `square.and.arrow.down` | existant |
+| Passage automatique | `forward.end.alt` | existant |
+| Écran de la barre | `display` | existant |
 
 | Ne pas utiliser | Pour | Raison |
 |---|---|---|

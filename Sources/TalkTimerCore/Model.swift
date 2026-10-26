@@ -138,7 +138,7 @@ public enum TalkError: Error, Equatable, Sendable {
 // MARK: - Session en direct (§ 6)
 
 public struct Session: Sendable {
-    public let talk: Talk
+    public private(set) var talk: Talk  // remplacé par `update(_:)` quand le planificateur change (§ 6.5)
     public private(set) var index = 0
     public private(set) var talkStart: Date  // jamais décalé : la fin prévue est fixe
     public private(set) var blockStart: Date
@@ -198,6 +198,19 @@ public struct Session: Sendable {
     }
 
     public mutating func end() { isFinished = true }
+
+    /// Le talk modifié pendant la session (§ 6.5). Le bloc en cours est retrouvé par son `id` et garde son
+    /// `blockStart` : sa nouvelle durée compte aussitôt. Sans effet si le bloc en cours a disparu (⌘Z, par exemple).
+    public mutating func update(_ talk: Talk) {
+        guard let newIndex = talk.blocks.firstIndex(where: { $0.id == block.id }) else { return }
+        let furthest = self.talk.blocks[furthestIndex].id
+        self.talk = talk
+        index = newIndex
+        // ponytail: `history` garde ses derniers débuts, autant que de blocs avant le bloc en cours ; si des blocs déjà
+        // passés ont été réordonnés, Précédent les retrouve dans le nouvel ordre, avec les débuts de l'ancien.
+        history = Array(history.suffix(newIndex))
+        furthestIndex = max(newIndex, talk.blocks.firstIndex { $0.id == furthest } ?? newIndex)
+    }
 
     // ponytail: une suspension faite après « Suivant » puis annulée par « Précédent » compte comme du temps
     // écoulé dans le bloc précédent ; décaler aussi `history` à la reprise si ce cas gêne en vrai.
