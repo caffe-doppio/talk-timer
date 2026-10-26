@@ -96,12 +96,13 @@ Exemple complet : [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from
 
 | Raccourci | Bouton | Action |
 |---|---|---|
+| ⌃⌥D | ▶ Démarrer, dans le planificateur | Démarre le talk de la dernière fenêtre active, sur l'écran choisi. Fonctionne même quand une autre appli a le focus |
 | ⌃⌥S | ⏭, ou ⌘-clic n'importe où sur la barre | Bloc suivant. Un clic seul ne fait rien |
-| ⌃⌥D | ⏮ | Revenir au bloc précédent |
+| ⌃⌥E | ⏮ | Revenir au bloc précédent |
 | ⌃⌥C | ⏯ | Suspendre / reprendre. Le bloc est figé, pas l'heure de fin : une pause imprévue consomme la marge |
 | ⌃⌥X, deux fois en 3 s | 🏁, deux fois en 3 s | Terminer la session |
 
-Les raccourcis sont globaux : ils fonctionnent même quand une autre appli a le focus, et ne demandent pas l'autorisation Accessibilité. Ils ne sont actifs que pendant une session, tous à portée de la main gauche, et se changent dans Réglages (⌘,). Le menu Session les affiche aussi.
+Les raccourcis sont globaux : ils fonctionnent même quand une autre appli a le focus, et ne demandent pas l'autorisation Accessibilité. Démarrer fonctionne tant qu'un talk est ouvert, les autres pendant une session seulement. Tous sont près de la main gauche, et se changent dans Réglages (⌘,). Le menu Session les affiche aussi.
 
 ## Structure
 

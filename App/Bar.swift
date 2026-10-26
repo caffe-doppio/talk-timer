@@ -6,7 +6,8 @@ import TalkTimerCore
 // Barre flottante : SPECS § 7. Ouverte par Démarrer (§ 5), fermée par Fin seule (§ 6.3).
 
 /// La session en cours, une seule pour l'app (§ 5) : la `Session`, sa barre, ses raccourcis,
-/// et l'attente du second appui sur Fin. Observée par la barre et par les boutons Démarrer.
+/// et l'attente du second appui sur Fin. Hors session, le talk que ⌃⌥D démarrerait.
+/// Observée par la barre et par les boutons Démarrer.
 @Observable
 final class Live {
     static let shared = Live()
@@ -15,10 +16,15 @@ final class Live {
 
     private(set) var session: Session?
     private(set) var endRequestedAt: Date?  // premier appui sur Fin : état de l'app, pas du modèle
-    /// Raccourcis réglés mais pris par une autre app à « Démarrer » (§ 7.4), pour le message du planificateur.
-    /// ponytail: calculé à Démarrer seulement ; KeyboardShortcuts ne publie pas ses changements.
+    /// Raccourcis réglés mais pris par une autre app (§ 7.4), pour le message du planificateur : Démarrer dès qu'un
+    /// talk est ouvert, les quatre autres à « Démarrer ».
+    /// ponytail: calculé à l'enregistrement seulement ; KeyboardShortcuts ne publie pas ses changements.
     private(set) var unavailable: [KeyboardShortcuts.Name] = []
     @ObservationIgnored private var panel: BarPanel?
+    /// Le dernier planificateur actif : son talk et son écran, que Démarrer (⌃⌥D) lance (§ 5), et sa fenêtre.
+    @ObservationIgnored private var planner: (talk: Talk, screen: Int)?
+    @ObservationIgnored private var plannerWindow: UUID?
+    @ObservationIgnored private var startArmed = false
 
     private init() {}
 
@@ -28,6 +34,7 @@ final class Live {
         guard session == nil, let screen = screens.indices.contains(index) ? screens[index] : screens.first else { return }
         session = Session(talk: talk, now: .now)
         endRequestedAt = nil
+        armStart()  // rend ⌃⌥D pendant la session
         panel = BarPanel(screen: screen, rootView: BarView(live: self)) { self.next() }
         panel?.orderFrontRegardless()
         // Un gestionnaire enregistre la combinaison ; le retirer la rend au système (§ 7.4).
@@ -35,10 +42,44 @@ final class Live {
         KeyboardShortcuts.onKeyDown(for: .previousBlock) { self.back() }
         KeyboardShortcuts.onKeyDown(for: .togglePause) { self.togglePause() }
         KeyboardShortcuts.onKeyDown(for: .endSession) { self.end(at: .now) }
-        // Un refus de RegisterEventHotKey n'est pas signalé : seul isEnabled(for:) le révèle, aussitôt.
-        unavailable = KeyboardShortcuts.Name.session.filter {
-            KeyboardShortcuts.getShortcut(for: $0) != nil && !KeyboardShortcuts.isEnabled(for: $0)
+        unavailable = Self.taken(KeyboardShortcuts.Name.session)
+    }
+
+    /// Le planificateur `window` devient actif, ou son talk ou son écran changent : c'est lui que ⌃⌥D démarrera.
+    func plannerIsActive(_ window: UUID, talk: Talk, screen: Int) {
+        planner = (talk, screen)
+        plannerWindow = window
+        armStart()
+    }
+
+    /// La fenêtre `window` se ferme : sans elle, ⌃⌥D attend qu'un autre planificateur devienne actif.
+    func plannerClosed(_ window: UUID) {
+        guard plannerWindow == window else { return }
+        planner = nil
+        plannerWindow = nil
+        armStart()
+    }
+
+    /// ⌃⌥D est enregistré hors session, tant qu'un talk avec des blocs est ouvert (§ 5, § 7.4).
+    /// Seulement quand l'état change : le talk, lui, change à chaque frappe dans le planificateur.
+    private func armStart() {
+        let armed = session == nil && planner.map { !$0.talk.blocks.isEmpty } == true
+        guard armed != startArmed else { return }
+        startArmed = armed
+        if armed {
+            KeyboardShortcuts.onKeyDown(for: .startSession) { [self] in
+                if let planner { start(planner.talk, screen: planner.screen) }
+            }
+            unavailable = Self.taken([.startSession])
+        } else {
+            KeyboardShortcuts.removeHandler(for: .startSession)
+            unavailable.removeAll { $0 == .startSession }
         }
+    }
+
+    /// Un refus de RegisterEventHotKey n'est pas signalé : seul isEnabled(for:) le révèle, juste après.
+    private static func taken(_ names: [KeyboardShortcuts.Name]) -> [KeyboardShortcuts.Name] {
+        names.filter { KeyboardShortcuts.getShortcut(for: $0) != nil && !KeyboardShortcuts.isEnabled(for: $0) }
     }
 
     func next() { session?.next(at: .now) }  // sans effet sur le dernier bloc (§ 6.3)
@@ -63,6 +104,7 @@ final class Live {
         KeyboardShortcuts.Name.session.forEach(KeyboardShortcuts.removeHandler)
         unavailable = []
         session = nil
+        armStart()
         NSApp.activate()
     }
 

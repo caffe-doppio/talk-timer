@@ -33,6 +33,9 @@ REACH = 2.2
 # En dessous de cette distance, deux touches se touchent (diagonale du décalage de rangée comprise).
 NEIGHBOR = 1.2
 ANCHOR = 58  # ⌥ gauche
+# Enregistré hors session seulement (SPECS § 7.4) : jamais actif en même temps que les autres,
+# donc ni voisinage ni oubli de modificateur à vérifier avec eux.
+OUTSIDE_SESSION = {"startSession"}
 
 # Bits de modificateurs de com.apple.symbolichotkeys (les mêmes que NSEvent.ModifierFlags).
 MODS = {"shift": 1 << 17, "control": 1 << 18, "option": 1 << 19, "command": 1 << 20}
@@ -199,13 +202,15 @@ def check(shortcuts, layouts, taken):
 
     end = proposed.get("endSession")
     for name, (code, mask, mods, shown) in proposed.items():
+        if name in OUTSIDE_SESSION:
+            continue
         if end is not None and name != "endSession" and distance(iso[end[0]], iso[code]) < NEIGHBOR:
             findings.append(("attention", "endSession (proposé)", f"voisine de la touche de {name} : "
                              f"Fin risque d'être pressé à sa place"))
         # Oubli d'un modificateur qui tombe sur un autre de nos raccourcis (⌃⌥⇧S sans ⇧ = ⌃⌥S).
         for m in mods if len(mods) > 1 else []:
             for other, (other_code, other_mask, _, _) in proposed.items():
-                if other != name and (other_code, other_mask) == (code, mask - MODS[m]):
+                if other != name and other not in OUTSIDE_SESSION and (other_code, other_mask) == (code, mask - MODS[m]):
                     findings.append(("attention", f"{name} (proposé)", f"{shown} sans {SYMBOLS[m]} : "
                                      f"déclenche {other}"))
     return findings

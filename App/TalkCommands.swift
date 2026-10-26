@@ -39,6 +39,7 @@ struct TalkCommands: Commands {
         CommandMenu("Session") {
             let live = Live.shared
             Button("Start", systemImage: "play.fill") { talk.map { live.start($0, screen: screenIndex ?? 0) } }
+                .globalKeyboardShortcut(.startSession)
                 .disabled(talk?.blocks.isEmpty ?? true || live.session != nil)  // comme le bouton du planificateur
             Divider()
             Group {

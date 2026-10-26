@@ -27,16 +27,6 @@
         }
       }
     },
-    "Active during a session only, even when another app has the focus." : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actifs pendant une session seulement, même quand une autre app a le focus."
-          }
-        }
-      }
-    },
     "Add Block" : {
       "localizations" : {
         "fr" : {
@@ -419,6 +409,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Démarrer"
+          }
+        }
+      }
+    },
+    "Start works while a talk is open, the others during a session only, even when another app has the focus." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Démarrer fonctionne tant qu'un talk est ouvert, les autres pendant une session seulement, même quand une autre app a le focus."
           }
         }
       }

@@ -153,7 +153,7 @@ text.legend { font-size: 11px; text-anchor: start; fill: var(--label); }
 <rect class="muted" x="124.0" y="102.0" width="40.0" height="40.0" rx="5"/>
 <text class="muted-text" x="144.0" y="126.0">z</text>
 <text class="secondary" x="132.0" y="113.0">w</text>
-<rect class="testing" x="168.0" y="102.0" width="40.0" height="40.0" rx="5"/>
+<rect class="chosen" x="168.0" y="102.0" width="40.0" height="40.0" rx="5"/>
 <text x="188.0" y="122.0">e</text>
 <text class="action" x="188.0" y="137.0">Précédent</text>
 <rect class="muted" x="212.0" y="102.0" width="40.0" height="40.0" rx="5"/>
@@ -186,9 +186,9 @@ text.legend { font-size: 11px; text-anchor: start; fill: var(--label); }
 <rect class="chosen" x="135.0" y="146.0" width="40.0" height="40.0" rx="5"/>
 <text x="155.0" y="166.0">s</text>
 <text class="action" x="155.0" y="181.0">Suivant</text>
-<rect class="testing" x="179.0" y="146.0" width="40.0" height="40.0" rx="5"/>
+<rect class="chosen" x="179.0" y="146.0" width="40.0" height="40.0" rx="5"/>
 <text x="199.0" y="166.0">d</text>
-<text class="action" x="199.0" y="181.0">Précédent</text>
+<text class="action" x="199.0" y="181.0">Démarrer</text>
 <rect class="muted" x="223.0" y="146.0" width="40.0" height="40.0" rx="5"/>
 <text class="muted-text" x="243.0" y="170.0">f</text>
 <rect class="muted" x="267.0" y="146.0" width="40.0" height="40.0" rx="5"/>

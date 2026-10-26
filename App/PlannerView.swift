@@ -9,9 +9,11 @@ import TalkTimerCore
 struct PlannerView: View {
     @Binding var document: TalkDocument
     @Environment(\.dismissWindow) private var dismissWindow
+    @Environment(\.appearsActive) private var appearsActive  // fenêtre active de l'app au premier plan
     @State private var marginFlash = false
     @State private var totalRefused = false
     @State private var screenIndex = 0  // 0 : l'écran qui porte la barre des menus (§ 5)
+    @State private var window = UUID()  // identifie cette fenêtre auprès de `Live`
 
     private var talk: Talk { document.talk }
 
@@ -50,6 +52,11 @@ struct PlannerView: View {
         .focusedSceneValue(\.talk, document.talk)  // pour Fichier › Exporter en Markdown… (`TalkCommands`)
         .focusedSceneValue(\.screenIndex, screenIndex)  // pour Session › Démarrer
         .onAppear { dismissWindow(id: WelcomeView.id) }  // un talk ouvert remplace l'Accueil (§ 5)
+        // Démarrer (⌃⌥D) lance le dernier planificateur actif, même quand Keynote a repris le focus (§ 5).
+        .onChange(of: appearsActive, initial: true) { reportIfActive() }
+        .onChange(of: talk) { reportIfActive() }
+        .onChange(of: screenIndex) { reportIfActive() }
+        .onDisappear { Live.shared.plannerClosed(window) }
     }
 
     private var header: some View {
@@ -111,6 +118,10 @@ struct PlannerView: View {
             SettingsLink { Text("Change in Settings…") }
         }
         .font(.callout)
+    }
+
+    private func reportIfActive() {
+        if appearsActive { Live.shared.plannerIsActive(window, talk: talk, screen: screenIndex) }
     }
 
     private func deleteButton(_ id: Block.ID) -> some View {

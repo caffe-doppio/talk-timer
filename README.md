@@ -96,12 +96,13 @@ Full example: [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from-the
 
 | Shortcut | Button | Action |
 |---|---|---|
+| ⌃⌥D | ▶ Start, in the planner | Start the talk of the last active planner window, on its chosen screen. Works while another app has focus |
 | ⌃⌥S | ⏭, or ⌘-click anywhere on the bar | Next block. A plain click does nothing |
-| ⌃⌥D | ⏮ | Back to the previous block |
+| ⌃⌥E | ⏮ | Back to the previous block |
 | ⌃⌥C | ⏯ | Pause / resume. The block is frozen, the end time is not: an unplanned pause uses up the margin |
 | ⌃⌥X, twice within 3 s | 🏁, twice within 3 s | End the session |
 
-Shortcuts are global: they work while another app has focus, and do not need the Accessibility permission. They are active during a session only, all within reach of the left hand, and can be changed in Settings (⌘,). The Session menu lists them too.
+Shortcuts are global: they work while another app has focus, and do not need the Accessibility permission. Start works while a talk is open, the others during a session only. All are close to the left hand, and can be changed in Settings (⌘,). The Session menu lists them too.
 
 ## Layout
 

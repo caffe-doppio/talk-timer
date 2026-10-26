@@ -61,9 +61,10 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Dessin proportionnel des blocs et de la marge | frise | strip | `StripView` | — | existant |
 | Barre flottante | barre | bar | `BarPanel` (fenêtre), `BarView` (contenu) | — | existant |
 | Jauge du bloc en cours dans la barre des menus | élément de la barre des menus | menu bar extra | `MenuBarExtra` | — | prévu |
-| Raccourci global | raccourci | shortcut | `KeyboardShortcuts.Name` (`.nextBlock`, `.previousBlock`, `.togglePause`, `.endSession`), `KeyboardShortcuts.Name.session` (les quatre, dans l'ordre du menu) | — | existant |
+| Raccourci global | raccourci | shortcut | `KeyboardShortcuts.Name` (`.startSession` hors session ; `.nextBlock`, `.previousBlock`, `.togglePause`, `.endSession`), `KeyboardShortcuts.Name.session` (les quatre de la session, dans l'ordre du menu) | — | existant |
 | Nom de l'action d'un raccourci, pour les messages | — | — | `KeyboardShortcuts.Name.title` | — | existant |
-| Raccourcis réglés mais pris par une autre app à « Démarrer » | — | — | `Live.unavailable` | — | existant |
+| Raccourcis réglés mais pris par une autre app, à leur enregistrement | — | — | `Live.unavailable` | — | existant |
+| Dernier planificateur actif, celui que ⌃⌥D démarre | — | — | `Live.plannerIsActive(_:talk:screen:)`, `Live.plannerClosed(_:)` | — | existant |
 | Fin sans double appui, depuis le menu Session | Fin | End | `Live.finish()` | — | existant |
 | Écran de la barre choisi dans la fenêtre active, pour Session › Démarrer | — | — | `FocusedValues.screenIndex` | — | existant |
 | Fenêtre des réglages (⌘,) | Réglages | Settings | `SettingsView` | — | existant |
@@ -128,8 +129,8 @@ Une ligne par déclaration de premier niveau dans `Sources/` et `App/`. `TalkTim
 | `BarPanel` | class | `App/Bar.swift` | `NSPanel` flottant non activant | § 7.1 |
 | `FirstClickHostingView` | class | `App/Bar.swift` | Hôte SwiftUI dont les boutons répondent au premier clic, la barre n'étant jamais clé | § 7.1 |
 | `BarView` | struct | `App/Bar.swift` | Contenu SwiftUI de la barre | § 7.2 |
-| `extension KeyboardShortcuts.Name` | extension | `App/Shortcuts.swift` | Les quatre raccourcis globaux, leurs valeurs initiales et le nom de leur action | § 6.3, § 7.4 |
-| `SettingsView` | struct | `App/Shortcuts.swift` | Réglages : les quatre raccourcis et « Rétablir les valeurs par défaut » | § 5, § 7.4 |
+| `extension KeyboardShortcuts.Name` | extension | `App/Shortcuts.swift` | Les cinq raccourcis globaux, leurs valeurs initiales et le nom de leur action | § 5, § 6.3, § 7.4 |
+| `SettingsView` | struct | `App/Shortcuts.swift` | Réglages : les cinq raccourcis et « Rétablir les valeurs par défaut » | § 5, § 7.4 |
 | `TalkTimerApp` | struct | `App/TalkTimerApp.swift` | Point d'entrée `@main` | § 5 |
 | `extension TalkError` | extension | `App/TalkDocument.swift` | `message` : texte des refus, traduit par le String Catalog ; `LocalizedError` pour `DocumentGroup` | § 8 |
 | `extension UTType` | extension | `App/TalkDocument.swift` | `.talk` (exporté) et `.markdownText` (importé, lu seulement) | § 3, § 5 |
