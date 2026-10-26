@@ -10,6 +10,10 @@ xcuserdata/
 logs/
 *.log
 
+# Bug tracking
+.github/issues
+.github/pr
+
 # Captures locales (visualiseur de clavier…), jamais versionnées
 assets/css/
 !assets/css/*.css
