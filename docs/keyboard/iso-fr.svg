@@ -2,9 +2,8 @@
 <title>Couche ⌃⌥, clavier ISO</title>
 <style>.bg{fill:#fff}.k{fill:#f6f8fa;stroke:#d0d7de}.free{fill:#dafbe1;stroke:#1a7f37}.assigned{fill:#fbefff;stroke:#8250df;stroke-width:2}.taken{fill:#ffebe9;stroke:#cf222e;stroke-dasharray:3 2}.layout{fill:#fff8c5;stroke:#9a6700}.held{fill:#ddf4ff;stroke:#0969da;stroke-width:2}text{font:13px -apple-system,sans-serif;fill:#1f2328;text-anchor:middle}.s{font-size:9px;fill:#59636e}.a{font-size:8px;fill:#59636e}@media (prefers-color-scheme:dark){.bg{fill:#0d1117}.k{fill:#151b23;stroke:#3d444d}.free{fill:#12261e;stroke:#3fb950}.assigned{fill:#271052;stroke:#a371f7}.taken{fill:#3c1618;stroke:#f85149}.layout{fill:#2e2a0f;stroke:#d29922}.held{fill:#0c2d6b;stroke:#4493f8}text{fill:#f0f6fc}.s,.a{fill:#9198a1}}</style>
 <rect class="bg" width="662" height="334"/>
-<rect class="assigned" x="14.0" y="14.0" width="41.6" height="40.0" rx="5"/>
-<text x="34.8" y="34.0">esc</text>
-<text class="a" x="34.8" y="49.0">Fin</text>
+<rect class="k" x="14.0" y="14.0" width="41.6" height="40.0" rx="5"/>
+<text x="34.8" y="38.0">esc</text>
 <rect class="k" x="59.6" y="14.0" width="41.6" height="40.0" rx="5"/>
 <text x="80.4" y="38.0">F1</text>
 <rect class="k" x="105.1" y="14.0" width="41.6" height="40.0" rx="5"/>
@@ -93,9 +92,8 @@
 <text x="408.0" y="126.0">i</text>
 <rect class="k" x="432.0" y="102.0" width="40.0" height="40.0" rx="5"/>
 <text x="452.0" y="126.0">o</text>
-<rect class="assigned" x="476.0" y="102.0" width="40.0" height="40.0" rx="5"/>
-<text x="496.0" y="122.0">p</text>
-<text class="a" x="496.0" y="137.0">Suspendre</text>
+<rect class="k" x="476.0" y="102.0" width="40.0" height="40.0" rx="5"/>
+<text x="496.0" y="126.0">p</text>
 <rect class="layout" x="520.0" y="102.0" width="40.0" height="40.0" rx="5"/>
 <text x="540.0" y="126.0">^</text>
 <text class="s" x="528.0" y="113.0">[</text>
@@ -109,8 +107,9 @@
 <rect class="layout" x="91.0" y="146.0" width="40.0" height="40.0" rx="5"/>
 <text x="111.0" y="170.0">q</text>
 <text class="s" x="99.0" y="157.0">a</text>
-<rect class="free" x="135.0" y="146.0" width="40.0" height="40.0" rx="5"/>
-<text x="155.0" y="170.0">s</text>
+<rect class="assigned" x="135.0" y="146.0" width="40.0" height="40.0" rx="5"/>
+<text x="155.0" y="166.0">s</text>
+<text class="a" x="155.0" y="181.0">Suivant</text>
 <rect class="free" x="179.0" y="146.0" width="40.0" height="40.0" rx="5"/>
 <text x="199.0" y="170.0">d</text>
 <rect class="k" x="223.0" y="146.0" width="40.0" height="40.0" rx="5"/>
@@ -143,10 +142,12 @@
 <rect class="layout" x="113.0" y="190.0" width="40.0" height="40.0" rx="5"/>
 <text x="133.0" y="214.0">w</text>
 <text class="s" x="121.0" y="201.0">z</text>
-<rect class="free" x="157.0" y="190.0" width="40.0" height="40.0" rx="5"/>
-<text x="177.0" y="214.0">x</text>
-<rect class="free" x="201.0" y="190.0" width="40.0" height="40.0" rx="5"/>
-<text x="221.0" y="214.0">c</text>
+<rect class="assigned" x="157.0" y="190.0" width="40.0" height="40.0" rx="5"/>
+<text x="177.0" y="210.0">x</text>
+<text class="a" x="177.0" y="225.0">Fin</text>
+<rect class="assigned" x="201.0" y="190.0" width="40.0" height="40.0" rx="5"/>
+<text x="221.0" y="210.0">c</text>
+<text class="a" x="221.0" y="225.0">Suspendre</text>
 <rect class="k" x="245.0" y="190.0" width="40.0" height="40.0" rx="5"/>
 <text x="265.0" y="214.0">v</text>
 <rect class="k" x="289.0" y="190.0" width="40.0" height="40.0" rx="5"/>
@@ -187,7 +188,7 @@
 <text x="584.0" y="247.0">↑</text>
 <rect class="k" x="564.0" y="256.0" width="40.0" height="18.0" rx="5"/>
 <text x="584.0" y="269.0">↓</text>
-<rect class="assigned" x="608.0" y="256.0" width="40.0" height="18.0" rx="5"/>
+<rect class="k" x="608.0" y="256.0" width="40.0" height="18.0" rx="5"/>
 <text x="628.0" y="269.0">→</text>
 <rect class="held" x="12" y="302" width="16" height="16" rx="3"/>
 <text class="s" style="text-anchor:start;font-size:11px" x="34" y="314">⌃⌥ tenus</text>

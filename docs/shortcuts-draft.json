@@ -22,15 +22,15 @@
       "name": "nextBlock",
       "action": { "fr": "Suivant", "en": "Next" },
       "model": "Session.next(at:)",
-      "proposed": { "shortcut": "⌃⌥→", "modifiers": ["control", "option"], "key": "rightArrow" },
+      "proposed": { "shortcut": "⌃⌥S", "modifiers": ["control", "option"], "key": "s" },
       "doublePress": false,
       "alsoOnBar": "bouton forward.end, ⌘-clic n'importe où sur la barre",
       "conflicts": [
-        "Rectangle et Magnet : moitié droite (défaut, géré par le § 7.4)"
+        "aucun dans les défauts de Rectangle ; Magnet non vérifié"
       ],
-      "fallback": { "shortcut": "⌃⌥N", "modifiers": ["control", "option"], "key": "n", "why": "N comme Next, libre dans les défauts de Rectangle" },
+      "fallback": { "shortcut": "⌃⌥→", "modifiers": ["control", "option"], "key": "rightArrow", "why": "flèche, la plus lisible, mais à deux mains ; sans ⌥, change d'espace ; moitié droite de Rectangle et Magnet" },
       "tested": null,
-      "notes": ""
+      "notes": "Sasha : la touche la plus agréable avec ⌃⌥. S comme « suivant », et « swipe » en anglais"
     },
     {
       "name": "previousBlock",
@@ -50,33 +50,30 @@
       "name": "togglePause",
       "action": { "fr": "Suspendre / Reprendre", "en": "Pause / Resume" },
       "model": "Session.togglePause(at:)",
-      "proposed": { "shortcut": "⌃⌥P", "modifiers": ["control", "option"], "key": "p" },
+      "proposed": { "shortcut": "⌃⌥C", "modifiers": ["control", "option"], "key": "c" },
       "doublePress": false,
       "alsoOnBar": "bouton playpause",
       "conflicts": [
-        "aucun connu : P est libre dans les défauts de Rectangle"
+        "Rectangle : centrer la fenêtre (défaut, géré par le § 7.4)"
       ],
-      "fallback": {
-        "shortcut": "⌃⌥Espace", "modifiers": ["control", "option"], "key": "space",
-        "why": "défaut actuel du spike. Pris par macOS (source de saisie suivante, dès qu'il y a deux sources) et, sur ce Mac, par le raccourci système n° 65 (fenêtre de recherche du Finder)"
-      },
+      "fallback": { "shortcut": "⌃⌥P", "modifiers": ["control", "option"], "key": "p", "why": "P comme pause, libre dans les défauts de Rectangle, mais à deux mains" },
       "tested": null,
-      "notes": ""
+      "notes": "Sasha : C comme coffee, cancel, comment, bien pour une pause. ⌃⌥Espace écarté : recherche Finder (n° 65) sur ce Mac, source de saisie suivante sur un macOS neuf"
     },
     {
       "name": "endSession",
       "action": { "fr": "Fin", "en": "End" },
       "model": "Live.end(at:) puis fermeture de la barre",
-      "proposed": { "shortcut": "⌃⌥⎋", "modifiers": ["control", "option"], "key": "escape" },
+      "proposed": { "shortcut": "⌃⌥X", "modifiers": ["control", "option"], "key": "x" },
       "doublePress": true,
       "alsoOnBar": "bouton flag.pattern.checkered.2.crossed, deux appuis en 3 s",
       "conflicts": [
         "aucun dans les défauts de Rectangle (vérifié dans WindowAction.swift) ; Magnet non vérifié, code fermé",
-        "à tester : Keynote en présentation ne doit pas recevoir Échap"
+        "voisine de S (Suivant) et de C (Suspendre) : le double appui limite l'erreur, à juger au clavier"
       ],
-      "fallback": { "shortcut": "⌃⌥.", "modifiers": ["control", "option"], "key": "period", "why": "point final, libre dans les défauts de Rectangle. Contraire à l'exigence layout : affiché ⌃⌥: en AZERTY" },
+      "fallback": { "shortcut": "⌃⌥⎋", "modifiers": ["control", "option"], "key": "escape", "why": "Échap pour sortir, libre dans les défauts de Rectangle, mais à deux mains ; Keynote en présentation ne doit pas recevoir Échap" },
       "tested": null,
-      "notes": ""
+      "notes": "Sasha : X comme ⌘X, :x dans vim, ⌃X dans nano et emacs, autant de façons de sortir"
     }
   ],
   "tests": [

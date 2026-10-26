@@ -56,6 +56,10 @@ SYSTEM_NAMES = {
     118: "bureau 1", 119: "bureau 2",
 }
 
+# Raccourcis ⌃⌥ par défaut de Rectangle (WindowAction.swift), key codes : flèches, J K U I, ↩, = -, C, ⌫, D E F T G R.
+# Avertissement seulement : l'app n'est pas forcément installée, et le § 7.4 gère l'échec d'enregistrement.
+RECTANGLE = {123, 124, 125, 126, 38, 40, 32, 34, 36, 24, 27, 8, 51, 2, 14, 3, 17, 5, 15}
+
 # Géométrie Apple compacte (Magic Keyboard, MacBook) : rangées de (key code, largeur), en largeurs de touche.
 # La rangée de fonctions compte 14 touches égales sur 14,5 ; la dernière (verrouillage) n'a pas de key code.
 FUNCTION_ROW = [(code, 14.5 / 14) for code in [53, *FKEYS, None]]
@@ -163,9 +167,9 @@ def check(shortcuts, layouts, taken):
                 findings.append(("erreur", where, f"touche « {key} » inconnue de ce script"))
                 continue
             shown = combo(mods, code, fr)
-            if variant == "proposed":
-                proposed[s["name"]] = code
             mask = sum(MODS[m] for m in mods)
+            if variant == "proposed":
+                proposed[s["name"]] = (code, mask, mods, shown)
 
             if has_character(code) and fr.get(code, "").lower() != us.get(code, "").lower():
                 findings.append(("erreur", where, f"{shown} : la touche affiche « {fr.get(code)} » en AZERTY "
@@ -181,16 +185,24 @@ def check(shortcuts, layouts, taken):
                 if n is not None:
                     findings.append(("attention", where, f"{shown} sans {SYMBOLS[m]} : raccourci système "
                                      f"n° {n} ({SYSTEM_NAMES.get(n, 'non identifié')})"))
+            if mask == MODS["control"] | MODS["option"] and code in RECTANGLE:
+                findings.append(("attention", where, f"{shown} : raccourci par défaut de Rectangle (§ 7.4)"))
             far = reach("iso", code)
             if far > REACH:
                 findings.append(("attention", where, f"{shown} : hors de portée d'une main "
                                  f"({far:.1f} touches depuis ⌥, maximum {REACH})"))
 
     end = proposed.get("endSession")
-    for name, code in proposed.items():
-        if end is not None and name != "endSession" and distance(iso[end], iso[code]) < NEIGHBOR:
+    for name, (code, mask, mods, shown) in proposed.items():
+        if end is not None and name != "endSession" and distance(iso[end[0]], iso[code]) < NEIGHBOR:
             findings.append(("attention", "endSession (proposé)", f"voisine de la touche de {name} : "
                              f"Fin risque d'être pressé à sa place"))
+        # Oubli d'un modificateur qui tombe sur un autre de nos raccourcis (⌃⌥⇧S sans ⇧ = ⌃⌥S).
+        for m in mods if len(mods) > 1 else []:
+            for other, (other_code, other_mask, _, _) in proposed.items():
+                if other != name and (other_code, other_mask) == (code, mask - MODS[m]):
+                    findings.append(("attention", f"{name} (proposé)", f"{shown} sans {SYMBOLS[m]} : "
+                                     f"déclenche {other}"))
     return findings
 
 
