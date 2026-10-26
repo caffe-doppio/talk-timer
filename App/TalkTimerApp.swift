@@ -17,5 +17,7 @@ struct TalkTimerApp: App {
             .defaultLaunchBehavior(.presented)
             .restorationBehavior(.disabled)
             .keyboardShortcut("1", modifiers: [.command, .shift])
+
+        Settings { SettingsView() }  // ⌘, (§ 5, § 7.4)
     }
 }

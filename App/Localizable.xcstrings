@@ -27,6 +27,16 @@
         }
       }
     },
+    "Active during a session only, even when another app has the focus." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actifs pendant une session seulement, même quand une autre app a le focus."
+          }
+        }
+      }
+    },
     "Add Block" : {
       "localizations" : {
         "fr" : {
@@ -103,6 +113,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "PAUSE"
+          }
+        }
+      }
+    },
+    "Change in Settings…" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modifier dans Réglages…"
           }
         }
       }
@@ -339,6 +359,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Politique de confidentialité"
+          }
+        }
+      }
+    },
+    "Restore Defaults" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rétablir les valeurs par défaut"
+          }
+        }
+      }
+    },
+    "Session" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session"
+          }
+        }
+      }
+    },
+    "Shortcuts" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raccourcis"
+          }
+        }
+      }
+    },
+    "Shortcuts taken by another app: %@" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raccourcis pris par une autre app : %@"
           }
         }
       }

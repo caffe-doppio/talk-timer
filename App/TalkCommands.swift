@@ -1,15 +1,17 @@
 import AppKit
+import KeyboardShortcuts
 import PDFKit
 import SwiftUI
 import TalkTimerCore
 import UniformTypeIdentifiers
 
-// Menus de l'app (SPECS § 5) : Fichier › Exporter en Markdown… et en PDF…, Imprimer…, Aide › Politique de confidentialité.
-// Le menu Session et les Réglages arrivent avec la barre et KeyboardShortcuts (§ 11, étape 6).
+// Menus de l'app (SPECS § 5) : Fichier › Exporter en Markdown… et en PDF…, Imprimer…, Session, Aide › Politique de confidentialité.
 
 extension FocusedValues {
     /// Le talk de la fenêtre au premier plan, publié par `PlannerView` pour les menus.
     @Entry var talk: Talk?
+    /// L'écran choisi pour la barre dans cette fenêtre, pour Session › Démarrer.
+    @Entry var screenIndex: Int?
 }
 
 struct TalkCommands: Commands {
@@ -17,6 +19,7 @@ struct TalkCommands: Commands {
     static let privacyPolicy = URL(string: "https://github.com/caffe-doppio/talk-timer/blob/main/PRIVACY.md")!
 
     @FocusedValue(\.talk) private var talk
+    @FocusedValue(\.screenIndex) private var screenIndex
     @Environment(\.openURL) private var openURL
 
     var body: some Commands {
@@ -30,6 +33,26 @@ struct TalkCommands: Commands {
             Button("Print…") { talk.map(printTalk) }
                 .keyboardShortcut("p")
                 .disabled(talk == nil)
+        }
+        // Session (§ 5) : chaque action de la barre, avec son raccourci global affiché, tel que réglé (§ 7.4).
+        // `globalKeyboardShortcut` montre la combinaison sans la déclencher : le raccourci global passe avant.
+        CommandMenu("Session") {
+            let live = Live.shared
+            Button("Start", systemImage: "play.fill") { talk.map { live.start($0, screen: screenIndex ?? 0) } }
+                .disabled(talk?.blocks.isEmpty ?? true || live.session != nil)  // comme le bouton du planificateur
+            Divider()
+            Group {
+                Button("Next", systemImage: "forward.end") { live.next() }
+                    .globalKeyboardShortcut(.nextBlock)
+                Button("Back", systemImage: "backward.end") { live.back() }
+                    .globalKeyboardShortcut(.previousBlock)
+                Button("Pause / Resume", systemImage: "playpause") { live.togglePause() }
+                    .globalKeyboardShortcut(.togglePause)
+                Divider()
+                Button("End", systemImage: "flag.pattern.checkered.2.crossed") { live.finish() }
+                    .globalKeyboardShortcut(.endSession)
+            }
+            .disabled(live.session == nil)
         }
         CommandGroup(replacing: .help) {
             Button("Privacy Policy") { openURL(Self.privacyPolicy) }

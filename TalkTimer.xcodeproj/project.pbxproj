@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A1000000000000000000000B /* TalkTimerCore in Frameworks */ = {isa = PBXBuildFile; productRef = A1000000000000000000000A /* TalkTimerCore */; };
+		A10000000000000000000015 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = A1000000000000000000000D /* KeyboardShortcuts */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +42,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1000000000000000000000B /* TalkTimerCore in Frameworks */,
+				A10000000000000000000015 /* KeyboardShortcuts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,6 +86,7 @@
 			name = TalkTimer;
 			packageProductDependencies = (
 				A1000000000000000000000A /* TalkTimerCore */,
+				A1000000000000000000000D /* KeyboardShortcuts */,
 			);
 			productName = TalkTimer;
 			productReference = A10000000000000000000003 /* talk-timer.app */;
@@ -116,6 +119,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				A10000000000000000000009 /* XCLocalSwiftPackageReference "." */,
+				A1000000000000000000000C /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A10000000000000000000002 /* Products */;
@@ -269,10 +273,26 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		A1000000000000000000000C /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts";
+			requirement = {
+				kind = exactVersion;
+				version = 3.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		A1000000000000000000000A /* TalkTimerCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TalkTimerCore;
+		};
+		A1000000000000000000000D /* KeyboardShortcuts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1000000000000000000000C /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
+			productName = KeyboardShortcuts;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

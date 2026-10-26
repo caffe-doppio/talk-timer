@@ -32,7 +32,7 @@ For people who have a solid outline but lose track of time once they start talki
 **Overtime.** Past zero, the gauge is empty and a red `+0:18` counts up. The next block starts when you say so, unless the talk is set to advance automatically.
 
 ![The paused bar: a grey gauge frozen at 0:52, the word "SUSPENDU", then the next block and the transition line.](assets/screenshots/bar_paused.png)\
-**Paused.** ⌃⌥Space freezes the block at 0:52 and shows `PAUSED` (`SUSPENDU` in French). The end time does not move: an unplanned pause uses up the margin.
+**Paused.** ⌃⌥C freezes the block at 0:52 and shows `PAUSED` (`SUSPENDU` in French). The end time does not move: an unplanned pause uses up the margin.
 
 3. **Share.** Open a Markdown outline as a new talk, export a talk to Markdown. PDF export *(planned)*.
 
@@ -92,16 +92,16 @@ Full example: [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from-the
 | Normal | More than 20 % of the block left, and more than 1 minute | Blue gauge, countdown, next block |
 | Alert | 20 % of the block or the last minute, whichever comes first | Orange hatched gauge, next block in bold, transition line |
 | Overtime | Past zero | Empty gauge, red `+m:ss` counting up |
-| Paused | After ⌃⌥Space | Grey gauge, frozen countdown, `PAUSED` label |
+| Paused | After ⌃⌥C | Grey gauge, frozen countdown, `PAUSED` label |
 
 | Shortcut | Button | Action |
 |---|---|---|
-| ⌃⌥→ | ⏭, or ⌘-click anywhere on the bar | Next block. A plain click does nothing |
-| ⌃⌥← | ⏮ | Back to the previous block |
-| ⌃⌥Space | ⏯ | Pause / resume. The block is frozen, the end time is not: an unplanned pause uses up the margin |
-| — | 🏁, twice within 3 s | End the session |
+| ⌃⌥S | ⏭, or ⌘-click anywhere on the bar | Next block. A plain click does nothing |
+| ⌃⌥D | ⏮ | Back to the previous block |
+| ⌃⌥C | ⏯ | Pause / resume. The block is frozen, the end time is not: an unplanned pause uses up the margin |
+| ⌃⌥X, twice within 3 s | 🏁, twice within 3 s | End the session |
 
-Shortcuts are global: they work while another app has focus, and do not need the Accessibility permission.
+Shortcuts are global: they work while another app has focus, and do not need the Accessibility permission. They are active during a session only, all within reach of the left hand, and can be changed in Settings (⌘,). The Session menu lists them too.
 
 ## Layout
 

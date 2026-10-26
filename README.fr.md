@@ -32,7 +32,7 @@ Pour qui a un plan solide mais perd le fil du temps en parlant : un sous-sujet p
 **Dépassement.** Passé zéro, la jauge est vide et un `+0:18` rouge monte. Le bloc suivant commence quand on le décide, sauf si le talk passe automatiquement au bloc suivant.
 
 ![La barre suspendue : une jauge grise figée à 0:52, le mot « SUSPENDU », puis le bloc suivant et la phrase de transition.](assets/screenshots/bar_paused.png)\
-**Suspendu.** ⌃⌥Espace fige le bloc à 0:52 et affiche `SUSPENDU`. L'heure de fin, elle, ne bouge pas : une pause imprévue consomme la marge.
+**Suspendu.** ⌃⌥C fige le bloc à 0:52 et affiche `SUSPENDU`. L'heure de fin, elle, ne bouge pas : une pause imprévue consomme la marge.
 
 3. **Partager.** Ouvrir un plan en Markdown comme nouveau talk, exporter un talk en Markdown. Export PDF *(prévu)*.
 
@@ -92,16 +92,16 @@ Exemple complet : [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from
 | Normal | Plus de 20 % du bloc restant, et plus d'une minute | Jauge bleue, compte à rebours, bloc suivant |
 | Alerte | 20 % du bloc ou dernière minute, selon ce qui arrive en premier | Jauge orange hachurée, bloc suivant en gras, phrase de transition |
 | Dépassement | Au-delà de zéro | Jauge vide, `+m:ss` rouge qui monte |
-| Suspendu | Après ⌃⌥Espace | Jauge grise, compte à rebours figé, mention `SUSPENDU` |
+| Suspendu | Après ⌃⌥C | Jauge grise, compte à rebours figé, mention `SUSPENDU` |
 
 | Raccourci | Bouton | Action |
 |---|---|---|
-| ⌃⌥→ | ⏭, ou ⌘-clic n'importe où sur la barre | Bloc suivant. Un clic seul ne fait rien |
-| ⌃⌥← | ⏮ | Revenir au bloc précédent |
-| ⌃⌥Espace | ⏯ | Suspendre / reprendre. Le bloc est figé, pas l'heure de fin : une pause imprévue consomme la marge |
-| — | 🏁, deux fois en 3 s | Terminer la session |
+| ⌃⌥S | ⏭, ou ⌘-clic n'importe où sur la barre | Bloc suivant. Un clic seul ne fait rien |
+| ⌃⌥D | ⏮ | Revenir au bloc précédent |
+| ⌃⌥C | ⏯ | Suspendre / reprendre. Le bloc est figé, pas l'heure de fin : une pause imprévue consomme la marge |
+| ⌃⌥X, deux fois en 3 s | 🏁, deux fois en 3 s | Terminer la session |
 
-Les raccourcis sont globaux : ils fonctionnent même quand une autre appli a le focus, et ne demandent pas l'autorisation Accessibilité.
+Les raccourcis sont globaux : ils fonctionnent même quand une autre appli a le focus, et ne demandent pas l'autorisation Accessibilité. Ils ne sont actifs que pendant une session, tous à portée de la main gauche, et se changent dans Réglages (⌘,). Le menu Session les affiche aussi.
 
 ## Structure
 

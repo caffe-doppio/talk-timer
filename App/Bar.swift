@@ -1,6 +1,5 @@
 import AppKit
-import Carbon.HIToolbox
-import os
+import KeyboardShortcuts
 import SwiftUI
 import TalkTimerCore
 
@@ -16,6 +15,9 @@ final class Live {
 
     private(set) var session: Session?
     private(set) var endRequestedAt: Date?  // premier appui sur Fin : état de l'app, pas du modèle
+    /// Raccourcis réglés mais pris par une autre app à « Démarrer » (§ 7.4), pour le message du planificateur.
+    /// ponytail: calculé à Démarrer seulement ; KeyboardShortcuts ne publie pas ses changements.
+    private(set) var unavailable: [KeyboardShortcuts.Name] = []
     @ObservationIgnored private var panel: BarPanel?
 
     private init() {}
@@ -28,9 +30,15 @@ final class Live {
         endRequestedAt = nil
         panel = BarPanel(screen: screen, rootView: BarView(live: self)) { self.next() }
         panel?.orderFrontRegardless()
-        HotKeys.register(keyCode: kVK_RightArrow) { self.next() }
-        HotKeys.register(keyCode: kVK_LeftArrow) { self.back() }
-        HotKeys.register(keyCode: kVK_Space) { self.togglePause() }
+        // Un gestionnaire enregistre la combinaison ; le retirer la rend au système (§ 7.4).
+        KeyboardShortcuts.onKeyDown(for: .nextBlock) { self.next() }
+        KeyboardShortcuts.onKeyDown(for: .previousBlock) { self.back() }
+        KeyboardShortcuts.onKeyDown(for: .togglePause) { self.togglePause() }
+        KeyboardShortcuts.onKeyDown(for: .endSession) { self.end(at: .now) }
+        // Un refus de RegisterEventHotKey n'est pas signalé : seul isEnabled(for:) le révèle, aussitôt.
+        unavailable = KeyboardShortcuts.Name.session.filter {
+            KeyboardShortcuts.getShortcut(for: $0) != nil && !KeyboardShortcuts.isEnabled(for: $0)
+        }
     }
 
     func next() { session?.next(at: .now) }  // sans effet sur le dernier bloc (§ 6.3)
@@ -45,9 +53,15 @@ final class Live {
             endRequestedAt = now
             return
         }
+        finish()
+    }
+
+    /// Fin sans double appui, depuis le menu Session : ouvrir le menu est déjà un geste délibéré (§ 6.3).
+    func finish() {
         panel?.close()
         panel = nil
-        HotKeys.unregisterAll()
+        KeyboardShortcuts.Name.session.forEach(KeyboardShortcuts.removeHandler)
+        unavailable = []
         session = nil
         NSApp.activate()
     }
@@ -214,48 +228,5 @@ struct BarView: View {
                 .frame(width: 240 * fraction)
         }
         .frame(width: 240, height: 8)
-    }
-}
-
-/// Raccourcis globaux Carbon : actifs quand une autre appli a le focus, sans autorisation Accessibilité (§ 7.4).
-/// Enregistrés à Démarrer, désenregistrés à Fin ; remplacés par KeyboardShortcuts à l'étape 6b.
-enum HotKeys {
-    private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "talk-timer", category: "shortcuts")
-    private static var actions: [UInt32: () -> Void] = [:]
-    private static var refs: [EventHotKeyRef] = []
-    private static var handlerInstalled = false
-
-    static func register(keyCode: Int, action: @escaping () -> Void) {
-        if !handlerInstalled {
-            var spec = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
-            InstallEventHandler(GetApplicationEventTarget(), { _, event, _ in
-                var hotKey = EventHotKeyID()
-                GetEventParameter(
-                    event, EventParamName(kEventParamDirectObject), EventParamType(typeEventHotKeyID),
-                    nil, MemoryLayout<EventHotKeyID>.size, nil, &hotKey
-                )
-                let id = hotKey.id
-                MainActor.assumeIsolated { HotKeys.actions[id]?() }
-                return noErr
-            }, 1, &spec, nil, nil)
-            handlerInstalled = true
-        }
-        let id = UInt32(actions.count + 1)
-        actions[id] = action
-        var ref: EventHotKeyRef?
-        let status = RegisterEventHotKey(
-            UInt32(keyCode), UInt32(controlKey | optionKey),
-            EventHotKeyID(signature: OSType(0x5454_4D52), id: id),  // 'TTMR'
-            GetApplicationEventTarget(), 0, &ref
-        )
-        if let ref { refs.append(ref) }
-        if status != noErr { logger.error("raccourci \(keyCode) indisponible (\(status))") }
-    }
-
-    /// Rend les combinaisons au système (§ 7.4). ⌘Q les rend aussi, avec le processus.
-    static func unregisterAll() {
-        refs.forEach { UnregisterEventHotKey($0) }
-        refs = []
-        actions = [:]
     }
 }

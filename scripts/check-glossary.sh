@@ -21,6 +21,6 @@ while read -r kind name; do
         missing=1
     fi
 done < <(find Sources App -name '*.swift' -exec sed -nE \
-    "s/^(($modifiers) +)*($kinds) +([A-Za-z_][A-Za-z0-9_]*).*/\3 \4/p" {} +)
+    "s/^(($modifiers) +)*($kinds) +([A-Za-z_][A-Za-z0-9_.]*).*/\3 \4/p" {} +)
 
 exit $missing

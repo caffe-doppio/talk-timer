@@ -14,6 +14,7 @@ import argparse
 import json
 import math
 import plistlib
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -21,6 +22,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DRAFT = ROOT / "docs/shortcuts-draft.json"
 CSS = ROOT / "assets/css/keyboard.css"
+CODE = ROOT / "App/Shortcuts.swift"  # valeurs initiales de KeyboardShortcuts, à garder égales au brouillon
+# static let nextBlock = Self("nextBlock", initial: Shortcut(.s, modifiers: [.control, .option]))
+INITIAL = re.compile(r'Self\("(\w+)", initial: Shortcut\(\.(\w+), modifiers: \[([^\]]*)\]\)\)')
 
 # Portée d'une main, en largeurs de touche, du centre de ⌥ gauche au bord le plus proche de la touche
 # (le bord, pas le centre : sinon Espace, large de 5, paraîtrait loin du pouce).
@@ -207,6 +211,18 @@ def check(shortcuts, layouts, taken):
     return findings
 
 
+def check_code(shortcuts, source):
+    """Le code (`initial:`) et le brouillon (`proposed`) doivent donner la même valeur par défaut."""
+    code = {name: (key, sorted(m.strip(" .") for m in mods.split(","))) for name, key, mods in INITIAL.findall(source)}
+    findings = []
+    for s in shortcuts:
+        draft = (s["proposed"]["key"], sorted(s["proposed"]["modifiers"]))
+        if code.get(s["name"]) != draft:
+            findings.append(("erreur", f"{s['name']} (code)", f"{CODE.name} donne {code.get(s['name'])}, "
+                             f"le brouillon {draft}"))
+    return findings
+
+
 def svg(geometry, shortcuts, layouts, taken):
     """Plan de la couche ⌃⌥ : retenu, à tester, disponible ; tout le reste atténué (styles : assets/css/keyboard.css)."""
     fr, us = layouts["French"], layouts["US"]
@@ -278,7 +294,7 @@ def main():
 
     shortcuts = json.loads(DRAFT.read_text(encoding="utf-8"))["shortcuts"]
     layouts, taken = load_layouts(), load_system()
-    findings = check(shortcuts, layouts, taken)
+    findings = check(shortcuts, layouts, taken) + check_code(shortcuts, CODE.read_text(encoding="utf-8"))
     for level, where, message in findings:
         print(f"{level:9} {where:28} {message}")
     if args.svg:

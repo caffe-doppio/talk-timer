@@ -61,7 +61,12 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Dessin proportionnel des blocs et de la marge | frise | strip | `StripView` | — | existant |
 | Barre flottante | barre | bar | `BarPanel` (fenêtre), `BarView` (contenu) | — | existant |
 | Jauge du bloc en cours dans la barre des menus | élément de la barre des menus | menu bar extra | `MenuBarExtra` | — | prévu |
-| Raccourci global | raccourci | shortcut | `KeyboardShortcuts.Name` (`.nextBlock`, `.previousBlock`, `.togglePause`, `.endSession`) | — | prévu |
+| Raccourci global | raccourci | shortcut | `KeyboardShortcuts.Name` (`.nextBlock`, `.previousBlock`, `.togglePause`, `.endSession`), `KeyboardShortcuts.Name.session` (les quatre, dans l'ordre du menu) | — | existant |
+| Nom de l'action d'un raccourci, pour les messages | — | — | `KeyboardShortcuts.Name.title` | — | existant |
+| Raccourcis réglés mais pris par une autre app à « Démarrer » | — | — | `Live.unavailable` | — | existant |
+| Fin sans double appui, depuis le menu Session | Fin | End | `Live.finish()` | — | existant |
+| Écran de la barre choisi dans la fenêtre active, pour Session › Démarrer | — | — | `FocusedValues.screenIndex` | — | existant |
+| Fenêtre des réglages (⌘,) | Réglages | Settings | `SettingsView` | — | existant |
 | Contrainte sur les raccourcis par défaut (disposition, coexistence) | exigence | requirement | — | `requirements[]` (brouillon `docs/shortcuts-draft.json`) | existant |
 | Touche atteignable d'une main, ⌃⌥ gauche tenus | portée | reach | — (`REACH`, `scripts/check-shortcuts.py`) | — | existant |
 | Schéma de la couche ⌃⌥ d'un clavier ISO ou ANSI | plan du clavier | keyboard map | — (`docs/keyboard/*.svg`, généré ; styles `assets/css/keyboard.css`) | — | existant |
@@ -123,7 +128,8 @@ Une ligne par déclaration de premier niveau dans `Sources/` et `App/`. `TalkTim
 | `BarPanel` | class | `App/Bar.swift` | `NSPanel` flottant non activant | § 7.1 |
 | `FirstClickHostingView` | class | `App/Bar.swift` | Hôte SwiftUI dont les boutons répondent au premier clic, la barre n'étant jamais clé | § 7.1 |
 | `BarView` | struct | `App/Bar.swift` | Contenu SwiftUI de la barre | § 7.2 |
-| `HotKeys` | enum | `App/Bar.swift` | Raccourcis Carbon, enregistrés à Démarrer et désenregistrés à Fin ; remplacés par KeyboardShortcuts (§ 11, étape 6b) | § 7.4 |
+| `extension KeyboardShortcuts.Name` | extension | `App/Shortcuts.swift` | Les quatre raccourcis globaux, leurs valeurs initiales et le nom de leur action | § 6.3, § 7.4 |
+| `SettingsView` | struct | `App/Shortcuts.swift` | Réglages : les quatre raccourcis et « Rétablir les valeurs par défaut » | § 5, § 7.4 |
 | `TalkTimerApp` | struct | `App/TalkTimerApp.swift` | Point d'entrée `@main` | § 5 |
 | `extension TalkError` | extension | `App/TalkDocument.swift` | `message` : texte des refus, traduit par le String Catalog ; `LocalizedError` pour `DocumentGroup` | § 8 |
 | `extension UTType` | extension | `App/TalkDocument.swift` | `.talk` (exporté) et `.markdownText` (importé, lu seulement) | § 3, § 5 |
@@ -136,4 +142,4 @@ Une ligne par déclaration de premier niveau dans `Sources/` et `App/`. `TalkTim
 | `RecentRow` | struct | `App/WelcomeView.swift` | Un talk récent : nom du fichier et dossier | § 5 |
 | `TalkPrintView` | struct | `App/TalkPrintView.swift` | Mise en page imprimable d'un talk, rendue en PDF paginé pour l'export et l'impression | § 3.2 |
 | `TalkCommands` | struct | `App/TalkCommands.swift` | Menus : Fichier › Exporter en Markdown…, Aide › Politique de confidentialité | § 5 |
-| `extension FocusedValues` | extension | `App/TalkCommands.swift` | `talk` : le talk de la fenêtre au premier plan, pour les menus | § 5 |
+| `extension FocusedValues` | extension | `App/TalkCommands.swift` | `talk` : le talk de la fenêtre au premier plan, pour les menus ; `screenIndex` : l'écran choisi pour la barre | § 5 |

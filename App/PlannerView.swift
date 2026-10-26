@@ -1,4 +1,5 @@
 import AppKit
+import KeyboardShortcuts
 import SwiftUI
 import TalkTimerCore
 
@@ -41,9 +42,13 @@ struct PlannerView: View {
             .padding(.vertical, 8)
             Divider()
             footer.padding()
+            if !Live.shared.unavailable.isEmpty {
+                conflict.padding([.horizontal, .bottom])
+            }
         }
         .frame(minWidth: 560, minHeight: 360)
         .focusedSceneValue(\.talk, document.talk)  // pour Fichier › Exporter en Markdown… (`TalkCommands`)
+        .focusedSceneValue(\.screenIndex, screenIndex)  // pour Session › Démarrer
         .onAppear { dismissWindow(id: WelcomeView.id) }  // un talk ouvert remplace l'Accueil (§ 5)
     }
 
@@ -93,6 +98,19 @@ struct PlannerView: View {
                 .buttonStyle(.borderedProminent)
                 .disabled(talk.blocks.isEmpty || Live.shared.session != nil)  // une seule session à la fois (§ 5)
         }
+    }
+
+    /// Raccourcis pris par une autre app à « Démarrer » : la session tourne quand même (§ 7.4).
+    private var conflict: some View {
+        let taken = Live.shared.unavailable.map { name in
+            KeyboardShortcuts.getShortcut(for: name).map { "\(name.title) (\($0))" } ?? name.title
+        }
+        return HStack {
+            Label("Shortcuts taken by another app: \(taken.formatted(.list(type: .and)))", systemImage: "exclamationmark.triangle")
+            Spacer()
+            SettingsLink { Text("Change in Settings…") }
+        }
+        .font(.callout)
     }
 
     private func deleteButton(_ id: Block.ID) -> some View {

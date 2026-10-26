@@ -165,7 +165,7 @@ talk-timer est une **app document** (`DocumentGroup` + `FileDocument`) : **une f
 - **Passage automatique** : interrupteur dans le pied de la fenêtre. Il modifie le talk (`autoAdvance`, § 6.3), donc passe par ⌘Z.
 - **▶ Démarrer** : lance une session sur le talk de cette fenêtre et affiche la barre. Une seule session à la fois, donc le bouton est désactivé dans les autres fenêtres pendant une session.
 - **Menu Session** dans la barre de menus : Démarrer, Suivant, Précédent, Suspendre / Reprendre, Fin. Toute action de la barre et du planificateur est accessible depuis un menu, ce qui sert à Voice Control, à VoiceOver et à la découverte des raccourcis.
-- **Réglages** (scène `Settings`, ⌘,) : les quatre raccourcis globaux, modifiables (§ 7.4).
+- **Réglages** (scène `Settings`, ⌘,) : les quatre raccourcis globaux, modifiables, et « Rétablir les valeurs par défaut » (§ 7.4).
 - **Menu Aide** : lien « Politique de confidentialité » (§ 14).
 - L'interface est compacte, pour tenir dans une moitié d'écran en split-screen. Elle utilise les contrôles standard, pour hériter de l'apparence du système (Liquid Glass, mode sombre, contraste).
 
@@ -214,10 +214,12 @@ Même situation avec `totalMinutes = 65` (5 min de marge) : l'écart vaut **−1
 
 | Action | Effet | Barre | Raccourci global par défaut |
 |---|---|---|---|
-| **Suivant** | Pousse `blockStart` dans `history`, puis `index += 1` et `blockStart = now`. Sans effet sur le dernier bloc | bouton `forward.end`, ou ⌘-clic n'importe où sur la barre | ⌃⌥→ |
-| **Précédent** | Revient au bloc précédent avec son `blockStart` d'origine (pris dans `history`). Sans effet sur le premier bloc | bouton `backward.end` | ⌃⌥← |
-| **Suspendre / Reprendre** | La suspension fige le bloc en cours (`pausedAt = now`). À la reprise, seul `blockStart` est décalé de la durée de la suspension ; `talkStart` ne bouge pas (§ 6.2) | bouton `playpause` | ⌃⌥Espace |
-| **Fin** | Passe `isFinished` à vrai, ferme la barre, désenregistre les raccourcis, revient au planificateur. **Seule action qui ferme la barre.** Double appui depuis la barre ou le raccourci (voir plus bas) ; un seul choix depuis le menu Session | bouton `flag.pattern.checkered.2.crossed`, menu Session | à choisir (§ 13) |
+| **Suivant** | Pousse `blockStart` dans `history`, puis `index += 1` et `blockStart = now`. Sans effet sur le dernier bloc | bouton `forward.end`, ou ⌘-clic n'importe où sur la barre | ⌃⌥S |
+| **Précédent** | Revient au bloc précédent avec son `blockStart` d'origine (pris dans `history`). Sans effet sur le premier bloc | bouton `backward.end` | ⌃⌥D, à tester (§ 13) |
+| **Suspendre / Reprendre** | La suspension fige le bloc en cours (`pausedAt = now`). À la reprise, seul `blockStart` est décalé de la durée de la suspension ; `talkStart` ne bouge pas (§ 6.2) | bouton `playpause` | ⌃⌥C |
+| **Fin** | Passe `isFinished` à vrai, ferme la barre, désenregistre les raccourcis, revient au planificateur. **Seule action qui ferme la barre.** Double appui depuis la barre ou le raccourci (voir plus bas) ; un seul choix depuis le menu Session | bouton `flag.pattern.checkered.2.crossed`, menu Session | ⌃⌥X |
+
+**Raccourcis par défaut** (§ 15). Tous d'une main gauche, ⌃⌥ tenus ; chaque touche porte le même caractère en AZERTY et en QWERTY, et aucune n'est un raccourci système. `scripts/check-shortcuts.py` le vérifie et dessine les plans de `docs/keyboard/` ; le détail des choix est dans `docs/shortcuts-draft.json`.
 
 **Clic.** Un clic seul sur le fond de la barre ne fait rien : un clic involontaire ne doit rien changer. Seuls les boutons et le ⌘-clic agissent.
 
@@ -329,7 +331,8 @@ Le titre du bloc suivant est toujours affiché, en texte secondaire : on sait à
 - Gérés par [`sindresorhus/KeyboardShortcuts`](https://github.com/sindresorhus/KeyboardShortcuts), qui s'appuie sur Carbon `RegisterEventHotKey`. Cette API n'est pas dépréciée dans le SDK macOS 27, fonctionne en sandbox et ne demande **pas l'autorisation Accessibilité**, contrairement à `NSEvent.addGlobalMonitorForEvents`.
 - Quatre noms : `.nextBlock`, `.previousBlock`, `.togglePause`, `.endSession`. Ils sont modifiables dans Réglages et leurs valeurs par défaut sont celles du § 6.3.
 - Ils sont actifs seulement pendant une session : enregistrés à « Démarrer », désenregistrés à la fin ou à ⌘Q.
-- **Conflits.** ⌃⌥← et ⌃⌥→ sont les raccourcis par défaut de Rectangle et Magnet. Si un raccourci ne peut pas être enregistré, la session démarre quand même : la barre reste cliquable et le menu Session fonctionne, et un message indique quel raccourci est pris et où le changer. [À vérifier : ce que KeyboardShortcuts remonte quand une autre app tient déjà la combinaison.]
+- **Valeurs initiales.** KeyboardShortcuts les écrit une seule fois dans `UserDefaults`, au premier lancement (`Name(_:initial:)`). Changer une valeur par défaut ne touche donc que les nouvelles installations ; « Rétablir les valeurs par défaut » ramène les quatre à celles du § 6.3.
+- **Conflits.** ⌃⌥C et ⌃⌥D sont des raccourcis par défaut de Rectangle (centrer, premier tiers). KeyboardShortcuts ne signale pas un enregistrement refusé : juste après « Démarrer », `KeyboardShortcuts.isEnabled(for:)` est faux pour un raccourci réglé mais pris. La session démarre quand même : la barre reste cliquable et le menu Session fonctionne, et le planificateur indique quels raccourcis sont pris, avec un lien vers Réglages. Le message est calculé à « Démarrer » : un raccourci corrigé pendant la session fonctionne aussitôt, mais le message reste jusqu'à « Fin ».
 
 ### 7.5 Accessibilité de la barre
 
@@ -415,14 +418,14 @@ fixtures/borrowed-from-the-lab.json
 
 1. Safari en plein écran sur l'écran principal, avec la barre des menus masquée en plein écran, puis toujours affichée (Réglages système › Barre des menus) : la barre reste visible, et ne recouvre ni la poignée « ··· » de Safari, ni sa barre d'outils avec la barre d'onglets séparée, ni la zone de survol du système. Même vérification avec VS Code.
 2. Keynote en mode présentation : la barre reste visible au-dessus.
-3. Le focus est dans Safari : ⌃⌥→ fait avancer le bloc et Safari garde le focus.
+3. Le focus est dans Safari : ⌃⌥S fait avancer le bloc et Safari garde le focus.
 4. Un clic sur le fond de la barre ne fait rien. ⌘-clic et le bouton Suivant font avancer le bloc, sans activer talk-timer.
 5. Le Mac se met en veille 1 min pendant un bloc : au réveil, le temps restant a bien diminué d'une minute.
 6. Débrancher l'écran choisi : la barre réapparaît sur l'écran principal.
 7. Double-clic sur un `.talk` dans le Finder : talk-timer l'ouvre.
 8. Ouvrir un talk, quitter, relancer : il est dans Fichier › Ouvrir récent et s'ouvre sans erreur de permission (sandbox).
 9. Rectangle actif avec ses raccourcis par défaut : « Démarrer » affiche le message de conflit, la barre reste utilisable, et un raccourci changé dans Réglages fonctionne immédiatement.
-10. ⌘Q pendant une session : plus aucun processus talk-timer, et ⌃⌥→ est rendu au système.
+10. ⌘Q pendant une session : plus aucun processus talk-timer, et ⌃⌥S est rendu au système.
 11. VoiceOver : tout le planificateur est utilisable, et la barre est annoncée au passage en alerte.
 12. Voice Control : « Cliquer Démarrer » lance la session.
 13. Interface en anglais puis en français (langue du système ou option de schéma) : aucune chaîne non traduite.
@@ -490,7 +493,7 @@ fixtures/borrowed-from-the-lab.json
 ## 13. Questions ouvertes
 
 - **Nom définitif**, à trancher avant de créer l'app dans App Store Connect : le bundle ID, qui en dépend, n'est plus modifiable ensuite. Le préfixe est décidé (§ 15) : `io.github.caffe-doppio.`. Provisoirement : `io.github.caffe-doppio.talk-timer`, et le UTType `io.github.caffe-doppio.talk-timer.talk`. Vérifier que le nom est libre sur l'App Store. Un futur canal Developer ID devra avoir son propre bundle ID : avec le même, les deux builds partageraient conteneur et réglages, et le système afficherait des invites.
-- **Raccourcis par défaut** : on garde ⌃⌥ + flèches (conflit Rectangle et Magnet géré au § 7.4), ou on choisit des valeurs par défaut moins exposées ? Et lequel pour Fin : ⌃⌥⌫ est la restauration de Rectangle.
+- **Raccourci de Précédent** : ⌃⌥D est à droite de Suivant (⌃⌥S), à l'inverse du geste. À essayer avec des gens ; sinon ⌃⌥E, hors de portée d'une main et pris par Rectangle (deux tiers). Écartés : Q (pas à la même place en QWERTY), ⌃⌥⇧S (sans ⇧, déclenche Suivant), ⌃⌥← (deux mains ; sans ⌥, change d'espace).
 - **Ouvrir récent en sandbox avec `DocumentGroup`** : supposé fourni par le système (documenté pour `NSDocument`, et seulement par des rapports de forum pour SwiftUI). À confirmer par la recette 8.
 - **Granularité** : la minute suffit-elle, ou faut-il des blocs de 30 s (pitchs courts) ?
 - **Hauteur de l'îlot** : la hauteur se lit-elle de loin, quand on est debout à un mètre de l'écran ? Les boutons doivent aussi rester cliquables sans viser.
@@ -571,3 +574,4 @@ Fiches de langage et de frameworks à produire en parallèle : `DocumentGroup`, 
 | 2026-10-11 | Élément de la barre des menus, en complément de la barre | Le système et la personne peuvent le masquer : il ne suffit jamais seul |
 | 2026-10-11 | Icônes SF Symbols standard, consignées dans GLOSSARY | Une icône par action |
 | 2026-10-11 | `CLAUDE.md` et `.claude/` locaux jusqu'à la publication | Exclus par l'ignore global, réintégrés au § 11, étape 8 |
+| 2026-10-26 | Raccourcis par défaut ⌃⌥S, ⌃⌥D (à tester), ⌃⌥C, ⌃⌥X ; ⌃⌥ + flèches écartés | D'une main, mêmes touches en AZERTY et en QWERTY, aucun raccourci système. Les flèches demandent deux mains, et ⌃→ sans ⌥ change d'espace, ce qui fait sortir de Keynote en plein écran |
