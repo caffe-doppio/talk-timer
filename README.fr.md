@@ -17,7 +17,7 @@ Pour qui a un plan solide mais perd le fil du temps en parlant : un sous-sujet p
 ![La fenêtre Accueil. À gauche, le nom de l'app, deux phrases : « Découpez votre talk en blocs, dans un temps qui ne déborde jamais. » et « Pendant la présentation, une barre au-dessus de vos diapositives montre le temps restant de chaque bloc. », puis les boutons Nouveau talk et Ouvrir. À droite, les talks récents : « borrowed-from-the-lab », dans le dossier « fixtures ».](assets/screenshots/welcome.png)\
 **Accueil.** Affichée au lancement, et par Fenêtre › Accueil (⇧⌘1). Les talks récents viennent de macOS : les talks restent des fichiers, là où on les range. Un plan `.md` s'ouvre aussi, comme nouveau talk sans titre.
 
-![La fenêtre du planificateur pour « Borrowed from the Lab », 60 minutes. Sous le titre, une frise de segments proportionnels : quatre pauses prévues en vert, puis les blocs en bleu, puis une marge grise de 3 minutes. En dessous, une ligne par bloc avec son titre, sa durée et ses flèches, sa phrase de transition et un interrupteur Pause. En bas, « Ajouter un bloc », la case « Passage automatique », le choix de l'écran et le bouton Démarrer.](assets/screenshots/planner.png)\
+![La fenêtre du planificateur pour « Borrowed from the Lab », 60 minutes. Dans la barre d'outils : Accueil, Ajouter un bloc, Enregistrer et Démarrer. Sous le titre, une frise de segments proportionnels pour les huit blocs, puis l'interrupteur « Passage automatique », le choix de l'écran et une marge de 0 minute. En dessous, une ligne par bloc avec son titre, sa phrase de transition, un interrupteur Pause, et sa durée avec ses flèches.](assets/screenshots/planner.png)\
 **Planificateur.** Une fenêtre par talk. La frise montre chaque bloc en proportion de sa durée, les pauses prévues en vert et la marge non attribuée en gris. Allonger un bloc au-delà de la marge est refusé avec un bip, et ⌘Z annule toute modification. Une modification faite pendant la présentation passe aussitôt dans la barre.
 
 2. **Tenir le temps.** Pendant la présentation, un îlot en verre en haut de l'écran, au-dessus de toutes les applis, affiche le bloc en cours et une jauge qui se vide. On voit la fin arriver et on a le temps de préparer sa transition.
@@ -34,12 +34,12 @@ Pour qui a un plan solide mais perd le fil du temps en parlant : un sous-sujet p
 ![La barre suspendue : une jauge grise figée à 0:52, le mot « SUSPENDU », puis le bloc suivant et la phrase de transition.](assets/screenshots/bar_paused.png)\
 **Suspendu.** ⌃⌥C fige le bloc à 0:52 et affiche `SUSPENDU`. L'heure de fin, elle, ne bouge pas : une pause imprévue consomme la marge.
 
-3. **Partager.** Ouvrir un plan en Markdown comme nouveau talk, exporter un talk en Markdown. Export PDF *(prévu)*.
+3. **Partager.** Ouvrir un plan en Markdown comme nouveau talk, exporter un talk en Markdown ou en PDF, l'imprimer.
 
 L'outil ne coupe jamais la parole. Le passage au bloc suivant peut être automatique, si on le choisit pour un talk ; la fin du talk, elle, est toujours décidée par la personne.
 
 > [!NOTE]
-> **Statut : planificateur + barre.** Le modèle (format de fichier, règles du planificateur, session en direct, Markdown) est une bibliothèque testée, `TalkTimerCore`. L'app du Mac App Store modifie les fichiers `.talk` dans son planificateur, et Démarrer affiche la barre flottante sur l'écran choisi. Les raccourcis sont fixes pour l'instant ; le menu Session et les Réglages arrivent ensuite. Cible : le Mac App Store, en gratuit.
+> **Statut : planificateur + barre.** Le modèle (format de fichier, règles du planificateur, session en direct, Markdown) est une bibliothèque testée, `TalkTimerCore`. L'app du Mac App Store modifie les fichiers `.talk` dans son planificateur, et Démarrer affiche la barre flottante sur l'écran choisi. Les raccourcis se changent dans Réglages. Cible : le Mac App Store, en gratuit.
 > Journal de développement : [`DEVSTORY.md`](DEVSTORY.md).
 > Spécifications complètes : [`SPECS.md`](SPECS.md). Vocabulaire : [`docs/GLOSSARY.md`](docs/GLOSSARY.md).
 
@@ -79,7 +79,7 @@ Un talk est un fichier JSON, écrit à la main ou par le planificateur :
 
 - La marge, `totalMinutes − Σ minutes`, est calculée et jamais stockée.
 - `cue` est une phrase de transition facultative, affichée quand la fin du bloc approche.
-- `autoAdvance: true` passe seul au bloc suivant, sauf en sortie de pause prévue et à la fin du talk.
+- `autoAdvance: true` passe seul au bloc suivant, sauf en sortie de pause prévue, sur un bloc retrouvé par Précédent, et à la fin du talk.
 - `break: true` marque une pause prévue. Elle compte dans le total comme n'importe quel bloc (la barre ne l'affiche pas encore différemment).
 - Toute durée est comprise entre 1 et 1440 minutes (24 h). Un fichier dont la somme des blocs dépasse le total est refusé au chargement.
 
@@ -96,13 +96,13 @@ Exemple complet : [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from
 
 | Raccourci | Bouton | Action |
 |---|---|---|
-| ⌃⌥D | ▶ Démarrer, dans le planificateur | Démarre le talk de la dernière fenêtre active, sur l'écran choisi. Fonctionne même quand une autre appli a le focus |
+| ⌃⌥D | ▶ Démarrer, dans le planificateur | Démarre le talk de la dernière fenêtre active, sur l'écran choisi |
 | ⌃⌥S | ⏭, ou ⌘-clic n'importe où sur la barre | Bloc suivant. Un clic seul ne fait rien |
 | ⌃⌥E | ⏮ | Revenir au bloc précédent |
-| ⌃⌥C | ⏯ | Suspendre / reprendre. Le bloc est figé, pas l'heure de fin : une pause imprévue consomme la marge |
+| ⌃⌥C | ⏯ | Suspendre / reprendre |
 | ⌃⌥X, deux fois en 3 s | 🏁, deux fois en 3 s | Terminer la session |
 
-Les raccourcis sont globaux : ils fonctionnent même quand une autre appli a le focus, et ne demandent pas l'autorisation Accessibilité. Démarrer fonctionne tant qu'un talk est ouvert, les autres pendant une session seulement. Tous sont près de la main gauche, et se changent dans Réglages (⌘,). Le menu Session les affiche aussi.
+Les raccourcis sont globaux : ils fonctionnent même quand une autre appli a le focus, et ne demandent pas l'autorisation Accessibilité. Démarrer fonctionne tant qu'un talk avec des blocs est ouvert, les autres pendant une session seulement. Tous sont près de la main gauche, et se changent dans Réglages (⌘,). Le menu Session les affiche aussi.
 
 ## Structure
 
@@ -115,12 +115,12 @@ Sources/TalkTimerCore/Markdown.swift       import et export Markdown
 Tests/TalkTimerCoreTests/                  critères d'acceptation (SPECS.md § 10)
 fixtures/                                  talks de référence (JSON, Markdown)
 docs/GLOSSARY.md                           un nom par concept (FR, EN, Swift, JSON)
-assets/screenshots/                        captures de la barre
+assets/screenshots/                        captures de la barre et des fenêtres
 scripts/check-glossary.sh                  échoue si une déclaration de premier niveau manque au dictionnaire
 DEVSTORY.md                                journal de développement
 ```
 
-Prochaine étape : les fenêtres du planificateur et d'Accueil dans l'app Xcode ([`SPECS.md` § 5](SPECS.md#5-fenêtre-du-planificateur)).
+Prochaine étape : le contenu de la barre ([`SPECS.md` § 11](SPECS.md#11-ordre-dimplémentation), étape 6c).
 
 La CI lance SwiftLint (`.swiftlint.yml`, adapté de [exelban/stats](https://github.com/exelban/stats)) et le contrôle du dictionnaire sous Linux, puis la compilation et les tests sous macOS 26.
 

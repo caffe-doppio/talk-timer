@@ -423,12 +423,12 @@
         }
       }
     },
-    "Start works while a talk is open, the others during a session only, even when another app has the focus." : {
+    "Start works while a talk with blocks is open, the others during a session only, even when another app has the focus." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Démarrer fonctionne tant qu'un talk est ouvert, les autres pendant une session seulement, même quand une autre app a le focus."
+            "value" : "Démarrer fonctionne tant qu'un talk avec des blocs est ouvert, les autres pendant une session seulement, même quand une autre app a le focus."
           }
         }
       }

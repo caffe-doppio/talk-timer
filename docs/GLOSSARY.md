@@ -32,7 +32,7 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Talk au format Markdown (import et export) | Markdown | Markdown | `Talk(markdown:)`, `Talk.markdown` | — | existant |
 | Export imprimable | Exporter en PDF, Imprimer | Export as PDF, Print | `TalkPrintView`, `TalkPrintView.pdf(_:)` | — | existant |
 | Fenêtre d'ouverture | Accueil | Welcome | `WelcomeView` | — | existant |
-| Talks ouverts récemment | talks récents | recent talks | récents du système (`NSDocumentController`) | — | prévu |
+| Talks ouverts récemment | talks récents | recent talks | récents du système (`NSDocumentController`), affichés par `WelcomeView` et `RecentRow` | — | existant |
 | Exécution en direct | session | session | `Session` | — | existant |
 | Bloc en cours | bloc en cours | current block | `Session.block`, `Session.index` | — | existant |
 | Bloc suivant | bloc suivant | next block | `Session.nextBlock` | — | existant |
@@ -48,7 +48,7 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Revenir au bloc précédent | Précédent | Back | `Session.back()` | — | existant |
 | Pause imprévue en direct | Suspendre / Reprendre | Pause / Resume | `Session.togglePause(at:)` | — | existant |
 | Fin de session (seule action qui ferme la barre) | Fin | End | `Session.end()`, `Session.isFinished` | — | existant |
-| Passage automatique au bloc suivant (sinon : dépassement). Jamais après une pause prévue, après le dernier bloc ni sur un bloc retrouvé par Précédent | passage automatique | advance automatically | `Talk.autoAdvance` | `autoAdvance` (facultatif, `false` par défaut) ; `auto` dans le titre Markdown | existant |
+| Passage automatique au bloc suivant (§ 6.3) | passage automatique | advance automatically | `Talk.autoAdvance` | `autoAdvance` (facultatif, `false` par défaut) ; `auto` dans le titre Markdown | existant |
 | Application du passage automatique selon l'horloge | — | — | `Session.catchUp(at:)` | — | existant |
 | Affichage de la barre selon le temps | phase | phase | `Phase`, `Session.phase(at:)` | — | existant |
 | Phase normale | normal | normal | `Phase.normal` | — | existant |
@@ -93,8 +93,6 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | durée (seule) en Swift | `minutes` ou `duration` | `minutes` : entier, dans le fichier. `duration` : secondes, à l'exécution |
 | section, séquence, segment, étape, item, élément (pour un bloc) | bloc | Un seul mot pour la séquence. « Segment » désigne seulement le dessin d'un bloc dans la frise |
 | plan (FR, pour le document) | talk | « talk » est le mot retenu en FR comme en EN. « Planificateur » reste le nom de la fenêtre d'édition |
-| pause (FR, pour l'action en direct) | Suspendre, `togglePause` | En FR, « pause » désigne le bloc prévu (`isBreak`) |
-| break (EN, pour l'action en direct) | Pause, `togglePause` | En EN, « break » désigne le bloc prévu |
 | îlot, island | barre, `BarPanel` | L'îlot est la forme de la barre (§ 7.1), pas un nouveau concept |
 
 ## Icônes
@@ -143,7 +141,7 @@ Une ligne par déclaration de premier niveau dans `Sources/` et `App/`. `TalkTim
 | `extension UTType` | extension | `App/TalkDocument.swift` | `.talk` (exporté) et `.markdownText` (importé, lu seulement) | § 3, § 5 |
 | `TalkDocument` | struct | `App/TalkDocument.swift` | `FileDocument` : lit `.talk` et `.md`, n'écrit que `.talk` ; `detachMarkdownFiles()` fait d'un `.md` ouvert un talk sans titre | § 5 |
 | `extension TalkDocument` | extension | `App/TalkDocument.swift` | `detachMarkdownFiles()`, côté AppKit (`NSDocumentController`) | § 5 |
-| `PlannerView` | struct | `App/PlannerView.swift` | Fenêtre d'un talk : en-tête, frise, liste, pied | § 5 |
+| `PlannerView` | struct | `App/PlannerView.swift` | Fenêtre d'un talk : barre d'outils, en-tête, frise, liste | § 5 |
 | `BlockRow` | struct | `App/PlannerView.swift` | Ligne d'un bloc : titre, durée, transition, pause | § 5 |
 | `StripView` | struct | `App/PlannerView.swift` | Frise des blocs et de la marge | § 5 |
 | `WelcomeView` | struct | `App/WelcomeView.swift` | Fenêtre Accueil : nouveau talk, ouvrir, talks récents | § 5 |

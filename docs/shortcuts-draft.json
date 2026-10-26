@@ -1,5 +1,5 @@
 {
-  "about": "Brouillon des raccourcis globaux par défaut (SPECS § 6.3, § 7.4, § 13), à corriger avant la 6b. Actifs seulement pendant une session : pas de raccourci pour Démarrer. Une fois tranché, le contenu passe dans SPECS § 6.3 et § 15, et ce fichier se supprime.",
+  "about": "Raccourcis globaux par défaut et leurs motifs (SPECS § 5, § 6.3, § 7.4, § 13), lus par scripts/check-shortcuts.py. Les décisions sont au § 15.",
   "legend": {
     "modifiers": "control ⌃, option ⌥, shift ⇧, command ⌘",
     "key": "nom du cas KeyboardShortcuts.Key (rightArrow, leftArrow, space, escape, period, p…)",
@@ -23,7 +23,7 @@
       "name": "startSession",
       "status": "chosen",
       "action": { "fr": "Démarrer", "en": "Start" },
-      "model": "Live.start(_:screen:), sur le dernier planificateur actif",
+      "model": "Live.startLastActive(), sur le dernier planificateur actif",
       "proposed": { "shortcut": "⌃⌥D", "modifiers": ["control", "option"], "key": "d" },
       "doublePress": false,
       "alsoOnBar": "bouton Démarrer du planificateur, menu Session ; hors session seulement, tant qu'un talk avec des blocs est ouvert",
@@ -99,10 +99,9 @@
   ],
   "tests": [
     "Debout, à un mètre de l'écran : chaque raccourci se fait d'une main, sans regarder le clavier",
-    "Les quatre restent distincts au toucher : pas de Suivant au lieu de Fin",
-    "Dans l'app actuelle, seuls ⌃⌥→, ⌃⌥← et ⌃⌥Espace réagissent (HotKeys codé en dur) ; le reste s'essaie au clavier jusqu'à la 6b",
-    "Keynote en présentation : ⌃⌥⎋ deux fois termine la session et la présentation continue",
-    "Même essai dans PowerPoint, Canva (Safari et Firefox, en plein écran) et Adobe Acrobat (mode lecture) : aucune de ces apps ne réagit aux quatre combinaisons",
+    "Les cinq restent distincts au toucher : pas de Suivant au lieu de Fin",
+    "Keynote en présentation : ⌃⌥X deux fois termine la session et la présentation continue",
+    "Même essai dans PowerPoint, Canva (Safari et Firefox, en plein écran) et Adobe Acrobat (mode lecture) : aucune de ces apps ne réagit aux cinq combinaisons",
     "Oubli d'un modificateur : ⌃⌥→ sans ⌥ donne ⌃→, qui change d'espace et fait sortir de Keynote en plein écran (raccourci système n° 79 à 82 actif sur ce Mac)",
     "En AZERTY, puis en russe : le raccourci se déclenche sur la même touche physique, et Réglages affiche bien la touche de la disposition active",
     "Safari en plein écran avec le focus : chaque raccourci agit et Safari garde le focus (recette 3)",

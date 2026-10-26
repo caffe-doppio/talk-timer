@@ -42,7 +42,7 @@ struct SettingsView: View {
             } header: {
                 Text("Shortcuts")
             } footer: {
-                Text("Start works while a talk is open, the others during a session only, even when another app has the focus.")
+                Text("Start works while a talk with blocks is open, the others during a session only, even when another app has the focus.")
                     .foregroundStyle(.secondary)
             }
             Button("Restore Defaults") { KeyboardShortcuts.reset([.startSession] + KeyboardShortcuts.Name.session) }

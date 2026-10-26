@@ -1,6 +1,6 @@
 # talk-timer — spécifications V1
 
-> Statut : V2 du document, à valider · 2026-10-11, révisée après les retours d'usage du spike (V1 du 2026-10-07)
+> Statut : V2 du document · 2026-10-11, révisée après les retours d'usage du spike (V1 du 2026-10-07), puis à chaque étape (§ 15, dernière décision du 2026-10-26)
 > Cible : macOS 26 (Tahoe) et versions suivantes, Apple Silicon · Swift 6.2 minimum, SwiftUI + AppKit · développement local sous Xcode 27
 > Distribution : Mac App Store, gratuit, open source (Apache 2.0). Décisions : § 15
 
@@ -53,7 +53,7 @@ Un talk est un fichier JSON, lisible et modifiable à la main, d'extension **`.t
 - **Type de fichier.** UTType exporté par l'app, conforme à `public.json` : le Finder ouvre un `.talk` avec talk-timer et l'affiche avec son icône, et le contenu reste du JSON. L'identifiant du type suit le bundle ID (§ 13).
 - **Versions du format.** Un fichier sans champ `format` est en version 1. Le champ ne sera ajouté qu'au premier changement incompatible.
 
-Fixture de référence : [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from-the-lab.json). C'est la timeline du workshop *Borrowed from the Lab* : 8 blocs pour 60 min, marge 0. Elle garde l'extension `.json` : c'est une donnée de test, pas un document.
+Fixture de référence : [`fixtures/borrowed-from-the-lab.json`](fixtures/borrowed-from-the-lab.json). C'est la timeline du workshop *Borrowed from the Lab* : 8 blocs pour 60 min, marge 0. Elle garde l'extension `.json` : c'est une donnée de test, pas un document. `fixtures/borrowed-from-the-lab.talk` est une copie de travail pour les essais dans l'app, que l'enregistrement automatique modifie : les tests lisent le `.json`.
 
 ### 3.1 Format Markdown (import et export)
 
@@ -117,7 +117,7 @@ Toute modification passe par l'annulation du système (⌘Z / ⇧⌘Z, fournie p
 
 ## 5. Fenêtre du planificateur
 
-talk-timer est une **app document** (`DocumentGroup` + `FileDocument`) : **une fenêtre par talk**. Le système fournit Fichier › Nouveau, Ouvrir, Ouvrir récent, Enregistrer, l'enregistrement automatique, les versions, le double-clic dans le Finder et l'accès aux fichiers en sandbox. Aucun bouton Ouvrir dans la fenêtre, et aucun chemin mémorisé dans `@AppStorage`. Enregistrer est aussi un bouton de la barre d'outils, bien que l'enregistrement soit automatique (§ 15).
+talk-timer est une **app document** (`DocumentGroup` + `FileDocument`) : **une fenêtre par talk**. Le système fournit Fichier › Nouveau, Ouvrir, Ouvrir récent, Enregistrer, l'enregistrement automatique, les versions, le double-clic dans le Finder et l'accès aux fichiers en sandbox. Aucun bouton Ouvrir dans la fenêtre, et aucun chemin mémorisé dans `@AppStorage`. Enregistrer est aussi un bouton de la barre d'outils (§ 15).
 
 **Plusieurs talks, brouillons.** Chaque talk est un fichier `.talk`, et on peut en avoir autant qu'on veut, ouverts en même temps. Un talk jamais enregistré (« Sans titre ») est enregistré automatiquement par le système, puis restauré au lancement suivant : un brouillon ne se perd pas en quittant.
 
@@ -159,10 +159,10 @@ Modèle de la fenêtre : [`docs/window/planner.svg`](docs/window/planner.svg), d
 └──────────────────────────────────────────────────────────────┘
 ```
 
-- **Barre d'outils** (Liquid Glass, macOS 26). Pas de barre en bas de fenêtre : le bas de l'écran peut la cacher. Chaque bouton existe aussi dans un menu :
+- **Barre d'outils** (Liquid Glass, macOS 26), sans barre en bas de fenêtre (§ 15). Chaque bouton existe aussi dans un menu :
   - au début, Accueil (`house`), qui ouvre la fenêtre Accueil, puis le titre du document et son menu ;
   - au centre, Ajouter un bloc (`plus`), désactivé sans marge (§ 4) ;
-  - à la fin, Enregistrer (`square.and.arrow.down`, comme Fichier › Enregistrer), seul dans son groupe, puis ▶ Démarrer, l'action principale (`.glassProminent`).
+  - à la fin, Enregistrer (`square.and.arrow.down`, comme ⌘S), seul dans son groupe, puis ▶ Démarrer, l'action principale (`.glassProminent`).
 
 - **Nouveau talk** : 30 min et un premier bloc « Introduction » de 5 min. Un talk sans bloc serait refusé au chargement (§ 3).
 - **Liste** : `List` avec `.onMove`, pour le glisser-déposer natif (sur macOS, la ligne entière se glisse, sans poignée). Colonnes alignées d'une ligne à l'autre : titre | transition | Pause | durée et flèches. La partie droite a une largeur fixe, et la durée est séparée de l'interrupteur pour que les flèches se lisent avec les minutes. Sur chaque ligne :
@@ -172,10 +172,10 @@ Modèle de la fenêtre : [`docs/window/planner.svg`](docs/window/planner.svg), d
   - un interrupteur « Pause », qui marque le bloc comme pause prévue (aussi dans le menu contextuel de la ligne).
 - **Frise** : segments proportionnels à la durée, dans l'ordre de la liste. La marge apparaît en dernier, comme un segment gris. Elle est mise à jour en direct.
 - **Total** : un champ et ses flèches. Le champ ne change le total qu'à ↩ ou quand il perd le focus, et seulement s'il a été modifié ; refusé, il revient au total (§ 4).
-- **Réglages de présentation**, sous la frise, à gauche de la marge : dans le contenu et pas dans la barre d'outils, car ce sont des données et non des commandes. La barre d'outils les ferait aussi passer dans le menu de débordement dès que la fenêtre rétrécit.
+- **Réglages de présentation**, sous la frise, à gauche de la marge : dans le contenu, car ce sont des données et non des commandes (§ 15).
   - **Passage automatique** : interrupteur. Il modifie le talk (`autoAdvance`, § 6.3), donc passe par ⌘Z ;
   - **Sélection de l'écran** : liste issue de `NSScreen.screens`. Par défaut, c'est l'écran qui porte la barre de menus.
-- **▶ Démarrer** : lance une session sur le talk de cette fenêtre et affiche la barre. Une seule session à la fois, donc le bouton est désactivé dans les autres fenêtres pendant une session. Raccourci global ⌃⌥D, hors session, tant qu'un talk avec des blocs est ouvert : il démarre le dernier planificateur actif, sur l'écran choisi dans sa fenêtre, même quand l'app de présentation a repris le focus (§ 7.4).
+- **▶ Démarrer** : lance une session sur le talk de cette fenêtre et affiche la barre. Une seule session à la fois, donc le bouton est désactivé dans les autres fenêtres pendant une session. Raccourci global ⌃⌥D (§ 7.4).
 - **Menu Session** dans la barre de menus : Démarrer, Suivant, Précédent, Suspendre / Reprendre, Fin. Toute action de la barre et du planificateur est accessible depuis un menu, ce qui sert à Voice Control, à VoiceOver et à la découverte des raccourcis.
 - **Réglages** (scène `Settings`, ⌘,) : les cinq raccourcis globaux, modifiables, et « Rétablir les valeurs par défaut » (§ 7.4).
 - **Menu Aide** : lien « Politique de confidentialité » (§ 14).
@@ -229,7 +229,7 @@ Même situation avec `totalMinutes = 65` (5 min de marge) : l'écart vaut **−1
 | **Suivant** | Pousse `blockStart` dans `history`, puis `index += 1` et `blockStart = now`. Sans effet sur le dernier bloc | bouton `forward.end`, ou ⌘-clic n'importe où sur la barre | ⌃⌥S |
 | **Précédent** | Revient au bloc précédent avec son `blockStart` d'origine (pris dans `history`). Sans effet sur le premier bloc | bouton `backward.end` | ⌃⌥E |
 | **Suspendre / Reprendre** | La suspension fige le bloc en cours (`pausedAt = now`). À la reprise, seul `blockStart` est décalé de la durée de la suspension ; `talkStart` ne bouge pas (§ 6.2) | bouton `playpause` | ⌃⌥C |
-| **Fin** | Passe `isFinished` à vrai, ferme la barre, désenregistre les raccourcis, revient au planificateur. **Seule action qui ferme la barre.** Double appui depuis la barre ou le raccourci (voir plus bas) ; un seul choix depuis le menu Session | bouton `flag.pattern.checkered.2.crossed`, menu Session | ⌃⌥X |
+| **Fin** | Passe `isFinished` à vrai, ferme la barre, désenregistre les raccourcis, revient au planificateur. **Seule action qui ferme la barre.** Double appui (voir plus bas) | bouton `flag.pattern.checkered.2.crossed`, menu Session | ⌃⌥X |
 
 **Raccourcis par défaut** (§ 15). Tous d'une main gauche, ⌃⌥ tenus ; chaque touche porte le même caractère en AZERTY et en QWERTY, et aucune n'est un raccourci système. `scripts/check-shortcuts.py` le vérifie et dessine les plans de `docs/keyboard/` ; le détail des choix est dans `docs/shortcuts-draft.json`.
 
@@ -246,7 +246,7 @@ Même situation avec `totalMinutes = 65` (5 min de marge) : l'écart vaut **−1
 
 Le passage se déduit de l'horloge, sans minuteur. À chaque rafraîchissement (§ 6.4), l'app appelle `Session.catchUp(at:)`, qui avance tant que ces conditions le permettent. Le bloc suivant commence à la fin exacte du précédent (`blockStart += duration`), et non à `now`. Après une veille qui a couvert plusieurs blocs, la session retrouve donc d'un coup le bon bloc et le bon temps restant, et une seconde de rafraîchissement perdue ne décale rien.
 
-En passage automatique, seuls une pause prévue, un bloc retrouvé ou le dernier bloc peuvent être en dépassement : l'écart bouge surtout avec les suspensions.
+L'écart bouge donc surtout avec les suspensions.
 
 « Suivant » pendant une suspension ne la lève pas : le bloc suivant démarre figé à sa durée pleine (`blockStart = pausedAt`). « Précédent » pendant une suspension garde `pausedAt` : le bloc précédent est figé là où la suspension a commencé.
 
@@ -295,7 +295,7 @@ Un `NSPanel` qui affiche une vue SwiftUI :
 - barre des menus affichée en plein écran : `visibleFrame.maxY` est sous la barre des menus, là où une app en plein écran dessine sa bande du haut, avec la poignée « ··· ». Le spike s'y collait et la recouvrait ;
 - barre des menus masquée en plein écran : `visibleFrame.maxY` est le bord haut de l'écran, qui est la zone de survol du système.
 
-`d` est donc mesuré par le test rapide de l'îlot (§ 11, étape 3), dans les deux configurations et sur un écran à encoche (`NSScreen.safeAreaInsets`). Mesures sur iMac (2026-10-12) : 32, 56 puis 72 pt sous la barre des menus recouvrent encore les barres d'outils à deux étages. Retenu : **`d = NSStatusBar.system.thickness + safeAreaInsets.top + 88`**, soit 110 pt sur un iMac (22 + 0 + 88). L'encoche s'ajoute d'elle-même sur un portable ; à vérifier à la recette 1 sur un MacBook.
+Retenu après mesure (DEVSTORY, étape 3) : **`d = NSStatusBar.system.thickness + safeAreaInsets.top + 88`**, soit 110 pt sur un iMac (22 + 0 + 88). L'encoche (`NSScreen.safeAreaInsets`) s'ajoute d'elle-même sur un portable ; à vérifier à la recette 1 sur un MacBook.
 
 **Élément de la barre des menus** (`MenuBarExtra`), en complément, pendant la session seulement : la jauge du bloc en cours et le temps restant, dessinés comme les graphiques de [exelban/stats](https://github.com/exelban/stats). Son menu reprend les actions du menu Session. Il ne remplace jamais la barre : il disparaît en plein écran quand la barre des menus se masque, et la personne peut le désactiver (Réglages système › Barre des menus › Autoriser dans la barre des menus). [À vérifier : `MenuBarExtra` rend son libellé comme une image. Si la jauge ne s'y dessine pas, on passe par `NSStatusItem` avec une vue.]
 
@@ -352,8 +352,8 @@ Le titre du bloc suivant est toujours affiché, en texte secondaire : on sait à
 - Gérés par [`sindresorhus/KeyboardShortcuts`](https://github.com/sindresorhus/KeyboardShortcuts), qui s'appuie sur Carbon `RegisterEventHotKey`. Cette API n'est pas dépréciée dans le SDK macOS 27, fonctionne en sandbox et ne demande **pas l'autorisation Accessibilité**, contrairement à `NSEvent.addGlobalMonitorForEvents`.
 - Cinq noms : `.startSession` (Démarrer, ⌃⌥D, § 5), puis `.nextBlock`, `.previousBlock`, `.togglePause`, `.endSession`. Ils sont modifiables dans Réglages ; les valeurs par défaut des quatre derniers sont celles du § 6.3.
 - Démarrer est enregistré hors session, tant qu'un talk avec des blocs est ouvert, et rendu au système pendant la session. Les quatre autres sont actifs seulement pendant une session : enregistrés à « Démarrer », désenregistrés à la fin. ⌘Q les rend tous.
-- **Valeurs initiales.** KeyboardShortcuts les écrit une seule fois dans `UserDefaults`, au premier lancement (`Name(_:initial:)`). Changer une valeur par défaut ne touche donc que les nouvelles installations ; « Rétablir les valeurs par défaut » ramène les quatre à celles du § 6.3.
-- **Conflits.** ⌃⌥C, ⌃⌥D et ⌃⌥E sont des raccourcis par défaut de Rectangle (centrer, premier tiers, deux tiers). KeyboardShortcuts ne signale pas un enregistrement refusé : juste après l'enregistrement, `KeyboardShortcuts.isEnabled(for:)` est faux pour un raccourci réglé mais pris. La session démarre quand même : la barre reste cliquable et le menu Session fonctionne, et le planificateur indique quels raccourcis sont pris, avec un lien vers Réglages. Le message est calculé à l'enregistrement : un raccourci corrigé ensuite fonctionne aussitôt, mais le message reste jusqu'au prochain enregistrement.
+- **Valeurs initiales.** KeyboardShortcuts les écrit une seule fois dans `UserDefaults`, au premier lancement (`Name(_:initial:)`). Changer une valeur par défaut ne touche donc que les nouvelles installations ; « Rétablir les valeurs par défaut » ramène les cinq aux valeurs du § 5 et du § 6.3.
+- **Conflits.** ⌃⌥C, ⌃⌥D et ⌃⌥E sont pris par Rectangle (centrer, premier tiers, deux tiers). Un refus est silencieux : `KeyboardShortcuts.isEnabled(for:)` le révèle juste après l'enregistrement. La session démarre quand même, et le planificateur liste les raccourcis pris, avec un lien vers Réglages, jusqu'au prochain enregistrement.
 
 ### 7.5 Accessibilité de la barre
 
@@ -361,7 +361,7 @@ Le titre du bloc suivant est toujours affiché, en texte secondaire : on sait à
 - Le passage en `alert`, puis en `overtime`, déclenche une annonce VoiceOver. Le premier appui sur Fin aussi : « Appuyez à nouveau pour terminer ».
 - Chaque bouton porte le nom de son action comme libellé : lu par VoiceOver, et utilisable par Voice Control (« Cliquer Suivant »).
 - Aucune animation de la jauge, qui saute une fois par seconde. Réduire les animations n'a donc rien à couper.
-- Augmenter le contraste et Réduire la transparence : les couleurs de jauge restent à au moins 3:1 sur le fond, le texte à au moins 4,5:1. Le fond de verre varie, donc c'est vérifié à la recette (§ 10).
+- Augmenter le contraste et Réduire la transparence : contrastes du § 7.3.
 
 ## 8. Exigences non fonctionnelles
 
@@ -371,7 +371,7 @@ Le titre du bloc suivant est toujours affiché, en texte secondaire : on sait à
 - Une précision d'affichage à la seconde suffit. Sur la durée d'une session, l'erreur est nulle, puisque le temps est calculé depuis l'horloge.
 - **Localisation** : anglais (langue de développement) et français, dans un String Catalog (`Localizable.xcstrings`). Aucune chaîne d'interface en dur. Le modèle ne contient aucune chaîne d'interface : `TalkError` porte des données, et l'app les formule.
 - **Journalisation** : `Logger` (framework `os`), jamais `print` dans l'app livrée. Aucun titre de talk ni contenu de bloc dans les journaux.
-- **Accessibilité** : tous les contrôles du planificateur ont un libellé VoiceOver (y compris le `Stepper` et la poignée de déplacement), et tout est utilisable au clavier seul et avec Voice Control. Objectif : déclarer les étiquettes d'accessibilité du § 14.
+- **Accessibilité** : tous les contrôles du planificateur ont un libellé VoiceOver (y compris le `Stepper`), et tout est utilisable au clavier seul et avec Voice Control. Objectif : déclarer les étiquettes d'accessibilité du § 14.
 - **Contrastes** : texte ≥ 4,5:1, éléments graphiques ≥ 3:1, en mode clair et en mode sombre pour le planificateur.
 
 ## 9. Architecture
@@ -405,7 +405,7 @@ fixtures/borrowed-from-the-lab.json
 
 - `TalkTimerCore` n'importe ni AppKit ni SwiftUI. Il n'utilise que Foundation et swift-markdown, qui fonctionne aussi sous Linux.
 
-État actuel : le modèle est dans `Sources/TalkTimerCore/` (bibliothèque, symboles `public`) et testé par `Tests/TalkTimerCoreTests/`. La barre est dans `App/Bar.swift` depuis l'étape 6a ; le spike SwiftPM qui la portait (`Sources/TalkTimer/`) est retiré. Le projet Xcode (`TalkTimer.xcodeproj`, `App/`) dépend du paquet local ; l'icône (`AppIcon.icon`) arrive à l'étape 8. Réglages du projet : Swift 6, isolation par défaut `MainActor` (`SWIFT_DEFAULT_ACTOR_ISOLATION`), comme le modèle d'app d'Xcode 27 (`App Base.xctemplate`) ; module `TalkTimerApp`, pour ne pas se confondre avec l'exécutable `TalkTimer` du spike.
+État actuel : modèle dans `Sources/TalkTimerCore/` (symboles `public`), testé par `Tests/TalkTimerCoreTests/` ; app dans `App/` (projet `TalkTimer.xcodeproj`, qui dépend du paquet local) ; icône (`AppIcon.icon`) à l'étape 8. Réglages : Swift 6, isolation `MainActor` par défaut (`SWIFT_DEFAULT_ACTOR_ISOLATION`, comme le modèle d'app d'Xcode 27), module `TalkTimerApp` (nom hérité du spike).
 
 ## 10. Critères d'acceptation
 
@@ -480,13 +480,13 @@ fixtures/borrowed-from-the-lab.json
 4. ✅ **Projet Xcode** (2026-10-12) : bundle ID provisoire `io.github.caffe-doppio.talk-timer`, sandbox, entitlements, Info.plist (UTType, chiffrement), String Catalog, privacy manifest. Schéma partagé `talk-timer`, compilé en CI sans signature. Reportés à l'étape 5 avec `DocumentGroup` : les types de documents (`CFBundleDocumentTypes`) et la traduction du nom du type (`UTTypeDescription`).
 5. **Planificateur**, en sous-étapes :
    - ✅ 5a. Document : `TalkDocument` (`FileDocument`), `DocumentGroup`, ouverture des `.md` en talk sans titre, types de documents dans Info.plist, noms des types traduits (`InfoPlist.xcstrings`) ;
-   - ✅ 5b. Vue du planificateur : en-tête (titre, total), frise, marge, liste avec interrupteur Pause et menu contextuel, ajout de bloc, pied (passage automatique, écran, Démarrer désactivé jusqu'à l'étape 6) ;
+   - ✅ 5b. Vue du planificateur : en-tête (titre, total), frise, marge, liste avec interrupteur Pause et menu contextuel, ajout de bloc, pied (passage automatique, écran, Démarrer désactivé jusqu'à l'étape 6), remplacé depuis par la barre d'outils (§ 15) ;
    - ✅ 5c. Menus : Fichier › Exporter en Markdown…, Aide › Politique de confidentialité. Le menu Session et la scène Réglages passent à l'étape 6, avec la session et KeyboardShortcuts dont ils dépendent ;
    - ✅ 5d. Fenêtre Accueil ;
    - ✅ 5e. Export PDF et impression (§ 3.2), avec l'entitlement `com.apple.security.print` (§ 8, § 15).
 6. **Session et barre**, en sous-étapes :
-   - ✅ 6a. Barre dans l'app : `Bar.swift` passe du spike à `App/`, avec l'îlot en Liquid Glass, les couleurs système, les boutons, le ⌘-clic et le double appui de Fin déjà faits dans le spike (§ 7.2, § 7.3). Démarrer ouvre la barre sur l'écran choisi, une seule session à la fois (§ 5) ; Fin la ferme et rend la main au planificateur (§ 6.3). `Logger` à la place de `print`, chaînes de la barre dans le String Catalog, `sharingType = .none` (§ 7.1). Retrait du spike : `AppDelegate`, mode ligne de commande, contournement `setActivationPolicy`, cible exécutable du paquet ;
-   - ✅ 6b. Raccourcis : KeyboardShortcuts à la place de `HotKeys`, les quatre noms du § 7.4, scène Réglages et menu Session (venus de l'étape 5), message de conflit. Préalable : choisir le raccourci de Fin (§ 13) ;
+   - ✅ 6a. Barre dans l'app : `Bar.swift` passe du spike à `App/`, avec l'îlot en Liquid Glass, les couleurs système, les boutons, le ⌘-clic et le double appui de Fin déjà faits dans le spike (§ 7.2, § 7.3). Démarrer ouvre la barre sur l'écran choisi, une seule session à la fois (§ 5) ; Fin la ferme et rend la main au planificateur (§ 6.3). Aucun `print` (§ 8), chaînes de la barre dans le String Catalog, `sharingType = .none` (§ 7.1). Retrait du spike : `AppDelegate`, mode ligne de commande, contournement `setActivationPolicy`, cible exécutable du paquet ;
+   - ✅ 6b. Raccourcis : KeyboardShortcuts à la place de `HotKeys`, les cinq noms du § 7.4, scène Réglages et menu Session (venus de l'étape 5), message de conflit ;
    - 6c. Contenu de la barre : blocs de pause prévue (§ 7.3), marge ou écart (§ 7.2), largeur ajustée au contenu (§ 7.1) ;
    - 6d. Accessibilité du § 7.5 : libellé de synthèse, annonces VoiceOver au passage en alerte, en dépassement et au premier appui sur Fin ;
    - 6e. Écran débranché pendant la session : la barre revient sur l'écran principal (§ 7.1) ;
@@ -519,7 +519,7 @@ fixtures/borrowed-from-the-lab.json
 ## 13. Questions ouvertes
 
 - **Nom définitif**, à trancher avant de créer l'app dans App Store Connect : le bundle ID, qui en dépend, n'est plus modifiable ensuite. Le préfixe est décidé (§ 15) : `io.github.caffe-doppio.`. Provisoirement : `io.github.caffe-doppio.talk-timer`, et le UTType `io.github.caffe-doppio.talk-timer.talk`. Vérifier que le nom est libre sur l'App Store. Un futur canal Developer ID devra avoir son propre bundle ID : avec le même, les deux builds partageraient conteneur et réglages, et le système afficherait des invites.
-- **Raccourci de Précédent** : ⌃⌥E, au-dessus de S et D, est un peu hors de portée d'une main (2,7 touches depuis ⌥, `scripts/check-shortcuts.py`). À confirmer avec des gens. Écartés : Q (pas à la même place en QWERTY), ⌃⌥⇧S (sans ⇧, déclenche Suivant), ⌃⌥← (deux mains ; sans ⌥, change d'espace).
+- **Raccourci de Précédent** : ⌃⌥E, au-dessus de S et D, est un peu hors de portée d'une main (2,7 touches depuis ⌥, `scripts/check-shortcuts.py`). À confirmer avec des gens ; les touches écartées sont dans `docs/shortcuts-draft.json`.
 - **Ouvrir récent en sandbox avec `DocumentGroup`** : supposé fourni par le système (documenté pour `NSDocument`, et seulement par des rapports de forum pour SwiftUI). À confirmer par la recette 8.
 - **Granularité** : la minute suffit-elle, ou faut-il des blocs de 30 s (pitchs courts) ?
 - **Hauteur de l'îlot** : la hauteur se lit-elle de loin, quand on est debout à un mètre de l'écran ? Les boutons doivent aussi rester cliquables sans viser.
@@ -551,7 +551,7 @@ Sources consultées le 2026-10-11 :
 | P10 | Métadonnées : URL de support, description, mots-clés, copyright | App Store Connect, Platform version information | obligatoire | obligatoire | Support : GitHub Issues du dépôt | à faire |
 | P11 | Captures Mac 16:10 : 1280×800, 1440×900, 2560×1600 ou 2880×1800, de 1 à 10 | App Store Connect, Screenshot specifications | obligatoire | obligatoire | Vraies captures, plein écran : planificateur, barre en phase normale, alerte, dépassement, pause prévue | — |
 | P12 | Questionnaire de classification par âge (système 2025-2026) | App Store Connect, Upcoming requirements | obligatoire | obligatoire | 4+ attendu | — |
-| P13 | Statut DSA déclaré et vérifié pour la vitrine UE | App Store Connect, DSA trader requirements | obligatoire | obligatoire Non-trader (confirmé le 2026-10-11) : gratuit, non commercial, compte particulier | à faire |
+| P13 | Statut DSA déclaré et vérifié pour la vitrine UE | App Store Connect, DSA trader requirements | obligatoire | obligatoire | Non-trader (confirmé le 2026-10-11) : gratuit, non commercial, compte particulier | à faire |
 | P14 | Build avec Xcode 26 ou plus, puis Xcode 27 à partir d'avril 2027 | Upcoming requirements | obligatoire | obligatoire | Cible de déploiement macOS 26 ; build local sous Xcode 27 | — |
 | P15 | Aucun attribut `com.apple.quarantine` dans le build | Upcoming requirements (depuis le 18 février 2025) | obligatoire | obligatoire | Archive Xcode ; aucun fichier téléchargé copié dans le bundle | — |
 | P16 | Fonctionnalité minimale | 4.2 | obligatoire | obligatoire | Arguments de revue : planification à budget fermé, barre au-dessus du plein écran, raccourcis globaux sans autorisation | à faire |
@@ -600,7 +600,7 @@ Fiches de langage et de frameworks à produire en parallèle : `DocumentGroup`, 
 | 2026-10-11 | Élément de la barre des menus, en complément de la barre | Le système et la personne peuvent le masquer : il ne suffit jamais seul |
 | 2026-10-11 | Icônes SF Symbols standard, consignées dans GLOSSARY | Une icône par action |
 | 2026-10-11 | `CLAUDE.md` et `.claude/` locaux jusqu'à la publication | Exclus par l'ignore global, réintégrés au § 11, étape 8 |
-| 2026-10-26 | Raccourcis par défaut ⌃⌥S, ⌃⌥D (à tester), ⌃⌥C, ⌃⌥X ; ⌃⌥ + flèches écartés | D'une main, mêmes touches en AZERTY et en QWERTY, aucun raccourci système. Les flèches demandent deux mains, et ⌃→ sans ⌥ change d'espace, ce qui fait sortir de Keynote en plein écran |
+| 2026-10-26 | Raccourcis par défaut : Suivant ⌃⌥S, Précédent ⌃⌥D (à tester, remplacé par ⌃⌥E plus bas), Suspendre ⌃⌥C, Fin ⌃⌥X ; ⌃⌥ + flèches écartés | D'une main, mêmes touches en AZERTY et en QWERTY, aucun raccourci système. Les flèches demandent deux mains, et ⌃→ sans ⌥ change d'espace, ce qui fait sortir de Keynote en plein écran |
 | 2026-10-26 | Barre d'outils à la place du pied de fenêtre : Accueil et menu du titre, Ajouter un bloc, Enregistrer, Démarrer. Passage automatique et écran restent dans le contenu (modèle `docs/window/planner.svg`) | HIG « Toolbars » : trois zones, trois groupes au plus, des commandes et pas des données. Apple déconseille une barre en bas de fenêtre, que le bas de l'écran peut cacher |
 | 2026-10-26 | Bouton Enregistrer dans la barre d'outils, malgré l'enregistrement automatique | Demandé à l'usage : savoir qu'on a enregistré. Apple ne le recommande pas, d'où un seul bouton, à part, qui fait la même chose que ⌘S |
 | 2026-10-26 | Les modifications du planificateur passent à la session en cours (§ 6.5) | On corrige un bloc pendant qu'on présente : la barre doit le montrer tout de suite, pas au prochain Démarrer |

@@ -70,7 +70,7 @@ Ces corrections sont bien moins chères maintenant, avec trois fichiers de code.
 
 ## 2026-10-11 · Markdown, PDF, pauses, accueil
 
-**Fait.** `9852363`.
+**Spécifié.** `9852363` (code aux étapes 3 et 5).
 
 - Import et export Markdown (SPECS § 3.1), avec une fixture Markdown du workshop ; export PDF par l'impression (§ 3.2).
 - Pause prévue (un bloc avec `break: true`) et pause imprévue (Suspendre, avec une heure de fin fixe).
@@ -78,7 +78,7 @@ Ces corrections sont bien moins chères maintenant, avec trois fichiers de code.
 
 **Pourquoi « fin fixe ».** Dans une conférence, la salle se libère à l'heure prévue. Une panne de projecteur de 3 minutes ne rallonge pas le créneau : elle consomme la marge, puis se voit dans l'écart.
 
-**Trouvé en calculant.** Le compteur `+m:ss` du dépassement, écrit en `error-500`, ne fait que 3,8:1 de contraste sur le fond de la barre, pour 4,5:1 exigés pour du texte. Il passe en `error-450` (4,6:1) à l'étape 6.
+**Trouvé en calculant.** Le compteur `+m:ss` du dépassement, écrit en `error-500`, ne fait que 3,8:1 de contraste sur le fond de la barre, pour 4,5:1 exigés pour du texte. Il passe en `error-450` (4,6:1) à l'étape 6. (Caduc : la barre a pris les couleurs système, § 15.)
 
 **Notions.**
 
@@ -311,7 +311,7 @@ Notes prises avant de toucher au code ni aux SPECS. Chaque point remet en cause 
 
 - `Bar.swift` passe du spike à `App/`. `Live` (`@Observable`, une seule instance : `Live.shared`) porte la session, la barre et l'attente du second appui sur Fin.
 - Démarrer ouvre la barre sur l'écran choisi, une seule session à la fois. Fin la ferme et rend la main au planificateur.
-- `Logger` à la place de `print`, et `sharingType = .none` (§ 7.1).
+- Plus aucun `print` (§ 8), et `sharingType = .none` (§ 7.1).
 - Le spike est retiré : `AppDelegate`, le mode ligne de commande, le contournement `setActivationPolicy` et la cible exécutable du paquet.
 - SPECS § 13 : nouvelle question ouverte, l'écran tactile annoncé pour le MacBook Pro.
 
