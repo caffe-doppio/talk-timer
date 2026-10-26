@@ -302,3 +302,147 @@ Notes prises avant de toucher au code ni aux SPECS. Chaque point remet en cause 
 - **Colonnes dans une `List`.** `Grid` ne s'y emploie pas : des largeurs fixes à droite et deux colonnes souples à parts égales donnent le même alignement.
 
 **Suite.** Étape 6 : la barre dans l'app (branchée sur la session), KeyboardShortcuts, le menu Session, la scène Réglages, l'élément de la barre des menus, et le retrait du spike.
+
+---
+
+## 2026-10-25 · Étape 6a : la barre dans l'app
+
+**Fait.** `2bc4ad3`.
+
+- `Bar.swift` passe du spike à `App/`. `Live` (`@Observable`, une seule instance : `Live.shared`) porte la session, la barre et l'attente du second appui sur Fin.
+- Démarrer ouvre la barre sur l'écran choisi, une seule session à la fois. Fin la ferme et rend la main au planificateur.
+- `Logger` à la place de `print`, et `sharingType = .none` (§ 7.1).
+- Le spike est retiré : `AppDelegate`, le mode ligne de commande, le contournement `setActivationPolicy` et la cible exécutable du paquet.
+- SPECS § 13 : nouvelle question ouverte, l'écran tactile annoncé pour le MacBook Pro.
+
+**Pièges.** Deux comportements d'AppKit à contourner, parce que la barre ne devient jamais la fenêtre clé (`canBecomeKey = false`) :
+
+1. **Le premier clic ne servirait qu'à activer la fenêtre.** `FirstClickHostingView` répond `true` à `acceptsFirstMouse`, et les boutons réagissent dès le premier clic.
+2. **Le ⌘-clic actionnerait aussi le bouton visé.** `BarPanel.sendEvent` intercepte le ⌘-clic, fait Suivant, et ne le transmet pas.
+
+**Notions.**
+
+- **Singleton `static let shared`.** Une constante de type, initialisée à la première lecture et sans risque entre threads. C'est l'équivalent d'une instance créée au niveau d'un module Python.
+- **`NSHostingView`.** C'est le pont entre une vue SwiftUI et une fenêtre AppKit, ici un `NSPanel`. Fiche : `/apple-dev-docs https://developer.apple.com/documentation/swiftui/nshostingview`.
+
+**Suite.** Étape 6b : les raccourcis.
+
+---
+
+## 2026-10-26 · Étape 6b, préalable : choisir les raccourcis par défaut
+
+**Fait.**
+
+- Fiches `swiftui-keyboardshortcut` et `uikit-uikeyboardhidusage` (`_apple/dev/03-frameworks/`), produites par des sous-agents.
+- `cd0a288` : `docs/captures/`, ignoré par git, pour les captures du visualiseur de clavier.
+- `cc1e7ff`, `75db5b8` : `scripts/check-shortcuts.py`, un lint des raccourcis par défaut. Il lit la disposition des claviers français, américain et russe avec `scripts/keyboard-layouts.swift`, et les raccourcis système avec `defaults export com.apple.symbolichotkeys`. Il dessine aussi les plans ⌃⌥ des claviers ISO et ANSI (`docs/keyboard/`).
+- `8876440` : choix de ⌃⌥S (Suivant), ⌃⌥C (Suspendre) et ⌃⌥X (Fin). Le lint signale aussi les raccourcis de Rectangle et les combinaisons qu'un doigt peut confondre.
+- `de852ba` : les plans prennent les couleurs système de la HIG, dans une feuille commune (`assets/css/keyboard.css`) ; les touches indisponibles sont grisées.
+- SwiftLint installé en local avec Homebrew, à la même version que la CI (0.65.1).
+
+**Pourquoi.** Deux exigences :
+
+- les touches doivent porter les mêmes caractères en AZERTY et en QWERTY ;
+- talk-timer doit répondre pendant que Keynote, PowerPoint, Canva ou Acrobat a le focus.
+
+D'où des raccourcis globaux, captés par le système avant l'app au premier plan, d'une seule main gauche, avec ⌃⌥ tenus.
+
+**Pièges.**
+
+1. **Un code de touche Carbon désigne une position, pas un caractère.** `kVK_ANSI_Q` est la touche `a` en AZERTY. Seul `UCKeyTranslate` dit quel caractère une touche produit dans une disposition donnée.
+2. **La touche 50 change de rôle selon le clavier.** En ISO, c'est `<`, près du ⇧ gauche ; en ANSI, c'est la touche grave.
+3. **Mesurer la portée jusqu'au centre des touches éloignait la barre d'espace.** Elle se mesure maintenant jusqu'au bord le plus proche de la touche, avec un seuil recalibré à 2,2 touches.
+4. **Un `<img>` dans un commentaire CSS cassait le XML du SVG.** La feuille est maintenant insérée dans une section `<![CDATA[…]]>`.
+5. **SwiftLint, `optional_data_string_conversion`.** Le script écrit les octets du JSON tels quels, sans passer par une `String`.
+6. **zsh lit une ligne `=====` comme une commande.** On sépare les sorties avec `---`.
+
+**Notions.**
+
+- **Code de touche ou caractère.** Le code de touche est la position physique, le caractère dépend de la disposition. C'est la distinction *scancode* / *keysym* de X11. Les raccourcis KeyboardShortcuts sont positionnels, comme ceux de Carbon.
+- **Raccourcis système.** Ils sont stockés dans `com.apple.symbolichotkeys`, une liste d'entrées numérotées : 64 = ⌃Espace (Spotlight), 79 à 82 = ⌃← et ⌃→ (changer d'espace).
+
+**Suite.** Brancher KeyboardShortcuts dans l'app.
+
+---
+
+## 2026-10-26 · Étape 6b : KeyboardShortcuts, Réglages, menu Session, ⌃⌥D
+
+**Fait.**
+
+- `ffc3734` : KeyboardShortcuts 3.1.0, épinglé en version exacte (§ 15), remplace les raccourcis Carbon de `HotKeys`.
+  - Scène Réglages : cinq enregistreurs et « Rétablir les valeurs par défaut ».
+  - Menu Session : chaque action affiche son raccourci (`globalKeyboardShortcut`).
+  - Le planificateur signale les raccourcis pris par une autre app.
+- `4d577b5` : Démarrer devient le raccourci global ⌃⌥D, actif hors session, sur le dernier planificateur actif. Précédent passe sur ⌃⌥E.
+- `f8347f8` : `.github/issues` et `.github/pr` ignorés par git. La première issue, `001-timelimits-in-talkplanner`, est rédigée en local.
+
+**Pourquoi ⌃⌥D.** Démarrer sans quitter l'app de présentation. D, à droite de S, allait contre le geste de Précédent, qui passe sur E.
+
+**Pièges.**
+
+1. **`initial:` n'est écrit qu'une fois dans `UserDefaults`.** Changer une valeur par défaut dans le code ne change rien sur un Mac où l'app a déjà tourné : Précédent y est resté sur D jusqu'au clic sur « Rétablir ».
+2. **Un raccourci refusé ne lève aucune erreur.** `RegisterEventHotKey` échoue en silence, et seul `KeyboardShortcuts.isEnabled(for:)`, lu juste après l'enregistrement, le révèle.
+3. **Un raccourci global ne peut pas lire `@FocusedValue`.** Quand Keynote est au premier plan, aucune fenêtre de talk-timer n'a le focus. Chaque planificateur signale donc lui-même à `Live` qu'il devient actif (`appearsActive`).
+4. **Une fermeture dans `@Entry` provoquait un avertissement.** Les fenêtres publient des valeurs simples à la place.
+5. **SwiftLint, `large_tuple`.** Un tuple de trois éléments est refusé : l'identifiant de la fenêtre est devenu une propriété à part.
+6. **Le lint signalait Démarrer comme voisin de Fin.** Démarrer n'est jamais actif pendant une session : il est exclu des contrôles de voisinage (`OUTSIDE_SESSION`).
+
+**Notions.**
+
+- **Paquet SwiftPM dans un projet Xcode.** `XCRemoteSwiftPackageReference` déclare le paquet, et `Package.resolved` fige la révision, comme `Cargo.lock`.
+- **Pousser plutôt que tirer.** `.onChange(of: appearsActive)` pousse l'état vers `Live` au bon moment, au lieu de le lire au moment de l'appui. C'est le passage d'un *polling* à une notification. Fiche : `/apple-dev-docs https://developer.apple.com/documentation/swiftui/environmentvalues/appearsactive`.
+- **`[self] in`.** Une liste de capture explicite. `Live` est un singleton jamais libéré, donc il n'y a pas de cycle de références. Pour un objet qui peut disparaître, on écrirait `[weak self]`, l'équivalent d'une `weakref` en Python.
+
+**Suite.** Tester avec l'app de présentation au premier plan.
+
+---
+
+## 2026-10-26 · Retours d'usage : session en direct, champ Total, fenêtre de macOS 26
+
+**Fait.**
+
+- `e29b302` :
+  - les modifications du planificateur passent à la session en cours (`Session.update(_:)`, § 6.5) ;
+  - le champ Total garde la valeur des flèches ;
+  - la barre d'outils remplace le pied de fenêtre, avec Accueil et Enregistrer ;
+  - l'issue 002 (versions) est rédigée en local.
+- `a672d34` : xcode-build-server pour VS Code ; `buildServer.json` ignoré par git.
+- `ab87a00` : modèle de fenêtre `docs/window/planner.svg`, dessiné d'après la HIG « Toolbars ». Le code le suit :
+  - au centre de la barre d'outils, Ajouter un bloc ;
+  - le menu du titre propose les exports et l'impression ;
+  - Édition › Ajouter un bloc ;
+  - le passage automatique et le choix de l'écran reviennent dans le contenu.
+
+**Pourquoi.** Premiers essais en vrai :
+
+- on corrige un bloc pendant qu'on présente, et la barre ne bougeait pas ;
+- on ne pouvait pas diminuer le total ;
+- la fenêtre avait l'air d'avant Liquid Glass ;
+- la comparaison des versions était illisible.
+
+**Pièges.**
+
+1. **La session tournait sur une copie.** `Session(talk:)` reçoit une `struct`, donc une copie : aucune modification ne l'atteignait. Il fallait les pousser explicitement, comme pour ⌃⌥D.
+2. **`TextField(value:format:)` ne se met plus à jour tant qu'il a le focus.** Il réécrivait ensuite son ancien texte en le perdant, ce qui annulait les flèches. `TextField(text:)`, lui, suit le modèle dans les deux sens.
+3. **Des données dans la barre d'outils.** La première version y mettait le passage automatique et le choix de l'écran. La HIG y veut des commandes, en trois groupes au plus. Ces deux réglages disparaissaient aussi dans le menu de débordement dès que la fenêtre rétrécissait.
+4. **Le navigateur de versions appartient au système.** Il est fourni par `NSDocument`, et on ne peut ni le mettre en forme ni y ajouter une comparaison. Elle passe hors V1 (§ 12, issue 002).
+5. **VS Code : « No such module 'KeyboardShortcuts' ».** Ce n'était pas un lint mais SourceKit-LSP, qui ne lit que `Package.swift`, où `App/` n'existe pas. Le correctif, xcode-build-server, a demandé trois choses :
+   - un build qui recompile vraiment `App/` : un build incrémental laisse un journal presque vide ;
+   - savoir que les fichiers ne sont pas listés un par un dans les commandes, mais via `@…SwiftFileList` ;
+   - relancer les serveurs de langage, démarrés avant que `buildServer.json` existe.
+6. **Pas de commentaire en fin de ligne dans un `.gitignore`.** La ligne `buildServer.json  # …` ignorait un fichier qui porte ce nom entier.
+7. **SwiftLint, `orphaned_doc_comment`.** Un commentaire `//` entre un `///` et sa déclaration détache le commentaire de doc.
+
+**Notions.**
+
+- **Sémantique de valeur.** Une `struct` passée en paramètre est copiée, comme un tuple en Python, pas comme une liste. C'est voulu pour la session, à condition de pousser les changements.
+- **`@FocusedBinding`.** Le menu reçoit une liaison au talk de la fenêtre au premier plan, et non une copie. Édition › Ajouter un bloc passe ainsi par ⌘Z comme le bouton. Fiche : `/apple-dev-docs https://developer.apple.com/documentation/swiftui/focusedbinding`.
+- **Chaîne des répondeurs.** Le bouton Enregistrer envoie `NSDocument.save(_:)` à `nil`, et AppKit le transmet à la fenêtre au premier plan, puis à son document : le chemin de ⌘S, comme la remontée d'un événement dans le DOM. Fiche : `/apple-dev-docs https://developer.apple.com/documentation/appkit/nsresponder`.
+- **Placements de barre d'outils.** `.navigation`, `.principal` et `ToolbarSpacer` décrivent un rôle, et le système en déduit la position, comme les *landmarks* ARIA. Fiche : `/apple-dev-docs https://developer.apple.com/documentation/swiftui/toolbaritemplacement`.
+- **Build Server Protocol.** Le cousin de LSP pour les réglages de compilation : `buildServer.json` dit à SourceKit-LSP quel programme interroger.
+
+**Suite.**
+
+- Vérifier dans l'app : le menu du titre, les recettes 25 et 26, et la largeur minimale de 560 pt.
+- Refaire la capture du planificateur pour le README.
+- Étape 6c : le contenu de la barre.
