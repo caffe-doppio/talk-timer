@@ -289,7 +289,7 @@ An `NSPanel` that shows a SwiftUI view:
 | `collectionBehavior` | `[.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]` | Visible on all Spaces and above a full-screen app |
 | `hidesOnDeactivate` | `false` | Stays visible when talk-timer is not the active app |
 | `sharingType` | `.none` | Precaution against screen capture, **with no guarantee** (see below) |
-| Shape | Island: capsule centered horizontally, width fitted to the content, at most 60% of the screen (starting point, to adjust in the quick test) | Native shape of Liquid Glass (§ 7.3) |
+| Shape | Island: capsule 44 pt high, centered horizontally, width fitted to the content (`BarPanel.fit(width:)`), at most 60% of the screen; beyond that, the block title is truncated | Native shape of Liquid Glass (§ 7.3) |
 | Position | At a distance `d` below the top of the chosen display (see below) | Covers neither the top strip of a full-screen app, nor its toolbar when it has two tiers (tabs and tools: Safari, VS Code), nor the system hover zone |
 
 **Vertical position.** It depends on the system setting “Automatically hide and show the menu bar”:
@@ -320,7 +320,7 @@ The title of the next block is always shown, as secondary text: you know at any 
 ( 3/8  Evidence before a judge  [▓▓▓░░░░░░░░░░░░░░░]  0:48   → From the field · “cue”   ⏮  ⏯  ⏭    🏁 )
 ```
 
-- **Buttons**, on the right, spaced out to be clicked without aiming: Back, Pause / Resume, Next, then End, set further apart from the other three. Icons from GLOSSARY (“Icônes” section), borderless buttons (`.borderless`): the capsule already carries the glass, and Apple advises against stacking glass elements.
+- **Buttons**, on the right: Back, Pause / Resume, Next, then End, set further apart from the other three. They are HIG image buttons (“Buttons”, macOS): an 18 pt symbol, borderless (`.borderless`, the capsule already carries the glass, and Apple advises against stacking glass elements), in a 44 × 44 pt hit region, the HIG minimum, which will also serve a touch screen (§ 13). Icons from GLOSSARY (“Icônes” section).
 - While waiting for the second press on End, “End?” replaces the remaining time.
 - The **gauge empties from right to left**: it is full at the start of the block and empty at zero.
 - Digits use `.monospacedDigit()`, so that the text does not shift every second.
@@ -466,6 +466,7 @@ Current state: model in `Sources/TalkTimerCore/` (`public` symbols), tested by `
 24. Two talks open, Keynote in front: ⌃⌥D starts the talk of the last active window, on the display chosen in that window. During the session, ⌃⌥D starts nothing; after “End”, it starts again.
 25. Total field, margin at 2: a click in the field, then the down arrow twice. The field shows each new total, and keeping it by clicking elsewhere does not raise it back. Type a total below the sum of the blocks, then ↩: beep, minimum shown, and the field reverts to the total.
 26. During a session, lengthen the current block by one minute in the planner: the bar gains a minute at once. The current block's Delete button is disabled. Saving changes nothing in the bar.
+27. Bar (§ 7): the capsule stays centered and its width follows the content from one block to the next; a very long block title is truncated in the middle, without cutting the time or the margin. A break shows “BREAK”, a green gauge and “After the break:”. After a pause that goes beyond the margin, “margin” becomes “end +m:ss” in red. Each button responds over its whole 44 pt region, not only on the symbol.
 
 ## 11. Implementation order
 
@@ -607,3 +608,4 @@ Language and framework fact sheets to produce in parallel: `DocumentGroup`, Defi
 | 2026-10-26 | Save button in the toolbar, despite autosave | Asked for in use: knowing you have saved. Apple does not recommend it, hence a single button, set apart, that does the same as ⌘S |
 | 2026-10-26 | Planner changes are passed to the running session (§ 6.5) | You fix a block while presenting: the bar must show it right away, not at the next Start |
 | 2026-10-26 | Start as global shortcut ⌃⌥D, outside a session, on the last active talk; Back moves to ⌃⌥E | Start without leaving the presentation app. D, to the right of Next, went against the gesture of Back |
+| 2026-10-26 | Bar 44 pt high, borderless 44 × 44 pt buttons, width fitted to the content | Minimum hit region of the HIG (“Buttons”); a capsule sized to its content hides less of the slide |

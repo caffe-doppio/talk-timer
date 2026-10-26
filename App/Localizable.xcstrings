@@ -47,6 +47,32 @@
         }
       }
     },
+    "After the break: %@" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reprise : %@"
+          }
+        }
+      }
+    },
+    "After the break: %@ · “%@”" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "After the break: %1$@ · “%2$@”"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reprise : %1$@ · « %2$@ »"
+          }
+        }
+      }
+    },
     "Back" : {
       "localizations" : {
         "fr" : {
@@ -147,6 +173,16 @@
         }
       }
     },
+    "end %@" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "fin %@"
+          }
+        }
+      }
+    },
     "End?" : {
       "localizations" : {
         "fr" : {
@@ -219,6 +255,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Marge"
+          }
+        }
+      }
+    },
+    "margin %@" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "marge %@"
           }
         }
       }

@@ -62,6 +62,7 @@ Status: **existing** (present in the code) or **planned** (name reserved by the 
 | Row of a block in the planner | — | — | `BlockRow` | — | existing |
 | Proportional drawing of the blocks and the margin | frise | strip | `StripView` | — | existing |
 | Floating bar | barre | bar | `BarPanel` (window), `BarView` (content) | — | existing |
+| Bar width, fitted to the content and capped | — | — | `BarPanel.fit(width:)`, `BarPanel.maxWidth(on:)` | — | existing |
 | Current block gauge in the menu bar | élément de la barre des menus | menu bar extra | `MenuBarExtra` | — | planned |
 | Global shortcut | raccourci | shortcut | `KeyboardShortcuts.Name` (`.startSession` outside a session; `.nextBlock`, `.previousBlock`, `.togglePause`, `.endSession`), `KeyboardShortcuts.Name.session` (the four session ones, in menu order) | — | existing |
 | Name of a shortcut's action, for messages | — | — | `KeyboardShortcuts.Name.title` | — | existing |

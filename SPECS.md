@@ -287,7 +287,7 @@ Un `NSPanel` qui affiche une vue SwiftUI :
 | `collectionBehavior` | `[.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]` | Visible sur tous les Spaces et au-dessus d'une appli en plein écran |
 | `hidesOnDeactivate` | `false` | Reste visible quand talk-timer n'est pas l'appli active |
 | `sharingType` | `.none` | Précaution contre la capture d'écran, **sans garantie** (voir plus bas) |
-| Forme | Îlot : capsule centrée horizontalement, largeur ajustée au contenu, au plus 60 % de l'écran (point de départ, à ajuster au test rapide) | Forme native de Liquid Glass (§ 7.3) |
+| Forme | Îlot : capsule de 44 pt de haut, centrée horizontalement, largeur ajustée au contenu (`BarPanel.fit(width:)`), au plus 60 % de l'écran ; au-delà, le titre du bloc se tronque | Forme native de Liquid Glass (§ 7.3) |
 | Position | À une distance `d` sous le haut de l'écran choisi (voir plus bas) | Ne recouvre ni la bande du haut d'une app en plein écran, ni sa barre d'outils quand elle a deux étages (onglets et outils : Safari, VS Code), ni la zone de survol du système |
 
 **Position verticale.** Elle dépend du réglage système « Masquer/afficher automatiquement la barre des menus » :
@@ -318,7 +318,7 @@ Le titre du bloc suivant est toujours affiché, en texte secondaire : on sait à
 ( 3/8  Evidence before a judge  [▓▓▓░░░░░░░░░░░░░░░]  0:48   → From the field · « cue »   ⏮  ⏯  ⏭    🏁 )
 ```
 
-- **Boutons**, à droite, espacés pour être cliqués sans viser : Précédent, Suspendre / Reprendre, Suivant, puis Fin, plus à l'écart des trois autres. Icônes de GLOSSARY (section « Icônes »), boutons sans bordure (`.borderless`) : la capsule porte déjà le verre, et Apple déconseille d'empiler des éléments en verre.
+- **Boutons**, à droite : Précédent, Suspendre / Reprendre, Suivant, puis Fin, plus à l'écart des trois autres. Ce sont des boutons-images de la HIG (« Buttons », macOS) : symbole de 18 pt, sans bordure (`.borderless`, la capsule porte déjà le verre, et Apple déconseille d'empiler des éléments en verre), dans une zone de clic de 44 × 44 pt, le minimum de la HIG, qui servira aussi à un écran tactile (§ 13). Icônes de GLOSSARY (section « Icônes »).
 - Pendant l'attente du second appui sur Fin, « Fin ? » remplace le temps restant.
 - La **jauge se vide de droite à gauche** : elle est pleine au début du bloc et vide à zéro.
 - Les chiffres utilisent `.monospacedDigit()`, pour que le texte ne bouge pas chaque seconde.
@@ -464,6 +464,7 @@ fixtures/borrowed-from-the-lab.json
 24. Deux talks ouverts, Keynote au premier plan : ⌃⌥D démarre le talk de la dernière fenêtre active, sur l'écran choisi dans cette fenêtre. Pendant la session, ⌃⌥D ne démarre rien ; après « Fin », il redémarre.
 25. Champ Total, marge à 2 : un clic dans le champ, puis la flèche du bas deux fois. Le champ affiche chaque nouveau total, et le garder en cliquant ailleurs ne le remonte pas. Taper un total sous la somme des blocs, puis ↩ : bip, minimum affiché, et le champ revient au total.
 26. Pendant une session, allonger le bloc en cours d'une minute dans le planificateur : la barre gagne une minute aussitôt. Le bouton Supprimer du bloc en cours est désactivé. Enregistrer ne change rien à la barre.
+27. Barre (§ 7) : la capsule reste centrée et sa largeur suit le contenu d'un bloc à l'autre ; un titre de bloc très long se tronque au milieu, sans couper le temps ni la marge. Une pause prévue affiche « PAUSE », une jauge verte et « Reprise : ». Après une suspension qui dépasse la marge, « marge » devient « fin +m:ss » en rouge. Chaque bouton répond sur toute sa zone de 44 pt, pas seulement sur le symbole.
 
 ## 11. Ordre d'implémentation
 
@@ -605,3 +606,4 @@ Fiches de langage et de frameworks à produire en parallèle : `DocumentGroup`, 
 | 2026-10-26 | Bouton Enregistrer dans la barre d'outils, malgré l'enregistrement automatique | Demandé à l'usage : savoir qu'on a enregistré. Apple ne le recommande pas, d'où un seul bouton, à part, qui fait la même chose que ⌘S |
 | 2026-10-26 | Les modifications du planificateur passent à la session en cours (§ 6.5) | On corrige un bloc pendant qu'on présente : la barre doit le montrer tout de suite, pas au prochain Démarrer |
 | 2026-10-26 | Démarrer en raccourci global ⌃⌥D, hors session, sur le dernier talk actif ; Précédent passe sur ⌃⌥E | Démarrer sans quitter l'app de présentation. D, à droite de Suivant, allait contre le geste de Précédent |
+| 2026-10-26 | Barre de 44 pt de haut, boutons de 44 × 44 pt sans bordure, largeur ajustée au contenu | Zone de clic minimale de la HIG (« Buttons ») ; une capsule à la taille de son contenu masque moins la diapositive |

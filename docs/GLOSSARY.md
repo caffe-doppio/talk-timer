@@ -60,6 +60,7 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Ligne d'un bloc dans le planificateur | — | — | `BlockRow` | — | existant |
 | Dessin proportionnel des blocs et de la marge | frise | strip | `StripView` | — | existant |
 | Barre flottante | barre | bar | `BarPanel` (fenêtre), `BarView` (contenu) | — | existant |
+| Largeur de la barre, ajustée au contenu et plafonnée | — | — | `BarPanel.fit(width:)`, `BarPanel.maxWidth(on:)` | — | existant |
 | Jauge du bloc en cours dans la barre des menus | élément de la barre des menus | menu bar extra | `MenuBarExtra` | — | prévu |
 | Raccourci global | raccourci | shortcut | `KeyboardShortcuts.Name` (`.startSession` hors session ; `.nextBlock`, `.previousBlock`, `.togglePause`, `.endSession`), `KeyboardShortcuts.Name.session` (les quatre de la session, dans l'ordre du menu) | — | existant |
 | Nom de l'action d'un raccourci, pour les messages | — | — | `KeyboardShortcuts.Name.title` | — | existant |
