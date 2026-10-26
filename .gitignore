@@ -11,4 +11,7 @@ logs/
 *.log
 
 # Captures locales (visualiseur de clavier…), jamais versionnées
+assets/css/
+!assets/css/*.css
 docs/captures/
+

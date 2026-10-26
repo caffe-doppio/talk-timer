@@ -3,6 +3,7 @@
   "legend": {
     "modifiers": "control ⌃, option ⌥, shift ⇧, command ⌘",
     "key": "nom du cas KeyboardShortcuts.Key (rightArrow, leftArrow, space, escape, period, p…)",
+    "status": "chosen : retenu (bordure orange sur le plan) ; testing : à essayer avec des gens, proposé et repli en bordure sarcelle",
     "tested": "null tant que non essayé ; puis true ou false, avec la raison dans notes"
   },
   "requirements": [
@@ -20,6 +21,7 @@
   "shortcuts": [
     {
       "name": "nextBlock",
+      "status": "chosen",
       "action": { "fr": "Suivant", "en": "Next" },
       "model": "Session.next(at:)",
       "proposed": { "shortcut": "⌃⌥S", "modifiers": ["control", "option"], "key": "s" },
@@ -34,20 +36,23 @@
     },
     {
       "name": "previousBlock",
+      "status": "testing",
       "action": { "fr": "Précédent", "en": "Back" },
       "model": "Session.back()",
-      "proposed": { "shortcut": "⌃⌥←", "modifiers": ["control", "option"], "key": "leftArrow" },
+      "proposed": { "shortcut": "⌃⌥D", "modifiers": ["control", "option"], "key": "d" },
       "doublePress": false,
       "alsoOnBar": "bouton backward.end",
       "conflicts": [
-        "Rectangle et Magnet : moitié gauche (défaut, géré par le § 7.4)"
+        "Rectangle : premier tiers (défaut, géré par le § 7.4)",
+        "à droite de S (Suivant) : sens contraire au geste, à tester avec des gens"
       ],
-      "fallback": { "shortcut": "⌃⌥B", "modifiers": ["control", "option"], "key": "b", "why": "B comme Back, libre dans les défauts de Rectangle" },
+      "fallback": { "shortcut": "⌃⌥E", "modifiers": ["control", "option"], "key": "e", "why": "au-dessus de S et D, hors de portée d'une main (2,7) ; Rectangle : deux tiers" },
       "tested": null,
-      "notes": ""
+      "notes": "Sasha, 2026-10-26 : on garde D pour l'instant, sinon E. Écartés : Q (AZERTY ≠ QWERTY), ⌃⌥⇧S (sans ⇧, déclenche Suivant), ⌃⌥← (deux mains, sans ⌥ change d'espace)"
     },
     {
       "name": "togglePause",
+      "status": "chosen",
       "action": { "fr": "Suspendre / Reprendre", "en": "Pause / Resume" },
       "model": "Session.togglePause(at:)",
       "proposed": { "shortcut": "⌃⌥C", "modifiers": ["control", "option"], "key": "c" },
@@ -62,6 +67,7 @@
     },
     {
       "name": "endSession",
+      "status": "chosen",
       "action": { "fr": "Fin", "en": "End" },
       "model": "Live.end(at:) puis fermeture de la barre",
       "proposed": { "shortcut": "⌃⌥X", "modifiers": ["control", "option"], "key": "x" },

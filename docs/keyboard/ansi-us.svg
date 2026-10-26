@@ -1,199 +1,276 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 662 334" role="img">
 <title>Couche ⌃⌥, clavier ANSI</title>
-<style>.bg{fill:#fff}.k{fill:#f6f8fa;stroke:#d0d7de}.free{fill:#dafbe1;stroke:#1a7f37}.assigned{fill:#fbefff;stroke:#8250df;stroke-width:2}.taken{fill:#ffebe9;stroke:#cf222e;stroke-dasharray:3 2}.layout{fill:#fff8c5;stroke:#9a6700}.held{fill:#ddf4ff;stroke:#0969da;stroke-width:2}text{font:13px -apple-system,sans-serif;fill:#1f2328;text-anchor:middle}.s{font-size:9px;fill:#59636e}.a{font-size:8px;fill:#59636e}@media (prefers-color-scheme:dark){.bg{fill:#0d1117}.k{fill:#151b23;stroke:#3d444d}.free{fill:#12261e;stroke:#3fb950}.assigned{fill:#271052;stroke:#a371f7}.taken{fill:#3c1618;stroke:#f85149}.layout{fill:#2e2a0f;stroke:#d29922}.held{fill:#0c2d6b;stroke:#4493f8}text{fill:#f0f6fc}.s,.a{fill:#9198a1}}</style>
-<rect class="bg" width="662" height="334"/>
-<rect class="k" x="14.0" y="14.0" width="41.6" height="40.0" rx="5"/>
-<text x="34.8" y="38.0">esc</text>
-<rect class="k" x="59.6" y="14.0" width="41.6" height="40.0" rx="5"/>
-<text x="80.4" y="38.0">F1</text>
-<rect class="k" x="105.1" y="14.0" width="41.6" height="40.0" rx="5"/>
-<text x="125.9" y="38.0">F2</text>
-<rect class="k" x="150.7" y="14.0" width="41.6" height="40.0" rx="5"/>
-<text x="171.5" y="38.0">F3</text>
-<rect class="k" x="196.3" y="14.0" width="41.6" height="40.0" rx="5"/>
-<text x="217.1" y="38.0">F4</text>
-<rect class="k" x="241.9" y="14.0" width="41.6" height="40.0" rx="5"/>
-<text x="262.6" y="38.0">F5</text>
-<rect class="k" x="287.4" y="14.0" width="41.6" height="40.0" rx="5"/>
-<text x="308.2" y="38.0">F6</text>
-<rect class="k" x="333.0" y="14.0" width="41.6" height="40.0" rx="5"/>
-<text x="353.8" y="38.0">F7</text>
-<rect class="k" x="378.6" y="14.0" width="41.6" height="40.0" rx="5"/>
-<text x="399.4" y="38.0">F8</text>
-<rect class="k" x="424.1" y="14.0" width="41.6" height="40.0" rx="5"/>
-<text x="444.9" y="38.0">F9</text>
-<rect class="k" x="469.7" y="14.0" width="41.6" height="40.0" rx="5"/>
-<text x="490.5" y="38.0">F10</text>
-<rect class="k" x="515.3" y="14.0" width="41.6" height="40.0" rx="5"/>
-<text x="536.1" y="38.0">F11</text>
-<rect class="k" x="560.9" y="14.0" width="41.6" height="40.0" rx="5"/>
-<text x="581.6" y="38.0">F12</text>
-<rect class="k" x="606.4" y="14.0" width="41.6" height="40.0" rx="5"/>
-<rect class="layout" x="14.0" y="58.0" width="40.0" height="40.0" rx="5"/>
-<text x="34.0" y="82.0">`</text>
-<text class="s" x="22.0" y="69.0">&lt;</text>
-<rect class="layout" x="58.0" y="58.0" width="40.0" height="40.0" rx="5"/>
-<text x="78.0" y="82.0">1</text>
-<text class="s" x="66.0" y="69.0">&amp;</text>
-<rect class="layout" x="102.0" y="58.0" width="40.0" height="40.0" rx="5"/>
-<text x="122.0" y="82.0">2</text>
-<text class="s" x="110.0" y="69.0">é</text>
-<rect class="layout" x="146.0" y="58.0" width="40.0" height="40.0" rx="5"/>
-<text x="166.0" y="82.0">3</text>
-<text class="s" x="154.0" y="69.0">"</text>
-<rect class="layout" x="190.0" y="58.0" width="40.0" height="40.0" rx="5"/>
-<text x="210.0" y="82.0">4</text>
-<text class="s" x="198.0" y="69.0">'</text>
-<rect class="layout" x="234.0" y="58.0" width="40.0" height="40.0" rx="5"/>
-<text x="254.0" y="82.0">5</text>
-<text class="s" x="242.0" y="69.0">(</text>
-<rect class="layout" x="278.0" y="58.0" width="40.0" height="40.0" rx="5"/>
-<text x="298.0" y="82.0">6</text>
-<text class="s" x="286.0" y="69.0">§</text>
-<rect class="layout" x="322.0" y="58.0" width="40.0" height="40.0" rx="5"/>
-<text x="342.0" y="82.0">7</text>
-<text class="s" x="330.0" y="69.0">è</text>
-<rect class="layout" x="366.0" y="58.0" width="40.0" height="40.0" rx="5"/>
-<text x="386.0" y="82.0">8</text>
-<text class="s" x="374.0" y="69.0">!</text>
-<rect class="layout" x="410.0" y="58.0" width="40.0" height="40.0" rx="5"/>
-<text x="430.0" y="82.0">9</text>
-<text class="s" x="418.0" y="69.0">ç</text>
-<rect class="layout" x="454.0" y="58.0" width="40.0" height="40.0" rx="5"/>
-<text x="474.0" y="82.0">0</text>
-<text class="s" x="462.0" y="69.0">à</text>
-<rect class="layout" x="498.0" y="58.0" width="40.0" height="40.0" rx="5"/>
-<text x="518.0" y="82.0">-</text>
-<text class="s" x="506.0" y="69.0">)</text>
-<rect class="layout" x="542.0" y="58.0" width="40.0" height="40.0" rx="5"/>
-<text x="562.0" y="82.0">=</text>
-<text class="s" x="550.0" y="69.0">-</text>
-<rect class="k" x="586.0" y="58.0" width="62.0" height="40.0" rx="5"/>
-<text x="617.0" y="82.0">⌫</text>
-<rect class="k" x="14.0" y="102.0" width="62.0" height="40.0" rx="5"/>
-<text x="45.0" y="126.0">⇥</text>
-<rect class="layout" x="80.0" y="102.0" width="40.0" height="40.0" rx="5"/>
-<text x="100.0" y="126.0">q</text>
-<text class="s" x="88.0" y="113.0">a</text>
-<rect class="layout" x="124.0" y="102.0" width="40.0" height="40.0" rx="5"/>
-<text x="144.0" y="126.0">w</text>
-<text class="s" x="132.0" y="113.0">z</text>
-<rect class="k" x="168.0" y="102.0" width="40.0" height="40.0" rx="5"/>
-<text x="188.0" y="126.0">e</text>
-<rect class="k" x="212.0" y="102.0" width="40.0" height="40.0" rx="5"/>
-<text x="232.0" y="126.0">r</text>
-<rect class="k" x="256.0" y="102.0" width="40.0" height="40.0" rx="5"/>
-<text x="276.0" y="126.0">t</text>
-<rect class="k" x="300.0" y="102.0" width="40.0" height="40.0" rx="5"/>
-<text x="320.0" y="126.0">y</text>
-<rect class="k" x="344.0" y="102.0" width="40.0" height="40.0" rx="5"/>
-<text x="364.0" y="126.0">u</text>
-<rect class="k" x="388.0" y="102.0" width="40.0" height="40.0" rx="5"/>
-<text x="408.0" y="126.0">i</text>
-<rect class="k" x="432.0" y="102.0" width="40.0" height="40.0" rx="5"/>
-<text x="452.0" y="126.0">o</text>
-<rect class="k" x="476.0" y="102.0" width="40.0" height="40.0" rx="5"/>
-<text x="496.0" y="126.0">p</text>
-<rect class="layout" x="520.0" y="102.0" width="40.0" height="40.0" rx="5"/>
-<text x="540.0" y="126.0">[</text>
-<text class="s" x="528.0" y="113.0">^</text>
-<rect class="layout" x="564.0" y="102.0" width="40.0" height="40.0" rx="5"/>
-<text x="584.0" y="126.0">]</text>
-<text class="s" x="572.0" y="113.0">$</text>
-<rect class="layout" x="608.0" y="102.0" width="40.0" height="40.0" rx="5"/>
-<text x="628.0" y="126.0">\</text>
-<text class="s" x="616.0" y="113.0">`</text>
-<rect class="k" x="14.0" y="146.0" width="73.0" height="40.0" rx="5"/>
-<text x="50.5" y="170.0">⇪</text>
-<rect class="layout" x="91.0" y="146.0" width="40.0" height="40.0" rx="5"/>
-<text x="111.0" y="170.0">a</text>
-<text class="s" x="99.0" y="157.0">q</text>
-<rect class="assigned" x="135.0" y="146.0" width="40.0" height="40.0" rx="5"/>
+<style><![CDATA[
+/* Plans du clavier (docs/keyboard/*.svg), recopié dans chaque SVG par scripts/check-shortcuts.py :
+   un SVG affiché par <img>, comme sur GitHub, ne charge pas de feuille externe.
+   Couleurs système de la HIG, onglet Specifications, lues le 2026-10-26 :
+   https://developer.apple.com/design/human-interface-guidelines/color
+   La HIG déconseille de les figer dans une app ; ici, c'est un document hors app, sans accès aux API. */
+
+:root {
+  --background: rgb(255 255 255);
+  --label: rgb(0 0 0);
+  --muted-label: rgb(142 142 147);  /* systemGray */
+  --key: rgb(242 242 247);          /* systemGray6 */
+  --key-border: rgb(209 209 214);   /* systemGray4 */
+  --muted-border: rgb(229 229 234); /* systemGray5 */
+  --held: rgb(255 56 60);           /* red */
+  --chosen: rgb(255 141 40);        /* orange */
+  --testing: rgb(0 195 208);        /* teal */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: rgb(0 0 0);
+    --label: rgb(255 255 255);
+    --key: rgb(28 28 30);
+    --key-border: rgb(58 58 60);
+    --muted-border: rgb(44 44 46);
+    --held: rgb(255 66 69);
+    --chosen: rgb(255 146 48);
+    --testing: rgb(0 210 224);
+  }
+}
+
+/* Augmenter le contraste (Réglages Système › Accessibilité › Affichage) */
+@media (prefers-contrast: more) {
+  :root {
+    --muted-label: rgb(108 108 112);
+    --key: rgb(235 235 240);
+    --key-border: rgb(188 188 192);
+    --muted-border: rgb(216 216 220);
+    --held: rgb(233 21 45);
+    --chosen: rgb(197 83 0);
+    --testing: rgb(0 129 152);
+  }
+}
+
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  :root {
+    --muted-label: rgb(174 174 178);
+    --key: rgb(36 36 38);
+    --key-border: rgb(68 68 70);
+    --muted-border: rgb(54 54 56);
+    --held: rgb(255 97 101);
+    --chosen: rgb(255 160 86);
+    --testing: rgb(59 221 236);
+  }
+}
+
+.background { fill: var(--background); }
+
+/* Touche disponible : libre, identique en AZERTY et en QWERTY, à portée d'une main */
+.key { fill: var(--key); stroke: var(--key-border); stroke-width: 1; }
+
+/* Touche indisponible : prise, différente selon la disposition, hors de portée, ou modificateur */
+.muted { fill: none; stroke: var(--muted-border); stroke-width: 1; }
+
+.held, .chosen, .testing { fill: var(--key); stroke-width: 2; }
+.held { stroke: var(--held); }
+.chosen { stroke: var(--chosen); }
+.testing { stroke: var(--testing); }
+
+text { font: 13px -apple-system, BlinkMacSystemFont, sans-serif; fill: var(--label); text-anchor: middle; }
+text.muted-text { fill: var(--muted-label); }
+text.secondary { font-size: 9px; fill: var(--muted-label); }
+text.action { font-size: 8px; fill: var(--muted-label); }
+text.legend { font-size: 11px; text-anchor: start; fill: var(--label); }
+]]></style>
+<rect class="background" width="662" height="334"/>
+<rect class="muted" x="14.0" y="14.0" width="41.6" height="40.0" rx="5"/>
+<text class="muted-text" x="34.8" y="38.0">esc</text>
+<rect class="muted" x="59.6" y="14.0" width="41.6" height="40.0" rx="5"/>
+<text class="muted-text" x="80.4" y="38.0">F1</text>
+<rect class="muted" x="105.1" y="14.0" width="41.6" height="40.0" rx="5"/>
+<text class="muted-text" x="125.9" y="38.0">F2</text>
+<rect class="muted" x="150.7" y="14.0" width="41.6" height="40.0" rx="5"/>
+<text class="muted-text" x="171.5" y="38.0">F3</text>
+<rect class="muted" x="196.3" y="14.0" width="41.6" height="40.0" rx="5"/>
+<text class="muted-text" x="217.1" y="38.0">F4</text>
+<rect class="muted" x="241.9" y="14.0" width="41.6" height="40.0" rx="5"/>
+<text class="muted-text" x="262.6" y="38.0">F5</text>
+<rect class="muted" x="287.4" y="14.0" width="41.6" height="40.0" rx="5"/>
+<text class="muted-text" x="308.2" y="38.0">F6</text>
+<rect class="muted" x="333.0" y="14.0" width="41.6" height="40.0" rx="5"/>
+<text class="muted-text" x="353.8" y="38.0">F7</text>
+<rect class="muted" x="378.6" y="14.0" width="41.6" height="40.0" rx="5"/>
+<text class="muted-text" x="399.4" y="38.0">F8</text>
+<rect class="muted" x="424.1" y="14.0" width="41.6" height="40.0" rx="5"/>
+<text class="muted-text" x="444.9" y="38.0">F9</text>
+<rect class="muted" x="469.7" y="14.0" width="41.6" height="40.0" rx="5"/>
+<text class="muted-text" x="490.5" y="38.0">F10</text>
+<rect class="muted" x="515.3" y="14.0" width="41.6" height="40.0" rx="5"/>
+<text class="muted-text" x="536.1" y="38.0">F11</text>
+<rect class="muted" x="560.9" y="14.0" width="41.6" height="40.0" rx="5"/>
+<text class="muted-text" x="581.6" y="38.0">F12</text>
+<rect class="muted" x="606.4" y="14.0" width="41.6" height="40.0" rx="5"/>
+<rect class="muted" x="14.0" y="58.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="34.0" y="82.0">`</text>
+<text class="secondary" x="22.0" y="69.0">&lt;</text>
+<rect class="muted" x="58.0" y="58.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="78.0" y="82.0">1</text>
+<text class="secondary" x="66.0" y="69.0">&amp;</text>
+<rect class="muted" x="102.0" y="58.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="122.0" y="82.0">2</text>
+<text class="secondary" x="110.0" y="69.0">é</text>
+<rect class="muted" x="146.0" y="58.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="166.0" y="82.0">3</text>
+<text class="secondary" x="154.0" y="69.0">"</text>
+<rect class="muted" x="190.0" y="58.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="210.0" y="82.0">4</text>
+<text class="secondary" x="198.0" y="69.0">'</text>
+<rect class="muted" x="234.0" y="58.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="254.0" y="82.0">5</text>
+<text class="secondary" x="242.0" y="69.0">(</text>
+<rect class="muted" x="278.0" y="58.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="298.0" y="82.0">6</text>
+<text class="secondary" x="286.0" y="69.0">§</text>
+<rect class="muted" x="322.0" y="58.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="342.0" y="82.0">7</text>
+<text class="secondary" x="330.0" y="69.0">è</text>
+<rect class="muted" x="366.0" y="58.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="386.0" y="82.0">8</text>
+<text class="secondary" x="374.0" y="69.0">!</text>
+<rect class="muted" x="410.0" y="58.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="430.0" y="82.0">9</text>
+<text class="secondary" x="418.0" y="69.0">ç</text>
+<rect class="muted" x="454.0" y="58.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="474.0" y="82.0">0</text>
+<text class="secondary" x="462.0" y="69.0">à</text>
+<rect class="muted" x="498.0" y="58.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="518.0" y="82.0">-</text>
+<text class="secondary" x="506.0" y="69.0">)</text>
+<rect class="muted" x="542.0" y="58.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="562.0" y="82.0">=</text>
+<text class="secondary" x="550.0" y="69.0">-</text>
+<rect class="muted" x="586.0" y="58.0" width="62.0" height="40.0" rx="5"/>
+<text class="muted-text" x="617.0" y="82.0">⌫</text>
+<rect class="muted" x="14.0" y="102.0" width="62.0" height="40.0" rx="5"/>
+<text class="muted-text" x="45.0" y="126.0">⇥</text>
+<rect class="muted" x="80.0" y="102.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="100.0" y="126.0">q</text>
+<text class="secondary" x="88.0" y="113.0">a</text>
+<rect class="muted" x="124.0" y="102.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="144.0" y="126.0">w</text>
+<text class="secondary" x="132.0" y="113.0">z</text>
+<rect class="testing" x="168.0" y="102.0" width="40.0" height="40.0" rx="5"/>
+<text x="188.0" y="122.0">e</text>
+<text class="action" x="188.0" y="137.0">Précédent</text>
+<rect class="muted" x="212.0" y="102.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="232.0" y="126.0">r</text>
+<rect class="muted" x="256.0" y="102.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="276.0" y="126.0">t</text>
+<rect class="muted" x="300.0" y="102.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="320.0" y="126.0">y</text>
+<rect class="muted" x="344.0" y="102.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="364.0" y="126.0">u</text>
+<rect class="muted" x="388.0" y="102.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="408.0" y="126.0">i</text>
+<rect class="muted" x="432.0" y="102.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="452.0" y="126.0">o</text>
+<rect class="muted" x="476.0" y="102.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="496.0" y="126.0">p</text>
+<rect class="muted" x="520.0" y="102.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="540.0" y="126.0">[</text>
+<text class="secondary" x="528.0" y="113.0">^</text>
+<rect class="muted" x="564.0" y="102.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="584.0" y="126.0">]</text>
+<text class="secondary" x="572.0" y="113.0">$</text>
+<rect class="muted" x="608.0" y="102.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="628.0" y="126.0">\</text>
+<text class="secondary" x="616.0" y="113.0">`</text>
+<rect class="muted" x="14.0" y="146.0" width="73.0" height="40.0" rx="5"/>
+<text class="muted-text" x="50.5" y="170.0">⇪</text>
+<rect class="muted" x="91.0" y="146.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="111.0" y="170.0">a</text>
+<text class="secondary" x="99.0" y="157.0">q</text>
+<rect class="chosen" x="135.0" y="146.0" width="40.0" height="40.0" rx="5"/>
 <text x="155.0" y="166.0">s</text>
-<text class="a" x="155.0" y="181.0">Suivant</text>
-<rect class="free" x="179.0" y="146.0" width="40.0" height="40.0" rx="5"/>
-<text x="199.0" y="170.0">d</text>
-<rect class="k" x="223.0" y="146.0" width="40.0" height="40.0" rx="5"/>
-<text x="243.0" y="170.0">f</text>
-<rect class="k" x="267.0" y="146.0" width="40.0" height="40.0" rx="5"/>
-<text x="287.0" y="170.0">g</text>
-<rect class="k" x="311.0" y="146.0" width="40.0" height="40.0" rx="5"/>
-<text x="331.0" y="170.0">h</text>
-<rect class="k" x="355.0" y="146.0" width="40.0" height="40.0" rx="5"/>
-<text x="375.0" y="170.0">j</text>
-<rect class="k" x="399.0" y="146.0" width="40.0" height="40.0" rx="5"/>
-<text x="419.0" y="170.0">k</text>
-<rect class="k" x="443.0" y="146.0" width="40.0" height="40.0" rx="5"/>
-<text x="463.0" y="170.0">l</text>
-<rect class="layout" x="487.0" y="146.0" width="40.0" height="40.0" rx="5"/>
-<text x="507.0" y="170.0">;</text>
-<text class="s" x="495.0" y="157.0">m</text>
-<rect class="layout" x="531.0" y="146.0" width="40.0" height="40.0" rx="5"/>
-<text x="551.0" y="170.0">'</text>
-<text class="s" x="539.0" y="157.0">ù</text>
-<rect class="k" x="575.0" y="146.0" width="73.0" height="40.0" rx="5"/>
-<text x="611.5" y="170.0">↩</text>
-<rect class="k" x="14.0" y="190.0" width="95.0" height="40.0" rx="5"/>
-<text x="61.5" y="214.0">⇧</text>
-<rect class="layout" x="113.0" y="190.0" width="40.0" height="40.0" rx="5"/>
-<text x="133.0" y="214.0">z</text>
-<text class="s" x="121.0" y="201.0">w</text>
-<rect class="assigned" x="157.0" y="190.0" width="40.0" height="40.0" rx="5"/>
+<text class="action" x="155.0" y="181.0">Suivant</text>
+<rect class="testing" x="179.0" y="146.0" width="40.0" height="40.0" rx="5"/>
+<text x="199.0" y="166.0">d</text>
+<text class="action" x="199.0" y="181.0">Précédent</text>
+<rect class="muted" x="223.0" y="146.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="243.0" y="170.0">f</text>
+<rect class="muted" x="267.0" y="146.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="287.0" y="170.0">g</text>
+<rect class="muted" x="311.0" y="146.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="331.0" y="170.0">h</text>
+<rect class="muted" x="355.0" y="146.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="375.0" y="170.0">j</text>
+<rect class="muted" x="399.0" y="146.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="419.0" y="170.0">k</text>
+<rect class="muted" x="443.0" y="146.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="463.0" y="170.0">l</text>
+<rect class="muted" x="487.0" y="146.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="507.0" y="170.0">;</text>
+<text class="secondary" x="495.0" y="157.0">m</text>
+<rect class="muted" x="531.0" y="146.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="551.0" y="170.0">'</text>
+<text class="secondary" x="539.0" y="157.0">ù</text>
+<rect class="muted" x="575.0" y="146.0" width="73.0" height="40.0" rx="5"/>
+<text class="muted-text" x="611.5" y="170.0">↩</text>
+<rect class="muted" x="14.0" y="190.0" width="95.0" height="40.0" rx="5"/>
+<text class="muted-text" x="61.5" y="214.0">⇧</text>
+<rect class="muted" x="113.0" y="190.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="133.0" y="214.0">z</text>
+<text class="secondary" x="121.0" y="201.0">w</text>
+<rect class="chosen" x="157.0" y="190.0" width="40.0" height="40.0" rx="5"/>
 <text x="177.0" y="210.0">x</text>
-<text class="a" x="177.0" y="225.0">Fin</text>
-<rect class="assigned" x="201.0" y="190.0" width="40.0" height="40.0" rx="5"/>
+<text class="action" x="177.0" y="225.0">Fin</text>
+<rect class="chosen" x="201.0" y="190.0" width="40.0" height="40.0" rx="5"/>
 <text x="221.0" y="210.0">c</text>
-<text class="a" x="221.0" y="225.0">Suspendre</text>
-<rect class="k" x="245.0" y="190.0" width="40.0" height="40.0" rx="5"/>
-<text x="265.0" y="214.0">v</text>
-<rect class="k" x="289.0" y="190.0" width="40.0" height="40.0" rx="5"/>
-<text x="309.0" y="214.0">b</text>
-<rect class="k" x="333.0" y="190.0" width="40.0" height="40.0" rx="5"/>
-<text x="353.0" y="214.0">n</text>
-<rect class="layout" x="377.0" y="190.0" width="40.0" height="40.0" rx="5"/>
-<text x="397.0" y="214.0">m</text>
-<text class="s" x="385.0" y="201.0">,</text>
-<rect class="layout" x="421.0" y="190.0" width="40.0" height="40.0" rx="5"/>
-<text x="441.0" y="214.0">,</text>
-<text class="s" x="429.0" y="201.0">;</text>
-<rect class="layout" x="465.0" y="190.0" width="40.0" height="40.0" rx="5"/>
-<text x="485.0" y="214.0">.</text>
-<text class="s" x="473.0" y="201.0">:</text>
-<rect class="layout" x="509.0" y="190.0" width="40.0" height="40.0" rx="5"/>
-<text x="529.0" y="214.0">/</text>
-<text class="s" x="517.0" y="201.0">=</text>
-<rect class="k" x="553.0" y="190.0" width="95.0" height="40.0" rx="5"/>
-<text x="600.5" y="214.0">⇧</text>
-<rect class="k" x="14.0" y="234.0" width="40.0" height="40.0" rx="5"/>
-<text x="34.0" y="258.0">fn</text>
+<text class="action" x="221.0" y="225.0">Suspendre</text>
+<rect class="muted" x="245.0" y="190.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="265.0" y="214.0">v</text>
+<rect class="muted" x="289.0" y="190.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="309.0" y="214.0">b</text>
+<rect class="muted" x="333.0" y="190.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="353.0" y="214.0">n</text>
+<rect class="muted" x="377.0" y="190.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="397.0" y="214.0">m</text>
+<text class="secondary" x="385.0" y="201.0">,</text>
+<rect class="muted" x="421.0" y="190.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="441.0" y="214.0">,</text>
+<text class="secondary" x="429.0" y="201.0">;</text>
+<rect class="muted" x="465.0" y="190.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="485.0" y="214.0">.</text>
+<text class="secondary" x="473.0" y="201.0">:</text>
+<rect class="muted" x="509.0" y="190.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="529.0" y="214.0">/</text>
+<text class="secondary" x="517.0" y="201.0">=</text>
+<rect class="muted" x="553.0" y="190.0" width="95.0" height="40.0" rx="5"/>
+<text class="muted-text" x="600.5" y="214.0">⇧</text>
+<rect class="muted" x="14.0" y="234.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="34.0" y="258.0">fn</text>
 <rect class="held" x="58.0" y="234.0" width="40.0" height="40.0" rx="5"/>
 <text x="78.0" y="258.0">⌃</text>
 <rect class="held" x="102.0" y="234.0" width="40.0" height="40.0" rx="5"/>
 <text x="122.0" y="258.0">⌥</text>
-<rect class="k" x="146.0" y="234.0" width="51.0" height="40.0" rx="5"/>
-<text x="171.5" y="258.0">⌘</text>
-<rect class="taken" x="201.0" y="234.0" width="216.0" height="40.0" rx="5"/>
-<text x="309.0" y="258.0">espace</text>
-<rect class="k" x="421.0" y="234.0" width="51.0" height="40.0" rx="5"/>
-<text x="446.5" y="258.0">⌘</text>
-<rect class="k" x="476.0" y="234.0" width="40.0" height="40.0" rx="5"/>
-<text x="496.0" y="258.0">⌥</text>
-<rect class="assigned" x="520.0" y="256.0" width="40.0" height="18.0" rx="5"/>
-<text x="540.0" y="269.0">←</text>
-<rect class="k" x="564.0" y="234.0" width="40.0" height="18.0" rx="5"/>
-<text x="584.0" y="247.0">↑</text>
-<rect class="k" x="564.0" y="256.0" width="40.0" height="18.0" rx="5"/>
-<text x="584.0" y="269.0">↓</text>
-<rect class="k" x="608.0" y="256.0" width="40.0" height="18.0" rx="5"/>
-<text x="628.0" y="269.0">→</text>
+<rect class="muted" x="146.0" y="234.0" width="51.0" height="40.0" rx="5"/>
+<text class="muted-text" x="171.5" y="258.0">⌘</text>
+<rect class="muted" x="201.0" y="234.0" width="216.0" height="40.0" rx="5"/>
+<text class="muted-text" x="309.0" y="258.0">espace</text>
+<rect class="muted" x="421.0" y="234.0" width="51.0" height="40.0" rx="5"/>
+<text class="muted-text" x="446.5" y="258.0">⌘</text>
+<rect class="muted" x="476.0" y="234.0" width="40.0" height="40.0" rx="5"/>
+<text class="muted-text" x="496.0" y="258.0">⌥</text>
+<rect class="muted" x="520.0" y="256.0" width="40.0" height="18.0" rx="5"/>
+<text class="muted-text" x="540.0" y="269.0">←</text>
+<rect class="muted" x="564.0" y="234.0" width="40.0" height="18.0" rx="5"/>
+<text class="muted-text" x="584.0" y="247.0">↑</text>
+<rect class="muted" x="564.0" y="256.0" width="40.0" height="18.0" rx="5"/>
+<text class="muted-text" x="584.0" y="269.0">↓</text>
+<rect class="muted" x="608.0" y="256.0" width="40.0" height="18.0" rx="5"/>
+<text class="muted-text" x="628.0" y="269.0">→</text>
 <rect class="held" x="12" y="302" width="16" height="16" rx="3"/>
-<text class="s" style="text-anchor:start;font-size:11px" x="34" y="314">⌃⌥ tenus</text>
-<rect class="assigned" x="108" y="302" width="16" height="16" rx="3"/>
-<text class="s" style="text-anchor:start;font-size:11px" x="130" y="314">proposé</text>
-<rect class="taken" x="197" y="302" width="16" height="16" rx="3"/>
-<text class="s" style="text-anchor:start;font-size:11px" x="219" y="314">pris par macOS</text>
-<rect class="layout" x="335" y="302" width="16" height="16" rx="3"/>
-<text class="s" style="text-anchor:start;font-size:11px" x="357" y="314">AZERTY ≠ QWERTY</text>
-<rect class="free" x="480" y="302" width="16" height="16" rx="3"/>
-<text class="s" style="text-anchor:start;font-size:11px" x="502" y="314">libre, à portée d'une main</text>
+<text class="legend" x="34" y="314">⌃⌥ tenus</text>
+<rect class="chosen" x="114" y="302" width="16" height="16" rx="3"/>
+<text class="legend" x="136" y="314">retenu</text>
+<rect class="testing" x="202" y="302" width="16" height="16" rx="3"/>
+<text class="legend" x="224" y="314">à tester</text>
+<rect class="key" x="304" y="302" width="16" height="16" rx="3"/>
+<text class="legend" x="326" y="314">disponible</text>
+<rect class="muted" x="420" y="302" width="16" height="16" rx="3"/>
+<text class="legend" x="442" y="314">indisponible</text>
 </svg>

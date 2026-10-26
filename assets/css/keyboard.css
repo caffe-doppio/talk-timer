@@ -1,0 +1,74 @@
+/* Plans du clavier (docs/keyboard/*.svg), recopié dans chaque SVG par scripts/check-shortcuts.py :
+   un SVG affiché par <img>, comme sur GitHub, ne charge pas de feuille externe.
+   Couleurs système de la HIG, onglet Specifications, lues le 2026-10-26 :
+   https://developer.apple.com/design/human-interface-guidelines/color
+   La HIG déconseille de les figer dans une app ; ici, c'est un document hors app, sans accès aux API. */
+
+:root {
+  --background: rgb(255 255 255);
+  --label: rgb(0 0 0);
+  --muted-label: rgb(142 142 147);  /* systemGray */
+  --key: rgb(242 242 247);          /* systemGray6 */
+  --key-border: rgb(209 209 214);   /* systemGray4 */
+  --muted-border: rgb(229 229 234); /* systemGray5 */
+  --held: rgb(255 56 60);           /* red */
+  --chosen: rgb(255 141 40);        /* orange */
+  --testing: rgb(0 195 208);        /* teal */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: rgb(0 0 0);
+    --label: rgb(255 255 255);
+    --key: rgb(28 28 30);
+    --key-border: rgb(58 58 60);
+    --muted-border: rgb(44 44 46);
+    --held: rgb(255 66 69);
+    --chosen: rgb(255 146 48);
+    --testing: rgb(0 210 224);
+  }
+}
+
+/* Augmenter le contraste (Réglages Système › Accessibilité › Affichage) */
+@media (prefers-contrast: more) {
+  :root {
+    --muted-label: rgb(108 108 112);
+    --key: rgb(235 235 240);
+    --key-border: rgb(188 188 192);
+    --muted-border: rgb(216 216 220);
+    --held: rgb(233 21 45);
+    --chosen: rgb(197 83 0);
+    --testing: rgb(0 129 152);
+  }
+}
+
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  :root {
+    --muted-label: rgb(174 174 178);
+    --key: rgb(36 36 38);
+    --key-border: rgb(68 68 70);
+    --muted-border: rgb(54 54 56);
+    --held: rgb(255 97 101);
+    --chosen: rgb(255 160 86);
+    --testing: rgb(59 221 236);
+  }
+}
+
+.background { fill: var(--background); }
+
+/* Touche disponible : libre, identique en AZERTY et en QWERTY, à portée d'une main */
+.key { fill: var(--key); stroke: var(--key-border); stroke-width: 1; }
+
+/* Touche indisponible : prise, différente selon la disposition, hors de portée, ou modificateur */
+.muted { fill: none; stroke: var(--muted-border); stroke-width: 1; }
+
+.held, .chosen, .testing { fill: var(--key); stroke-width: 2; }
+.held { stroke: var(--held); }
+.chosen { stroke: var(--chosen); }
+.testing { stroke: var(--testing); }
+
+text { font: 13px -apple-system, BlinkMacSystemFont, sans-serif; fill: var(--label); text-anchor: middle; }
+text.muted-text { fill: var(--muted-label); }
+text.secondary { font-size: 9px; fill: var(--muted-label); }
+text.action { font-size: 8px; fill: var(--muted-label); }
+text.legend { font-size: 11px; text-anchor: start; fill: var(--label); }

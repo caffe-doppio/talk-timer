@@ -64,7 +64,8 @@ Statut : **existant** (présent dans le code) ou **prévu** (nom réservé par l
 | Raccourci global | raccourci | shortcut | `KeyboardShortcuts.Name` (`.nextBlock`, `.previousBlock`, `.togglePause`, `.endSession`) | — | prévu |
 | Contrainte sur les raccourcis par défaut (disposition, coexistence) | exigence | requirement | — | `requirements[]` (brouillon `docs/shortcuts-draft.json`) | existant |
 | Touche atteignable d'une main, ⌃⌥ gauche tenus | portée | reach | — (`REACH`, `scripts/check-shortcuts.py`) | — | existant |
-| Schéma de la couche ⌃⌥ d'un clavier ISO ou ANSI | plan du clavier | keyboard map | — (`docs/keyboard/*.svg`, généré) | — | existant |
+| Schéma de la couche ⌃⌥ d'un clavier ISO ou ANSI | plan du clavier | keyboard map | — (`docs/keyboard/*.svg`, généré ; styles `assets/css/keyboard.css`) | — | existant |
+| Avancement du choix d'un raccourci par défaut | retenu, à tester | chosen, testing | — | `shortcuts[].status` (brouillon) | existant |
 | Erreur de chargement | — | — | `TalkError` (données), `TalkError.message` (texte, côté app) | — | existant |
 | Titre de bloc Markdown sans durée | — | — | `TalkError.missingDuration` | — | existant |
 | Refus Markdown et sa ligne | ligne | line | `TalkError.atLine` | — | existant |

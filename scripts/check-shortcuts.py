@@ -20,6 +20,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DRAFT = ROOT / "docs/shortcuts-draft.json"
+CSS = ROOT / "assets/css/keyboard.css"
 
 # Portée d'une main, en largeurs de touche, du centre de ⌥ gauche au bord le plus proche de la touche
 # (le bord, pas le centre : sinon Espace, large de 5, paraîtrait loin du pouce).
@@ -207,12 +208,19 @@ def check(shortcuts, layouts, taken):
 
 
 def svg(geometry, shortcuts, layouts, taken):
-    """Plan de la couche ⌃⌥ : proposé, pris par macOS, contraire à l'exigence layout, libre à portée."""
+    """Plan de la couche ⌃⌥ : retenu, à tester, disponible ; tout le reste atténué (styles : assets/css/keyboard.css)."""
     fr, us = layouts["French"], layouts["US"]
     main, other = (fr, us) if geometry == "iso" else (us, fr)
     ctrl_opt = MODS["control"] | MODS["option"]
-    assigned = {KEYS[s["proposed"]["key"]]: s["action"]["fr"].split(" / ")[0] for s in shortcuts
-                if sorted(s["proposed"]["modifiers"]) == ["control", "option"]}
+    # Touche → (classe, nom de l'action) : le proposé d'un raccourci retenu ; proposé et repli d'un raccourci à tester.
+    marked = {}
+    for s in shortcuts:
+        name = s["action"]["fr"].split(" / ")[0]
+        variants = ("proposed", "fallback") if s.get("status") == "testing" else ("proposed",)
+        for variant in variants:
+            if sorted(s[variant]["modifiers"]) == ["control", "option"]:
+                css = "testing" if s.get("status") == "testing" else "chosen"
+                marked.setdefault(KEYS[s[variant]["key"]], (css, name))
 
     u, pad, legend = 44, 12, 46
     width, height = 14.5 * u + 2 * pad, 6 * u + 2 * pad + legend
@@ -220,53 +228,41 @@ def svg(geometry, shortcuts, layouts, taken):
     def status(code):
         if code in (59, 58):
             return "held"
-        if code is None or code in MODIFIER_KEYS:
-            return "k"
-        if code in assigned:
-            return "assigned"
-        if (code, ctrl_opt) in taken:
-            return "taken"
-        if has_character(code) and fr.get(code, "").lower() != us.get(code, "").lower():
-            return "layout"
-        return "free" if reach(geometry, code) <= REACH else "k"
+        if code in marked:
+            return marked[code][0]
+        available = (code is not None and code not in MODIFIER_KEYS and (code, ctrl_opt) not in taken
+                     and not (has_character(code) and fr.get(code, "").lower() != us.get(code, "").lower())
+                     and reach(geometry, code) <= REACH)
+        return "key" if available else "muted"
 
     out = [
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width:.0f} {height:.0f}" role="img">',
         f"<title>Couche ⌃⌥, clavier {geometry.upper()}</title>",
-        "<style>"
-        ".bg{fill:#fff}.k{fill:#f6f8fa;stroke:#d0d7de}.free{fill:#dafbe1;stroke:#1a7f37}"
-        ".assigned{fill:#fbefff;stroke:#8250df;stroke-width:2}.taken{fill:#ffebe9;stroke:#cf222e;stroke-dasharray:3 2}"
-        ".layout{fill:#fff8c5;stroke:#9a6700}.held{fill:#ddf4ff;stroke:#0969da;stroke-width:2}"
-        "text{font:13px -apple-system,sans-serif;fill:#1f2328;text-anchor:middle}.s{font-size:9px;fill:#59636e}.a{font-size:8px;fill:#59636e}"
-        
-        "@media (prefers-color-scheme:dark){.bg{fill:#0d1117}.k{fill:#151b23;stroke:#3d444d}"
-        ".free{fill:#12261e;stroke:#3fb950}.assigned{fill:#271052;stroke:#a371f7}.taken{fill:#3c1618;stroke:#f85149}"
-        ".layout{fill:#2e2a0f;stroke:#d29922}.held{fill:#0c2d6b;stroke:#4493f8}text{fill:#f0f6fc}"
-        ".s,.a{fill:#9198a1}}"
-        "</style>",
-        f'<rect class="bg" width="{width:.0f}" height="{height:.0f}"/>',
+        f"<style><![CDATA[\n{CSS.read_text(encoding='utf-8')}]]></style>",  # CDATA : le CSS peut contenir < ou &
+        f'<rect class="background" width="{width:.0f}" height="{height:.0f}"/>',
     ]
     for code, x, y, w, h in keys(geometry):
         px, py, pw, ph = pad + x * u + 2, pad + y * u + 2, w * u - 4, h * u - 4
-        out.append(f'<rect class="{status(code)}" x="{px:.1f}" y="{py:.1f}" width="{pw:.1f}" height="{ph:.1f}" rx="5"/>')
+        css = status(code)
+        out.append(f'<rect class="{css}" x="{px:.1f}" y="{py:.1f}" width="{pw:.1f}" height="{ph:.1f}" rx="5"/>')
         if code is None or (code == 36 and h == 1 and w < 1):
             continue
         cx, cy = px + pw / 2, py + ph / 2
         text = LABELS.get(code) or main.get(code, "")
-        named = code in assigned and h == 1  # une demi-touche flèche n'a pas la place du nom de l'action
-        out.append(f'<text x="{cx:.1f}" y="{cy + (0 if named else 4):.1f}">{escape(text)}</text>')
+        named = code in marked and h == 1  # une demi-touche flèche n'a pas la place du nom de l'action
+        muted = ' class="muted-text"' if css == "muted" else ""
+        out.append(f'<text{muted} x="{cx:.1f}" y="{cy + (0 if named else 4):.1f}">{escape(text)}</text>')
         if has_character(code) and other.get(code, "").lower() != main.get(code, "").lower():
-            out.append(f'<text class="s" x="{px + 8:.1f}" y="{py + 11:.1f}">{escape(other.get(code, ""))}</text>')
+            out.append(f'<text class="secondary" x="{px + 8:.1f}" y="{py + 11:.1f}">{escape(other.get(code, ""))}</text>')
         if named:
-            out.append(f'<text class="a" x="{cx:.1f}" y="{py + ph - 5:.1f}">{escape(assigned[code])}</text>')
-    items = [("held", "⌃⌥ tenus"), ("assigned", "proposé"), ("taken", "pris par macOS"),
-             ("layout", "AZERTY ≠ QWERTY"), ("free", "libre, à portée d'une main")]
+            out.append(f'<text class="action" x="{cx:.1f}" y="{py + ph - 5:.1f}">{escape(marked[code][1])}</text>')
+    items = [("held", "⌃⌥ tenus"), ("chosen", "retenu"), ("testing", "à tester"),
+             ("key", "disponible"), ("muted", "indisponible")]
     x = pad
     for css, text in items:
         out.append(f'<rect class="{css}" x="{x}" y="{height - legend + 14}" width="16" height="16" rx="3"/>')
-        out.append(f'<text class="s" style="text-anchor:start;font-size:11px" x="{x + 22}" '
-                   f'y="{height - legend + 26}">{text}</text>')
-        x += 22 + 7 * len(text) + 18
+        out.append(f'<text class="legend" x="{x + 22}" y="{height - legend + 26}">{text}</text>')
+        x += 22 + 7 * len(text) + 24
     out.append("</svg>")
     return "\n".join(out) + "\n"
 
