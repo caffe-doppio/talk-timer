@@ -5,6 +5,8 @@ build/
 DerivedData/
 xcuserdata/
 .vscode/
+# xcode-build-server (SourceKit-LSP dans VS Code) : chemins absolus de la machine
+buildServer.json
 .claude/settings.local.json
 .claude/plans/
 logs/
